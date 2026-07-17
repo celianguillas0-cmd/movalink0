@@ -1,0 +1,337 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #fafafa;
+  --foreground: #0a0a0a;
+  --hex-stroke: #5a5e7433;
+  --hex-fill: #5a5e7412;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --card: #fff;
+  --card-border: #f0f0f0;
+  --nav-bg: #fff;
+  --nav-border: #e5e7eb;
+  --nav-text: #111827;
+  --nav-muted: #6b7280;
+  --nav-active-bg: #f3f4f6;
+  --nav-hover-bg: #f3f4f6;
+  --nav-bar: #111827;
+  --nav-btn-bg: #111827;
+  --nav-btn-text: #fff;
+  --nav-shadow: 2px 0 8px #0000000a;
+  --accent: #6366f1;
+  --accent-muted: rgba(99, 102, 241, 0.10);
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --muted: #71717a;
+  --hex-stroke: #afb4d221;
+  --hex-fill: #afb4d20d;
+  --border: #27272a;
+  --card: #111;
+  --card-border: #1f1f1f;
+  --nav-bg: #09090b;
+  --nav-border: #27272a;
+  --nav-text: #fff;
+  --nav-muted: #71717a;
+  --nav-active-bg: #27272a;
+  --nav-hover-bg: #18181b;
+  --nav-bar: #fff;
+  --nav-btn-bg: #fff;
+  --nav-btn-text: #111827;
+  --nav-shadow: none;
+  --accent: #818cf8;
+  --accent-muted: rgba(129, 140, 248, 0.10);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (max-width: 1023px) {
+  #ml-sidebar {
+    display: none !important;
+  }
+}
+@media (min-width: 1024px) {
+  #ml-mobile-nav {
+    display: none !important;
+  }
+}
+#ml-sidebar a:hover {
+  background: var(--nav-hover-bg) !important;
+  color: var(--nav-text) !important;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: background 0.2s ease;
+}
+
+/* Grille de points façon rivtools */
+.dotgrid {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+.dark .dotgrid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+}
+
+/* Fond plasma animé (effet profil) */
+@keyframes plasma-drift {
+  0% { transform: translate(-8%, -6%) scale(1); }
+  50% { transform: translate(6%, 8%) scale(1.15); }
+  100% { transform: translate(-8%, -6%) scale(1); }
+}
+.fx-plasma::before,
+.fx-plasma::after {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  pointer-events: none;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.5;
+  animation: plasma-drift 16s ease-in-out infinite;
+}
+.fx-plasma::after {
+  animation-duration: 22s;
+  animation-direction: reverse;
+  opacity: 0.35;
+}
+
+/* Dégradé animé subtil (effet profil "aurora") */
+@keyframes aurora-move {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.fx-aurora {
+  background-size: 300% 300%;
+  animation: aurora-move 18s ease infinite;
+}
+
+/* Anneau d'avatar animé (frame "animated") */
+@keyframes ml-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Effets de pseudo : dégradé/arc-en-ciel animés + curseur machine à écrire */
+@keyframes ml-name-slide {
+  to {
+    background-position: 200% center;
+  }
+}
+.ml-name-gradient {
+  animation: ml-name-slide 4s linear infinite;
+}
+@keyframes ml-caret-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+.ml-typecaret {
+  animation: ml-caret-blink 1s step-end infinite;
+  margin-left: 1px;
+  font-weight: 400;
+}
+
+/* Pseudo "Vague" : lettres qui ondulent */
+@keyframes ml-wave-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+.ml-wavechar {
+  display: inline-block;
+  animation: ml-wave-bounce 1.6s ease-in-out infinite;
+  white-space: pre;
+}
+
+/* Pseudo "Glitch" : décalages RVB nerveux */
+@keyframes ml-glitch-shake {
+  0%,
+  86%,
+  100% {
+    text-shadow: none;
+    transform: translate(0);
+  }
+  88% {
+    text-shadow: -2px 0 #ff2d55, 2px 0 #00e5ff;
+    transform: translate(1px, -1px);
+  }
+  90% {
+    text-shadow: 2px 0 #ff2d55, -2px 0 #00e5ff;
+    transform: translate(-1px, 1px);
+  }
+  92% {
+    text-shadow: -1px 0 #ff2d55, 1px 0 #00e5ff;
+    transform: translate(1px, 0);
+  }
+  94% {
+    text-shadow: none;
+    transform: translate(0);
+  }
+}
+.ml-name-glitch {
+  animation: ml-glitch-shake 2.4s infinite;
+}
+
+/* Pseudo "Feu" : scintillement chaud */
+@keyframes ml-fire-flicker {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 6px rgba(255, 120, 0, 0.8));
+  }
+  50% {
+    filter: drop-shadow(0 -2px 12px rgba(255, 180, 0, 0.9));
+  }
+}
+.ml-name-fire {
+  animation: ml-fire-flicker 0.9s ease-in-out infinite;
+}
+
+/* Cadre d'avatar "Pulsation" */
+@keyframes ml-pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--ml-pulse-color, rgba(255, 255, 255, 0.5));
+  }
+  70% {
+    box-shadow: 0 0 0 14px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* Animations d'entrée de la carte */
+@keyframes ml-intro-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.ml-intro-fade {
+  animation: ml-intro-fade 0.8s ease-out both;
+}
+@keyframes ml-intro-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.ml-intro-zoom {
+  animation: ml-intro-zoom 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes ml-intro-slide {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.ml-intro-slide {
+  animation: ml-intro-slide 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Effet de page "Glitch" */
+@keyframes fx-glitch-jitter {
+  0%,
+  92%,
+  100% {
+    transform: translateX(0);
+  }
+  94% {
+    transform: translateX(-6px);
+  }
+  96% {
+    transform: translateX(4px);
+  }
+  98% {
+    transform: translateX(-2px);
+  }
+}
+.fx-glitch {
+  animation: fx-glitch-jitter 2.8s steps(2) infinite;
+}
+@keyframes fx-band-sweep {
+  0% {
+    top: -12%;
+  }
+  100% {
+    top: 112%;
+  }
+}
+.fx-glitch-band {
+  animation: fx-band-sweep 3.4s linear infinite;
+}
+.fx-vhs-roll {
+  animation: fx-band-sweep 7s linear infinite;
+}
+
+/* Écran de démarrage */
+@keyframes ml-splash-m-in {
+  from { opacity: 0; transform: scale(0.5); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.ml-splash-m {
+  opacity: 0;
+  animation: ml-splash-m-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes ml-splash-char-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ml-splash-char {
+  opacity: 0;
+  animation: ml-splash-char-in 0.1s ease-out forwards;
+}
+
+::selection {
+  background: #18181b;
+  color: #ffffff;
+}
+.dark ::selection {
+  background: #ffffff;
+  color: #18181b;
+}

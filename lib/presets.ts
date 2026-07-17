@@ -1,0 +1,433 @@
+import { Plan, Theme } from "./types";
+
+// Presets : combinaisons prêtes à l'emploi des options existantes.
+// Un preset au-dessus du plan de l'utilisateur s'affiche en aperçu (non enregistré).
+export interface ThemePreset {
+  id: string;
+  label: string;
+  plan: Plan; // plan minimum requis
+  emoji: string; // pastille visuelle dans l'éditeur
+  theme: Partial<Theme>;
+}
+
+// Tous les réglages de style qu'un preset contrôle : ceux qu'il ne définit
+// pas explicitement sont remis à leur valeur par défaut (undefined), sinon
+// les restes d'un ancien preset ou du full custom se mélangent au nouveau
+// (ex : fond violet Synthwave sous des pétales Sakura). On préserve ce qui
+// n'est pas du style : musique, Discord, emoji de pluie, curseur perso,
+// animation d'entrée.
+//
+// Fonds : AUCUN preset ne fixe de fond custom — tous utilisent le fond radial
+// dérivé de l'accent, qui réagit à la pastille couleur. L'identité visuelle
+// des presets "scène" (Néon Tokyo/VHS/Synthwave/Hantée) vient de l'effet
+// overlay (aurora/vhs/synthwave-grid/storm) et de leur couleur d'accent.
+const STYLE_RESET: Partial<Theme> = {
+  font: undefined,
+  nameFont: undefined,
+  buttonStyle: undefined,
+  avatarFrame: undefined,
+  nameEffect: undefined,
+  cardWidth: undefined,
+  cardAlign: undefined,
+  cardRadius: undefined,
+  cardPadding: undefined,
+  contentScale: undefined,
+  bgType: undefined,
+  bgColor: undefined,
+  bgColor2: undefined,
+  bgAngle: undefined,
+  bgDim: undefined,
+  cardBg: undefined,
+  cardBgOpacity: undefined,
+  cardBlur: undefined,
+  nameColor: undefined,
+  bioColor: undefined,
+  avatarShape: undefined,
+  avatarSize: undefined,
+  cardBorderColor: undefined,
+  cardBorderWidth: undefined,
+  buttonTextColor: undefined,
+};
+
+// Thème complet d'un preset : base réinitialisée + réglages du preset.
+// À étaler sur le thème courant ({ ...theme, ...presetTheme(p) }) — les
+// undefined écrasent bien les valeurs existantes lors du spread.
+export function presetTheme(preset: ThemePreset): Partial<Theme> {
+  return { ...STYLE_RESET, ...preset.theme };
+}
+
+export const THEME_PRESETS: ThemePreset[] = [
+  {
+    id: "minimal",
+    label: "Minimal",
+    plan: "pro",
+    emoji: "◽",
+    theme: {
+      accent: "#e5e5e5",
+      effect: "none",
+      layout: "clean",
+      font: "poppins",
+      nameFont: "poppins",
+      buttonStyle: "square",
+      avatarFrame: "none",
+      nameEffect: "none",
+    },
+  },
+  {
+    id: "ocean",
+    label: "Océan",
+    plan: "pro",
+    emoji: "🌊",
+    theme: {
+      accent: "#0ea5e9",
+      effect: "rain",
+      layout: "card",
+      font: "classic",
+      nameFont: "bebas",
+      buttonStyle: "pill",
+      avatarFrame: "ring",
+      nameEffect: "none",
+    },
+  },
+  {
+    id: "sakura",
+    label: "Sakura",
+    plan: "pro",
+    emoji: "🌸",
+    theme: {
+      accent: "#ec4899",
+      effect: "sakura",
+      layout: "card",
+      font: "caveat",
+      nameFont: "dancing",
+      buttonStyle: "glass",
+      avatarFrame: "gradientRing",
+      nameEffect: "gradient",
+    },
+  },
+  {
+    id: "automne",
+    label: "Automne",
+    plan: "pro",
+    emoji: "🍂",
+    theme: {
+      accent: "#f97316",
+      effect: "leaves",
+      layout: "card",
+      font: "playfair",
+      nameFont: "playfair",
+      buttonStyle: "rounded",
+      avatarFrame: "double",
+      nameEffect: "fire",
+    },
+  },
+  {
+    id: "neon-tokyo",
+    label: "Néon Tokyo",
+    plan: "pro",
+    emoji: "🏮",
+    theme: {
+      accent: "#ff2d95",
+      effect: "aurora",
+      layout: "card",
+      font: "orbitron",
+      nameFont: "orbitron",
+      buttonStyle: "glass",
+      avatarFrame: "glow",
+      nameEffect: "glow",
+    },
+  },
+  {
+    id: "retro-vhs",
+    label: "Rétro VHS",
+    plan: "elite",
+    emoji: "📼",
+    theme: {
+      accent: "#22d3ee",
+      effect: "vhs",
+      layout: "card",
+      font: "typewriter",
+      nameFont: "typewriter",
+      buttonStyle: "shadow",
+      avatarFrame: "dashed",
+      nameEffect: "glitch",
+    },
+  },
+  {
+    id: "synthwave",
+    label: "Synthwave",
+    plan: "elite",
+    emoji: "🌆",
+    theme: {
+      accent: "#f472b6",
+      effect: "synthwave",
+      layout: "card",
+      font: "orbitron",
+      nameFont: "monoton",
+      buttonStyle: "neon",
+      avatarFrame: "pulse",
+      nameEffect: "gradient",
+    },
+  },
+  {
+    id: "hantee",
+    label: "Hantée",
+    plan: "elite",
+    emoji: "👻",
+    theme: {
+      accent: "#7c3aed",
+      effect: "storm",
+      layout: "card",
+      font: "creepster",
+      nameFont: "creepster",
+      buttonStyle: "outline",
+      avatarFrame: "glow",
+      nameEffect: "glitch",
+    },
+  },
+  // --- PRO (anciennement free) ---
+  {
+    id: "hiver",
+    label: "Hiver",
+    plan: "pro",
+    emoji: "❄️",
+    theme: {
+      accent: "#bae6fd",
+      effect: "snow",
+      layout: "clean",
+      font: "classic",
+      nameFont: "classic",
+      buttonStyle: "rounded",
+      avatarFrame: "ring",
+      nameEffect: "none",
+    },
+  },
+  {
+    id: "foret",
+    label: "Forêt",
+    plan: "pro",
+    emoji: "🌲",
+    theme: {
+      accent: "#34d399",
+      effect: "rain",
+      layout: "card",
+      font: "poppins",
+      nameFont: "bebas",
+      buttonStyle: "square",
+      avatarFrame: "ring",
+      nameEffect: "none",
+    },
+  },
+  // --- PRO ---
+  {
+    id: "galaxy",
+    label: "Galaxy",
+    plan: "pro",
+    emoji: "🌌",
+    theme: {
+      accent: "#818cf8",
+      effect: "stars",
+      layout: "card",
+      font: "orbitron",
+      nameFont: "orbitron",
+      buttonStyle: "glass",
+      avatarFrame: "glow",
+      nameEffect: "glow",
+    },
+  },
+  {
+    id: "amour",
+    label: "Amour",
+    plan: "pro",
+    emoji: "💕",
+    theme: {
+      accent: "#f43f5e",
+      effect: "hearts",
+      layout: "card",
+      font: "dancing",
+      nameFont: "dancing",
+      buttonStyle: "pill",
+      avatarFrame: "double",
+      nameEffect: "gradient",
+    },
+  },
+  {
+    id: "bubblegum",
+    label: "Bubblegum",
+    plan: "pro",
+    emoji: "🍬",
+    theme: {
+      accent: "#d946ef",
+      effect: "bubbles",
+      layout: "card",
+      font: "fredoka",
+      nameFont: "fredoka",
+      buttonStyle: "pill",
+      avatarFrame: "gradientRing",
+      nameEffect: "rainbow",
+    },
+  },
+  {
+    id: "aurore",
+    label: "Aurore",
+    plan: "pro",
+    emoji: "🌈",
+    theme: {
+      accent: "#2dd4bf",
+      effect: "aurora",
+      layout: "card",
+      font: "poppins",
+      nameFont: "poppins",
+      buttonStyle: "gradient",
+      avatarFrame: "gradientRing",
+      nameEffect: "gradient",
+    },
+  },
+  // --- ELITE ---
+  {
+    id: "matrix",
+    label: "Matrix",
+    plan: "elite",
+    emoji: "💻",
+    theme: {
+      accent: "#22c55e",
+      effect: "matrix",
+      layout: "card",
+      font: "orbitron",
+      nameFont: "orbitron",
+      buttonStyle: "outline",
+      avatarFrame: "glow",
+      nameEffect: "glitch",
+    },
+  },
+  {
+    id: "braise",
+    label: "Braise",
+    plan: "elite",
+    emoji: "🔥",
+    theme: {
+      accent: "#dc2626",
+      effect: "embers",
+      layout: "card",
+      font: "bangers",
+      nameFont: "bangers",
+      buttonStyle: "bevel",
+      avatarFrame: "pulse",
+      nameEffect: "fire",
+    },
+  },
+  {
+    id: "nebuleuse",
+    label: "Nébuleuse",
+    plan: "elite",
+    emoji: "🔮",
+    theme: {
+      accent: "#a855f7",
+      effect: "nebula",
+      layout: "card",
+      font: "bungee",
+      nameFont: "bungee",
+      buttonStyle: "neon",
+      avatarFrame: "animated",
+      nameEffect: "gradient",
+    },
+  },
+  {
+    id: "meteores",
+    label: "Météores",
+    plan: "elite",
+    emoji: "☄️",
+    theme: {
+      accent: "#94a3b8",
+      effect: "meteors",
+      layout: "card",
+      font: "poppins",
+      nameFont: "monoton",
+      buttonStyle: "shadow",
+      avatarFrame: "pulse",
+      nameEffect: "glow",
+    },
+  },
+  // --- PRO (nouveaux) ---
+  {
+    id: "tropical",
+    label: "Tropical",
+    plan: "pro",
+    emoji: "🌴",
+    theme: {
+      accent: "#06b6d4",
+      effect: "leaves",
+      layout: "card",
+      font: "fredoka",
+      nameFont: "fredoka",
+      buttonStyle: "pill",
+      avatarFrame: "gradientRing",
+      nameEffect: "gradient",
+    },
+  },
+  {
+    id: "lofi",
+    label: "Lo-fi",
+    plan: "pro",
+    emoji: "🎶",
+    theme: {
+      accent: "#a78bfa",
+      effect: "stars",
+      layout: "card",
+      font: "typewriter",
+      nameFont: "caveat",
+      buttonStyle: "underline",
+      avatarFrame: "ring",
+      nameEffect: "gradient",
+    },
+  },
+  {
+    id: "pirate",
+    label: "Pirate",
+    plan: "pro",
+    emoji: "☠️",
+    theme: {
+      accent: "#d97706",
+      effect: "rain",
+      layout: "card",
+      font: "pirata",
+      nameFont: "pirata",
+      buttonStyle: "shadow",
+      avatarFrame: "double",
+      nameEffect: "none",
+    },
+  },
+  {
+    id: "printemps",
+    label: "Printemps",
+    plan: "pro",
+    emoji: "🌻",
+    theme: {
+      accent: "#84cc16",
+      effect: "bubbles",
+      layout: "card",
+      font: "dancing",
+      nameFont: "dancing",
+      buttonStyle: "pill",
+      avatarFrame: "ring",
+      nameEffect: "wave",
+    },
+  },
+  // --- ELITE (nouveaux) ---
+  {
+    id: "cyberpunk",
+    label: "Cyberpunk",
+    plan: "elite",
+    emoji: "⚡",
+    theme: {
+      accent: "#facc15",
+      effect: "glitch",
+      layout: "card",
+      font: "stencil",
+      nameFont: "stencil",
+      buttonStyle: "neon",
+      avatarFrame: "animated",
+      nameEffect: "glitch",
+    },
+  },
+];
