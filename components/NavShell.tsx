@@ -609,9 +609,18 @@ export function UserCardFooter({ me }: { me: MovalinkMe }) {
 }
 
 // Menus du dashboard, partagés (utilisés dès qu'on est connecté, partout).
+const advanceIcon = (s: number) => (
+  <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14" strokeLinecap="round" />
+    <path d="M15.54 8.46a5 5 0 010 7.07M8.46 8.46a5 5 0 000 7.07" strokeLinecap="round" />
+  </svg>
+);
+
 export const DASHBOARD_ITEMS: NavItem[] = [
   { id: "accueil", label: "Accueil", href: "/dashboard", exact: true, icon: navIcons.home(18) },
   { id: "mapage", label: "Ma page", href: "/dashboard/mapage", exact: false, icon: navIcons.page(18) },
+  { id: "avance", label: "Avancé", href: "/dashboard/avance", exact: false, icon: advanceIcon(18) },
   { id: "premium", label: "Premium", href: "/dashboard/premium", exact: false, icon: navIcons.premium(18) },
   { id: "compte", label: "Compte", href: "/dashboard/compte", exact: false, icon: navIcons.account(18) },
 ];
@@ -619,6 +628,7 @@ export const DASHBOARD_ITEMS: NavItem[] = [
 export const DASHBOARD_MOBILE: NavItem[] = [
   { id: "accueil", label: "Accueil", href: "/dashboard", exact: true, icon: navIcons.home(20) },
   { id: "mapage", label: "Ma page", href: "/dashboard/mapage", exact: false, icon: navIcons.page(20) },
+  { id: "avance", label: "Avancé", href: "/dashboard/avance", exact: false, icon: advanceIcon(20) },
   { id: "premium", label: "Premium", href: "/dashboard/premium", exact: false, icon: navIcons.premium(20) },
   { id: "compte", label: "Compte", href: "/dashboard/compte", exact: false, icon: navIcons.account(20) },
 ];

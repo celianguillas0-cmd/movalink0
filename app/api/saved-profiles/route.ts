@@ -65,6 +65,33 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ slot });
 }
 
+export async function PATCH(request: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Non connecté." }, { status: 401 });
+
+  let body: { id?: string; scheduledAt?: string | null; activeUntil?: string | null };
+  try { body = await request.json(); } catch { return NextResponse.json({ error: "Requête invalide." }, { status: 400 }); }
+
+  if (!body.id) return NextResponse.json({ error: "id requis." }, { status: 400 });
+
+  const slots = await getSavedSlots(user.id);
+  const idx = slots.findIndex((s) => s.id === body.id);
+  if (idx === -1) return NextResponse.json({ error: "Emplacement introuvable." }, { status: 404 });
+
+  const slot = { ...slots[idx] };
+  if ("scheduledAt" in body) {
+    if (body.scheduledAt == null) delete slot.scheduledAt;
+    else slot.scheduledAt = body.scheduledAt;
+  }
+  if ("activeUntil" in body) {
+    if (body.activeUntil == null) delete slot.activeUntil;
+    else slot.activeUntil = body.activeUntil;
+  }
+  slots[idx] = slot;
+  await setSavedSlots(user.id, slots);
+  return NextResponse.json({ slot });
+}
+
 export async function DELETE(request: NextRequest) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Non connecté." }, { status: 401 });

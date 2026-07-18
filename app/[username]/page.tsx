@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import ProfileView from "@/components/ProfileView";
-import { getProfile, getStats, getUserById, getUserIdByUsername } from "@/lib/store";
+import LockScreen from "@/components/LockScreen";
+import { getProfile, getStats, getUserById, getUserIdByUsername, getSavedSlots } from "@/lib/store";
 import { RESERVED_USERNAMES } from "@/lib/slug";
-import { PLAN_LIMITS } from "@/lib/types";
+import { PLAN_LIMITS, Profile } from "@/lib/types";
 
-// Pas de force-dynamic : ISR revalide toutes les 30 s (CDN cache entre-temps).
-// Le tracking des vues reste côté client (sendBeacon), donc pas besoin de SSR live.
 export const revalidate = 30;
 
 interface Props {
@@ -39,12 +39,39 @@ export default async function PublicProfilePage({ params }: Props) {
   const userId = await getUserIdByUsername(username);
   if (!userId) notFound();
 
-  const [profile, owner, stats] = await Promise.all([
+  const [baseProfile, owner, stats, savedSlots] = await Promise.all([
     getProfile(username),
     getUserById(userId),
     getStats(username),
+    getSavedSlots(userId),
   ]);
-  if (!profile || !owner) notFound();
+  if (!baseProfile || !owner) notFound();
+
+  // Apply scheduled page if one is currently active
+  const now = new Date();
+  const activeSlot = savedSlots.find((s) => {
+    if (!s.scheduledAt) return false;
+    if (new Date(s.scheduledAt) > now) return false;
+    if (s.activeUntil && new Date(s.activeUntil) <= now) return false;
+    return true;
+  });
+  const profile: Profile = activeSlot ? { ...activeSlot.profile, pagePassword: baseProfile.pagePassword, linkGroups: baseProfile.linkGroups } : baseProfile;
+
+  // Check password lock
+  if (baseProfile.pagePassword) {
+    const cookieStore = await cookies();
+    const expected = Buffer.from(`${username}:${baseProfile.pagePassword}`).toString("base64");
+    const unlock = cookieStore.get(`mova_unlock_${username}`);
+    if (unlock?.value !== expected) {
+      return (
+        <LockScreen
+          username={username}
+          displayName={baseProfile.displayName}
+          avatarUrl={baseProfile.avatarUrl}
+        />
+      );
+    }
+  }
 
   const branding = PLAN_LIMITS[owner.plan].branding;
   const watermark = PLAN_LIMITS[owner.plan].watermark;

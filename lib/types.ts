@@ -94,6 +94,11 @@ export interface PublicUser {
   createdAt: string;
 }
 
+export interface LinkGroup {
+  id: string;
+  label: string;
+}
+
 export interface ProfileLink {
   id: string;
   label: string;
@@ -101,6 +106,7 @@ export interface ProfileLink {
   color?: string;      // couleur personnalisée du bouton (hex), défaut = accent
   icon?: string;       // emoji ou 1-4 caractères affichés avant le libellé
   expiresAt?: string;  // ISO date — le lien disparaît après cette date
+  groupId?: string;    // appartenance à un groupe de liens
 }
 
 export interface LeaderboardEntry {
@@ -304,6 +310,8 @@ export interface Profile {
   supportButton?: { label: string; url: string } | null;
   streamSchedule?: { days: number[]; timeStart: string; timeEnd?: string } | null;
   clips?: { url: string; title?: string }[];
+  pagePassword?: string;
+  linkGroups?: LinkGroup[];
   updatedAt: string;
 }
 
@@ -323,6 +331,8 @@ export interface SavedProfileSlot {
   id: string;
   name: string;
   savedAt: string;
+  scheduledAt?: string;
+  activeUntil?: string;
   profile: Profile;
 }
 

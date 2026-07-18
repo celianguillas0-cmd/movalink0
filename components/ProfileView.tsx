@@ -971,33 +971,91 @@ export default function ProfileView({
 
       {profile.links.length > 0 && (
         <div className="mt-7 flex w-full flex-col gap-3">
-          {profile.links.filter((link) => !link.expiresAt || new Date(link.expiresAt) > new Date()).map((link) => {
-            // Couleur propre au bouton si définie, sinon la couleur d'accent.
-            const lbtn = link.color
-              ? linkButtonProps(buttonStyle, link.color)
-              : btn;
-            return (
-              <a
-                key={link.id}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={lbtn.className}
-                style={{ ...lbtn.style, color: buttonTextColor }}
-                onClick={() => {
-                  if (interactive) track(profile.username, "click", link.id);
-                }}
-              >
-                <span className="flex min-w-0 items-center gap-2">
-                  {link.icon && (
-                    <span className="shrink-0 text-base leading-none">{link.icon}</span>
-                  )}
-                  <span className="truncate">{link.label}</span>
-                </span>
-                <LinkIcon className="h-4 w-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
-              </a>
-            );
-          })}
+          {(() => {
+            const now = new Date();
+            const active = profile.links.filter((l) => !l.expiresAt || new Date(l.expiresAt) > now);
+            const groups = profile.linkGroups ?? [];
+
+            if (groups.length === 0) {
+              return active.map((link) => {
+                const lbtn = link.color ? linkButtonProps(buttonStyle, link.color) : btn;
+                return (
+                  <a
+                    key={link.id}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={lbtn.className}
+                    style={{ ...lbtn.style, color: buttonTextColor }}
+                    onClick={() => { if (interactive) track(profile.username, "click", link.id); }}
+                  >
+                    <span className="flex min-w-0 items-center gap-2">
+                      {link.icon && <span className="shrink-0 text-base leading-none">{link.icon}</span>}
+                      <span className="truncate">{link.label}</span>
+                    </span>
+                    <LinkIcon className="h-4 w-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
+                  </a>
+                );
+              });
+            }
+
+            // Grouped rendering: ungrouped first, then each group
+            const ungrouped = active.filter((l) => !l.groupId);
+            const result: React.ReactNode[] = [];
+
+            ungrouped.forEach((link) => {
+              const lbtn = link.color ? linkButtonProps(buttonStyle, link.color) : btn;
+              result.push(
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={lbtn.className}
+                  style={{ ...lbtn.style, color: buttonTextColor }}
+                  onClick={() => { if (interactive) track(profile.username, "click", link.id); }}
+                >
+                  <span className="flex min-w-0 items-center gap-2">
+                    {link.icon && <span className="shrink-0 text-base leading-none">{link.icon}</span>}
+                    <span className="truncate">{link.label}</span>
+                  </span>
+                  <LinkIcon className="h-4 w-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
+                </a>
+              );
+            });
+
+            groups.forEach((group) => {
+              const gLinks = active.filter((l) => l.groupId === group.id);
+              if (gLinks.length === 0) return;
+              result.push(
+                <p key={`g-${group.id}`} className="mt-2 mb-0.5 text-xs font-semibold uppercase tracking-widest text-white/40">
+                  {group.label}
+                </p>
+              );
+              gLinks.forEach((link) => {
+                const lbtn = link.color ? linkButtonProps(buttonStyle, link.color) : btn;
+                result.push(
+                  <a
+                    key={link.id}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={lbtn.className}
+                    style={{ ...lbtn.style, color: buttonTextColor }}
+                    onClick={() => { if (interactive) track(profile.username, "click", link.id); }}
+                  >
+                    <span className="flex min-w-0 items-center gap-2">
+                      {link.icon && <span className="shrink-0 text-base leading-none">{link.icon}</span>}
+                      <span className="truncate">{link.label}</span>
+                    </span>
+                    <LinkIcon className="h-4 w-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
+                  </a>
+                );
+              });
+            });
+
+            return result;
+          })()}
         </div>
       )}
 
