@@ -12,6 +12,24 @@ import {
 import { newId, validateEmail, validateUsername } from "@/lib/slug";
 import { emptyProfile, User } from "@/lib/types";
 
+// ─── Rate limiter ────────────────────────────────────────────────────────────
+// Per-email: 3 signups max in a 1-hour window.
+const signupAttempts = new Map<string, { count: number; resetAt: number }>();
+const MAX_SIGNUPS = 3;
+const WINDOW_MS = 60 * 60 * 1000;
+
+function checkSignupLimit(email: string): boolean {
+  const now = Date.now();
+  const entry = signupAttempts.get(email);
+  if (!entry || now >= entry.resetAt) {
+    signupAttempts.set(email, { count: 1, resetAt: now + WINDOW_MS });
+    return false;
+  }
+  if (entry.count >= MAX_SIGNUPS) return true;
+  entry.count++;
+  return false;
+}
+
 export async function POST(request: NextRequest) {
   let body: { email?: string; username?: string; password?: string; ref?: string };
   try {
@@ -22,6 +40,13 @@ export async function POST(request: NextRequest) {
 
   const email = (body.email ?? "").trim().toLowerCase();
   const password = body.password ?? "";
+
+  if (checkSignupLimit(email)) {
+    return NextResponse.json(
+      { error: "Trop de tentatives. Réessaie dans 1 heure." },
+      { status: 429 }
+    );
+  }
 
   if (!validateEmail(email)) {
     return NextResponse.json({ error: "Adresse email invalide." }, { status: 400 });

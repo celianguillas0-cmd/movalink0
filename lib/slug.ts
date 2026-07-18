@@ -59,7 +59,10 @@ export function sanitizeUrl(raw: string): string | null {
   const withProto = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
   try {
     const url = new URL(withProto);
+    // Reject non-web protocols (javascript:, file:, data:, etc.).
     if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+    // Upgrade http → https to prevent mixed-content and phishing risks.
+    url.protocol = "https:";
     return url.toString();
   } catch {
     return null;
