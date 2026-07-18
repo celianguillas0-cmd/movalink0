@@ -109,7 +109,6 @@ export async function PUT(request: NextRequest) {
           game: clampText(g?.game, 50),
           pseudo: clampText(g?.pseudo, 50),
         }))
-        .filter((g) => g.game.length > 0)
     : current.games;
 
   const socials: SocialLinks = {};

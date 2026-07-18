@@ -1059,14 +1059,14 @@ export default function ProfileView({
         </div>
       )}
 
-      {profile.games.length > 0 && (
+      {profile.games.filter((g) => g.game).length > 0 && (
         <div className="mt-8 w-full">
           <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-white/50">
             <GamepadIcon className="h-4 w-4" />
             Mes jeux
           </div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {profile.games.map((game) => (
+            {profile.games.filter((g) => g.game).map((game) => (
               <div
                 key={game.id}
                 className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5"
