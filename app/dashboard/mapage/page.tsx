@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -41,8 +41,10 @@ import {
   FontId,
   FULLCUSTOM_DEFAULTS,
   LAYOUT_DEFAULTS,
+  LinkGroup,
   NAME_EFFECT_LABELS,
   NameEffect,
+  PLAN_LIMITS,
   PlanLimits,
   Profile,
   PublicUser,
@@ -51,7 +53,7 @@ import {
   THEME_DEFAULTS,
 } from "@/lib/types";
 
-type Tab = "profil" | "liens" | "reseaux" | "jeux" | "apparence" | "widgets";
+type Tab = "profil" | "liens" | "reseaux" | "jeux" | "apparence" | "avance";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "profil", label: "Profil" },
@@ -59,8 +61,252 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "reseaux", label: "Réseaux" },
   { id: "jeux", label: "Jeux" },
   { id: "apparence", label: "Style" },
-  { id: "widgets", label: "Widgets" },
+  { id: "avance", label: "Avancé" },
 ];
+
+// ─── Helpers for scheduled pages ────────────────────────────────────────────
+function fmt(iso: string) { return iso.slice(0, 16); }
+function toIso(local: string) { return local ? new Date(local).toISOString() : ""; }
+
+// ─── Advanced sub-sections ───────────────────────────────────────────────────
+
+function PasswordSection({ profile, onSave }: { profile: Profile; onSave: (p: Partial<Profile>) => Promise<void> }) {
+  const [enabled, setEnabled] = useState(!!profile.pagePassword);
+  const [pw, setPw] = useState(profile.pagePassword ?? "");
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  const save = async () => {
+    setSaving(true); setMsg("");
+    await onSave({ pagePassword: enabled ? pw.trim() || undefined : undefined });
+    setMsg("Enregistré."); setSaving(false);
+    setTimeout(() => setMsg(""), 2500);
+  };
+
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">Protéger la page par mot de passe</p>
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400">Les visiteurs devront saisir un mot de passe avant de voir ton profil.</p>
+        </div>
+        <button type="button" onClick={() => setEnabled((v) => !v)}
+          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none ${enabled ? "bg-indigo-500" : "bg-gray-200 dark:bg-zinc-700"}`}>
+          <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${enabled ? "translate-x-5" : "translate-x-0"}`} />
+        </button>
+      </div>
+      {enabled && (
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-zinc-400">Mot de passe</label>
+          <input type="text" value={pw} onChange={(e) => setPw(e.target.value)} placeholder="Ex: monstreamofoff2024"
+            className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-zinc-400 focus:ring-2 focus:ring-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
+            maxLength={64} />
+          <p className="mt-1.5 text-[11px] text-gray-400 dark:text-zinc-500">Le mot de passe est visible en clair ici — évite un mot de passe important.</p>
+        </div>
+      )}
+      <div className="flex items-center gap-3">
+        <button type="button" onClick={save} disabled={saving || (enabled && !pw.trim())}
+          className="rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40 dark:bg-white dark:text-zinc-900">
+          {saving ? "Enregistrement…" : "Enregistrer"}
+        </button>
+        {msg && <span className="text-xs text-emerald-500">{msg}</span>}
+      </div>
+    </div>
+  );
+}
+
+function ScheduleSection({ slots, isPro }: { slots: SavedProfileSlot[]; isPro: boolean }) {
+  const [local, setLocal] = useState<SavedProfileSlot[]>(slots);
+  const [saving, setSaving] = useState<string | null>(null);
+  const [msg, setMsg] = useState<Record<string, string>>({});
+  const now = new Date();
+
+  const save = async (slot: SavedProfileSlot) => {
+    setSaving(slot.id);
+    await fetch("/api/saved-profiles", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: slot.id, scheduledAt: slot.scheduledAt || null, activeUntil: slot.activeUntil || null }),
+    });
+    setSaving(null);
+    setMsg((m) => ({ ...m, [slot.id]: "Enregistré." }));
+    setTimeout(() => setMsg((m) => ({ ...m, [slot.id]: "" })), 2500);
+  };
+
+  const patch = (id: string, fields: Partial<SavedProfileSlot>) =>
+    setLocal((s) => s.map((sl) => (sl.id === id ? { ...sl, ...fields } : sl)));
+
+  if (!isPro) return (
+    <div className="rounded-xl border border-dashed border-gray-200 dark:border-zinc-700 px-5 py-8 text-center">
+      <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Fonctionnalité Pro / Elite</p>
+      <p className="text-xs text-gray-500 dark:text-zinc-400 mb-4">Les pages programmées nécessitent un plan Pro ou Elite.</p>
+      <a href="/dashboard/premium" className="text-xs font-semibold text-indigo-500 hover:underline">Voir les plans →</a>
+    </div>
+  );
+
+  if (local.length === 0) return (
+    <p className="text-sm text-gray-500 dark:text-zinc-400">
+      Aucune page sauvegardée. Sauvegarde d'abord une page depuis{" "}
+      <a href="/dashboard/mapage" className="font-medium text-indigo-500 hover:underline">Ma page</a>.
+    </p>
+  );
+
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-xs text-gray-500 dark:text-zinc-400">Définis quand chaque page sauvegardée doit s'activer automatiquement. Une seule page peut être active à la fois.</p>
+      {local.map((slot) => {
+        const isActive = slot.scheduledAt && new Date(slot.scheduledAt) <= now && (!slot.activeUntil || new Date(slot.activeUntil) > now);
+        return (
+          <div key={slot.id} className="rounded-2xl border border-gray-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 flex flex-col gap-4">
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">{slot.name}</p>
+                <p className="text-xs text-gray-400 dark:text-zinc-500">Sauvegardée le {new Date(slot.savedAt).toLocaleDateString("fr-FR")}</p>
+              </div>
+              {isActive && <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-500">Active maintenant</span>}
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-zinc-400">Activer à partir du</label>
+                <input type="datetime-local" value={slot.scheduledAt ? fmt(slot.scheduledAt) : ""}
+                  onChange={(e) => patch(slot.id, { scheduledAt: e.target.value ? toIso(e.target.value) : undefined })}
+                  className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-zinc-500 dark:focus:ring-zinc-800" />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-zinc-400">Désactiver à partir du (optionnel)</label>
+                <input type="datetime-local" value={slot.activeUntil ? fmt(slot.activeUntil) : ""}
+                  onChange={(e) => patch(slot.id, { activeUntil: e.target.value ? toIso(e.target.value) : undefined })}
+                  className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-zinc-500 dark:focus:ring-zinc-800" />
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button type="button" onClick={() => save(slot)} disabled={saving === slot.id}
+                className="rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40 dark:bg-white dark:text-zinc-900">
+                {saving === slot.id ? "Enregistrement…" : "Appliquer"}
+              </button>
+              {slot.scheduledAt && (
+                <button type="button" onClick={() => { patch(slot.id, { scheduledAt: undefined, activeUntil: undefined }); save({ ...slot, scheduledAt: undefined, activeUntil: undefined }); }}
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition-colors hover:border-gray-300 dark:border-zinc-700 dark:text-zinc-300">
+                  Retirer la programmation
+                </button>
+              )}
+              {msg[slot.id] && <span className="text-xs text-emerald-500">{msg[slot.id]}</span>}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function GroupsSection({ profile, onSave }: { profile: Profile; onSave: (p: Partial<Profile>) => Promise<void> }) {
+  const [groups, setGroups] = useState<LinkGroup[]>(profile.linkGroups ?? []);
+  const [links, setLinks] = useState(profile.links);
+  const [newLabel, setNewLabel] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  const save = useCallback(async (g: LinkGroup[], l: typeof links) => {
+    setSaving(true); setMsg("");
+    await onSave({ linkGroups: g, links: l });
+    setMsg("Enregistré."); setSaving(false);
+    setTimeout(() => setMsg(""), 2500);
+  }, [onSave]);
+
+  const addGroup = async () => {
+    const label = newLabel.trim();
+    if (!label) return;
+    const g = [...groups, { id: Math.random().toString(36).slice(2), label }];
+    setGroups(g); setNewLabel("");
+    await save(g, links);
+  };
+
+  const deleteGroup = async (id: string) => {
+    const g = groups.filter((gr) => gr.id !== id);
+    const l = links.map((lk) => (lk.groupId === id ? { ...lk, groupId: undefined } : lk));
+    setGroups(g); setLinks(l);
+    await save(g, l);
+  };
+
+  const renameGroup = async (id: string, label: string) => {
+    const g = groups.map((gr) => (gr.id === id ? { ...gr, label } : gr));
+    setGroups(g); setEditingId(null);
+    await save(g, links);
+  };
+
+  const assignLink = async (linkId: string, groupId: string | null) => {
+    const l = links.map((lk) => lk.id === linkId ? { ...lk, groupId: groupId ?? undefined } : lk);
+    setLinks(l);
+    await save(groups, l);
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      <p className="text-xs text-gray-500 dark:text-zinc-400">Crée des groupes pour organiser tes liens en sections sur ta page publique.</p>
+      {groups.length > 0 && (
+        <div className="flex flex-col gap-3">
+          {groups.map((group) => {
+            const groupLinks = links.filter((l) => l.groupId === group.id);
+            return (
+              <div key={group.id} className="rounded-2xl border border-gray-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  {editingId === group.id ? (
+                    <form onSubmit={(e) => { e.preventDefault(); const val = (e.currentTarget.elements.namedItem("label") as HTMLInputElement).value.trim(); if (val) renameGroup(group.id, val); }} className="flex flex-1 gap-2">
+                      <input name="label" defaultValue={group.label} autoFocus
+                        className="flex-1 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" maxLength={40} />
+                      <button type="submit" className="rounded-xl bg-zinc-900 px-4 py-2 text-xs font-semibold text-white dark:bg-white dark:text-zinc-900">OK</button>
+                      <button type="button" onClick={() => setEditingId(null)} className="rounded-xl border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 dark:border-zinc-700 dark:text-zinc-300">✕</button>
+                    </form>
+                  ) : (
+                    <>
+                      <span className="flex-1 text-sm font-semibold text-gray-900 dark:text-white">{group.label}</span>
+                      <button type="button" onClick={() => setEditingId(group.id)} className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 dark:border-zinc-700 dark:text-zinc-300">Renommer</button>
+                      <button type="button" onClick={() => deleteGroup(group.id)} className="rounded-xl border border-red-200 dark:border-red-900 px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30">Supprimer</button>
+                    </>
+                  )}
+                </div>
+                <div>
+                  <p className="mb-2 text-xs font-medium text-gray-500 dark:text-zinc-400">Liens dans ce groupe ({groupLinks.length})</p>
+                  {links.length === 0 ? <p className="text-xs text-gray-400 dark:text-zinc-500">Aucun lien sur ta page.</p> : (
+                    <div className="flex flex-col gap-1.5">
+                      {links.map((lk) => (
+                        <label key={lk.id} className="flex cursor-pointer items-center gap-2.5">
+                          <input type="checkbox" checked={lk.groupId === group.id}
+                            onChange={(e) => assignLink(lk.id, e.target.checked ? group.id : null)}
+                            className="h-3.5 w-3.5 accent-indigo-500 rounded" />
+                          <span className="truncate text-xs text-gray-700 dark:text-zinc-200">
+                            {lk.icon && <span className="mr-1">{lk.icon}</span>}{lk.label}
+                          </span>
+                          {lk.groupId && lk.groupId !== group.id && (
+                            <span className="ml-auto shrink-0 text-[10px] text-gray-400 dark:text-zinc-500">
+                              ({groups.find((g) => g.id === lk.groupId)?.label ?? "autre groupe"})
+                            </span>
+                          )}
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      <div className="flex gap-2">
+        <input type="text" value={newLabel} onChange={(e) => setNewLabel(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addGroup()}
+          placeholder="Nom du groupe (ex: Socials, Gaming…)"
+          className="flex-1 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
+          maxLength={40} />
+        <button type="button" onClick={addGroup} disabled={saving || !newLabel.trim()}
+          className="rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40 dark:bg-white dark:text-zinc-900">
+          Ajouter
+        </button>
+      </div>
+      {msg && <span className="text-xs text-emerald-500">{msg}</span>}
+    </div>
+  );
+}
 
 const SOCIAL_KEYS = Object.keys(SOCIAL_LABELS) as (keyof SocialLinks)[];
 
@@ -566,6 +812,23 @@ function MaPageEditor() {
     if (dirty && !saving) save();
     setTab(newTab);
   };
+
+  // Sauvegarde immédiate pour les sections avancées (mot de passe, groupes).
+  const saveAdvanced = useCallback(async (patch: Partial<Profile>) => {
+    if (!profile) return;
+    const updated = { ...profile, ...patch };
+    if (autosaveTimer.current) { clearTimeout(autosaveTimer.current); autosaveTimer.current = null; }
+    setProfile(updated);
+    profileRef.current = updated;
+    setDirty(false);
+    dirtyRef.current = false;
+    await fetch("/api/profile", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updated),
+    });
+    setCachedMe({ profile: updated });
+  }, [profile]);
 
   const saveSlot = async () => {
     if (!profile || !newSlotName.trim()) return;
@@ -1175,9 +1438,40 @@ function MaPageEditor() {
                   </div>
                 )}
 
-                {tab === "widgets" && (
-                  <div className="flex flex-col gap-4">
+                {tab === "avance" && (
+                  <div className="flex flex-col gap-6">
 
+                    {/* ── Mot de passe ──────────────────────────────── */}
+                    <div>
+                      <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500">🔒 Mot de passe</p>
+                      <div className={cardClass}>
+                        <PasswordSection profile={profile} onSave={saveAdvanced} />
+                      </div>
+                    </div>
+
+                    {/* ── Pages programmées ─────────────────────────── */}
+                    <div>
+                      <div className="mb-3 flex items-center gap-2">
+                        <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500">📅 Pages programmées</p>
+                        {PLAN_LIMITS[user.plan].savedProfiles === 0 && (
+                          <Link href="/dashboard/premium" className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">Pro</Link>
+                        )}
+                      </div>
+                      <ScheduleSection slots={slots} isPro={PLAN_LIMITS[user.plan].savedProfiles > 0} />
+                    </div>
+
+                    {/* ── Groupes de liens ──────────────────────────── */}
+                    <div>
+                      <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500">🗂️ Groupes de liens</p>
+                      <div className={cardClass}>
+                        <GroupsSection profile={profile} onSave={saveAdvanced} />
+                      </div>
+                    </div>
+
+                    <hr className="border-gray-200 dark:border-zinc-800" />
+
+                    {/* ── Widgets ───────────────────────────────────── */}
+                    <div className="flex flex-col gap-4">
                     {/* Compteur de vues */}
                     <div className={`${cardClass} flex items-center justify-between gap-4`}>
                       <div>
@@ -1411,7 +1705,7 @@ function MaPageEditor() {
                         <p className="text-sm text-gray-400 dark:text-zinc-500">Disponible avec un plan Pro ou Elite.</p>
                       )}
                     </div>
-
+                    </div>{/* end widgets sub-section */}
 
                   </div>
                 )}
