@@ -47,14 +47,16 @@ export default async function PublicProfilePage({ params }: Props) {
   ]);
   if (!baseProfile || !owner) notFound();
 
-  // Apply scheduled page if one is currently active
+  // Apply scheduled page if one is currently active and scheduling is enabled.
   const now = new Date();
-  const activeSlot = savedSlots.find((s) => {
-    if (!s.scheduledAt) return false;
-    if (new Date(s.scheduledAt) > now) return false;
-    if (s.activeUntil && new Date(s.activeUntil) <= now) return false;
-    return true;
-  });
+  const activeSlot = (baseProfile.scheduledPagesEnabled !== false)
+    ? savedSlots.find((s) => {
+        if (!s.scheduledAt) return false;
+        if (new Date(s.scheduledAt) > now) return false;
+        if (s.activeUntil && new Date(s.activeUntil) <= now) return false;
+        return true;
+      })
+    : undefined;
   const profile: Profile = activeSlot ? { ...activeSlot.profile, pagePassword: baseProfile.pagePassword, linkGroups: baseProfile.linkGroups } : baseProfile;
 
   // Check password lock

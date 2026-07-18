@@ -312,6 +312,7 @@ export interface Profile {
   clips?: { url: string; title?: string }[];
   pagePassword?: string;
   linkGroups?: LinkGroup[];
+  scheduledPagesEnabled?: boolean;
   updatedAt: string;
 }
 

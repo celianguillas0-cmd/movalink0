@@ -17,6 +17,7 @@ import {
   GameEntry,
   LAYOUT_DEFAULTS,
   LayoutId,
+  LinkGroup,
   NAME_EFFECT_LABELS,
   NameEffect,
   PLAN_LIMITS,
@@ -378,6 +379,26 @@ export async function PUT(request: NextRequest) {
       }).filter((c): c is { url: string; title?: string } => c !== null)
     : [];
 
+  // ─── Advanced settings (all plans) ──────────────────────────────────────
+  // pagePassword: use body value if the key is present (empty string = clear),
+  // otherwise fall back to current stored value so autosaves don't wipe it.
+  const pagePassword = ("pagePassword" in body)
+    ? (clampText(body.pagePassword as string, 64) || undefined)
+    : current.pagePassword;
+
+  // linkGroups: same pattern — preserve existing value when key absent from body.
+  const linkGroups: LinkGroup[] = Array.isArray(body.linkGroups)
+    ? (body.linkGroups as unknown[])
+        .filter((g): g is LinkGroup => !!g && typeof (g as LinkGroup).id === "string" && typeof (g as LinkGroup).label === "string")
+        .slice(0, 50)
+        .map((g) => ({ id: g.id.slice(0, 32), label: clampText(g.label, 40) }))
+    : (current.linkGroups ?? []);
+
+  // scheduledPagesEnabled: explicit boolean from body, else current, else true.
+  const scheduledPagesEnabled = typeof body.scheduledPagesEnabled === "boolean"
+    ? body.scheduledPagesEnabled
+    : (current.scheduledPagesEnabled ?? true);
+
   const updated: Profile = {
     username: current.username,
     displayName: clampText(body.displayName, 50) || current.username,
@@ -417,6 +438,9 @@ export async function PUT(request: NextRequest) {
     ...(supportButton ? { supportButton } : {}),
     ...(streamSchedule ? { streamSchedule } : {}),
     ...(clips?.length ? { clips } : {}),
+    ...(pagePassword ? { pagePassword } : {}),
+    ...(linkGroups.length ? { linkGroups } : {}),
+    ...(!scheduledPagesEnabled ? { scheduledPagesEnabled: false } : {}),
     updatedAt: new Date().toISOString(),
   };
 
