@@ -34,7 +34,7 @@ Sans variables Upstash (`UPSTASH_REDIS_REST_URL`/`KV_REST_API_URL`), les donnée
 | Liens | 5 | 15 | 50 |
 | Jeux | 5 | 15 | 50 |
 | Effets | 3 | 6 | 8 (dont plasma, matrix) |
-| Fond personnalisé | — | Oui | Oui |
+| Couleurs & dégradé perso | — | Oui | Oui |
 | Badge Movalink | Affiché | Retiré | Retiré |
 | Historique stats | 7 j | 30 j | 365 j |
 | Upload max | 2 Mo | 5 Mo | 8 Mo |

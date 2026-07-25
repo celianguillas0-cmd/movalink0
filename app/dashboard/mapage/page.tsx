@@ -2066,61 +2066,6 @@ function MaPageEditor() {
                       )}
                     </div>
 
-                    <div>
-                      <p className={labelClass}>
-                        Fond personnalisé {!limits.customBackground && "(plans Pro et Elite)"}
-                      </p>
-                      {limits.customBackground ? (
-                        <div className="flex flex-col gap-3">
-                          <div className="flex items-center gap-2">
-                            {profile.backgroundUrl && (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={profile.backgroundUrl}
-                                alt="Fond"
-                                className="h-12 w-20 shrink-0 rounded-lg border border-gray-200 object-cover dark:border-zinc-700"
-                              />
-                            )}
-                            <input
-                              value={profile.backgroundUrl}
-                              maxLength={500}
-                              placeholder="URL image de fond (https://…)"
-                              onChange={(e) => update({ backgroundUrl: e.target.value })}
-                              className={inputClass}
-                            />
-                            {profile.backgroundUrl && (
-                              <button type="button" className={`${smallBtnClass} shrink-0`} onClick={() => update({ backgroundUrl: "" })}>Retirer</button>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {profile.backgroundVideoUrl && (
-                              <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
-                                🎬 Vidéo
-                              </span>
-                            )}
-                            <input
-                              value={profile.backgroundVideoUrl ?? ""}
-                              maxLength={500}
-                              placeholder="URL vidéo de fond MP4 (https://…)"
-                              onChange={(e) => update({ backgroundVideoUrl: e.target.value })}
-                              className={inputClass}
-                            />
-                            {profile.backgroundVideoUrl && (
-                              <button type="button" className={`${smallBtnClass} shrink-0`} onClick={() => update({ backgroundVideoUrl: "" })}>Retirer</button>
-                            )}
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-400 dark:text-zinc-500">
-                          Ajoute ta propre image de fond avec un{" "}
-                          <Link href="/dashboard/premium" className="underline">
-                            plan payant
-                          </Link>
-                          .
-                        </p>
-                      )}
-                    </div>
-
                     <div className="rounded-lg border border-gray-100 p-4 dark:border-zinc-800">
                       <p className={labelClass}>
                         Full custom{" "}
@@ -2134,7 +2079,7 @@ function MaPageEditor() {
                             allowed={Object.keys(BG_TYPE_LABELS) as BgType[]}
                             value={profile.theme.bgType ?? FULLCUSTOM_DEFAULTS.bgType}
                             labels={BG_TYPE_LABELS}
-                            columns={4}
+                            columns={3}
                             onSelect={(bgType) =>
                               update({ theme: { ...profile.theme, bgType } })
                             }

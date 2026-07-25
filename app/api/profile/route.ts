@@ -196,11 +196,9 @@ export async function PUT(request: NextRequest) {
   };
   const bgTypeReq = fc.bgType;
   const bgType: BgType | undefined =
-    bgTypeReq === "solid" || bgTypeReq === "gradient" || bgTypeReq === "image"
+    bgTypeReq === "solid" || bgTypeReq === "gradient" || bgTypeReq === "accent"
       ? bgTypeReq
-      : bgTypeReq === "accent"
-        ? "accent"
-        : undefined;
+      : undefined;
   const bgColor = hex(fc.bgColor);
   const bgColor2 = hex(fc.bgColor2);
   const bgAngle = fcClampInt(fc.bgAngle, 0, 360);
@@ -302,12 +300,10 @@ export async function PUT(request: NextRequest) {
     : [];
 
   const avatarUrl = clampText(body.avatarUrl, 500);
-  const backgroundUrl = limits.customBackground
-    ? clampText(body.backgroundUrl, 500)
-    : "";
-  const backgroundVideoUrl = limits.customBackground
-    ? clampText(body.backgroundVideoUrl, 500)
-    : "";
+  // Image/vidéo de fond retirées : ces champs ne sont plus acceptés ni stockés
+  // (empêche de contourner les effets payants via un screenshot en fond).
+  const backgroundUrl = "";
+  const backgroundVideoUrl = "";
 
   // Calque décoration (logo/pseudo importable) : réservé aux plans payants.
   const clampNum = (v: unknown, min: number, max: number, fallback: number) => {

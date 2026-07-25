@@ -42,8 +42,8 @@ const PLAN_FEATURES: Record<Exclude<Plan, "free">, string[]> = {
   pro: [
     "15 liens · 15 jeux · emoji par lien",
     "9 effets + 8 styles de boutons + 13 polices",
-    "Full custom : fond, carte, bordure, avatar, couleurs",
-    "Fond vidéo + animation d'entrée de la carte",
+    "Full custom : couleurs, dégradé, carte, bordure, avatar",
+    "Animation d'entrée de la carte",
     "Musique de fond + curseur image importés",
     "Thèmes prêts à l'emploi Pro + filigranes superposés (×3)",
     "Sans badge Movalink · Stats 30 jours",

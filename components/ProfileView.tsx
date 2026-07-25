@@ -750,23 +750,11 @@ export default function ProfileView({
   const bgAngle = theme.bgAngle ?? FULLCUSTOM_DEFAULTS.bgAngle;
   const bgDim = theme.bgDim ?? FULLCUSTOM_DEFAULTS.bgDim;
 
-  // Image/vidéo de fond : les champs existants OU bgType "image".
-  const useVideoBg =
-    Boolean(profile.backgroundVideoUrl) && bgType !== "solid" && bgType !== "gradient";
-  const useImageBg =
-    !useVideoBg &&
-    Boolean(profile.backgroundUrl) &&
-    bgType !== "solid" &&
-    bgType !== "gradient";
-
+  // Fond : couleur unie, dégradé, ou accent auto. L'image/vidéo de fond a été
+  // retirée (empêche de contourner les effets payants en mettant un screenshot
+  // ou un enregistrement en arrière-plan).
   let backgroundStyle: React.CSSProperties;
-  if (useImageBg) {
-    backgroundStyle = {
-      backgroundImage: `url(${profile.backgroundUrl})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    };
-  } else if (bgType === "solid") {
+  if (bgType === "solid") {
     backgroundStyle = { background: bgColor };
   } else if (bgType === "gradient") {
     backgroundStyle = {
@@ -778,11 +766,7 @@ export default function ProfileView({
       backgroundImage: `radial-gradient(ellipse at top, ${accent}22, transparent 55%), radial-gradient(ellipse at bottom right, ${accent}11, transparent 50%)`,
     };
   }
-  // Assombrissement : par défaut 55% sur une image, sinon la valeur bgDim.
-  const dimPct =
-    useImageBg || useVideoBg
-      ? Math.max(bgDim, theme.bgDim === undefined ? 55 : bgDim)
-      : bgDim;
+  const dimPct = bgDim;
 
   const cardStyle: React.CSSProperties = {
     borderRadius: cardRadius,
@@ -1148,17 +1132,6 @@ export default function ProfileView({
         ...backgroundStyle,
       }}
     >
-      {useVideoBg && (
-        <video
-          className="absolute inset-0 h-full w-full object-cover"
-          src={profile.backgroundVideoUrl}
-          autoPlay
-          muted
-          loop
-          playsInline
-          aria-hidden
-        />
-      )}
       {dimPct > 0 && (
         <div
           className="absolute inset-0"

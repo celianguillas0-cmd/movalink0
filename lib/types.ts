@@ -197,7 +197,7 @@ export const CARD_INTRO_LABELS: Record<CardIntro, string> = {
 
 export type CardAlign = "top" | "center" | "bottom";
 
-export type BgType = "accent" | "solid" | "gradient" | "image";
+export type BgType = "accent" | "solid" | "gradient";
 
 export type AvatarShape = "circle" | "rounded" | "square";
 
@@ -226,7 +226,6 @@ export const BG_TYPE_LABELS: Record<BgType, string> = {
   accent: "Auto",
   solid: "Couleur unie",
   gradient: "Dégradé",
-  image: "Image",
 };
 
 export const AVATAR_SHAPE_LABELS: Record<AvatarShape, string> = {
