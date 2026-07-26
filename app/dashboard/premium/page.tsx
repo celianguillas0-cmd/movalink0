@@ -63,6 +63,7 @@ export default function PremiumPage() {
   const [user, setUser] = useState<PublicUser | null>(
     getCachedMe()?.user ?? null
   );
+  const [discountCode, setDiscountCode] = useState("");
 
   useEffect(() => {
     let alive = true;
@@ -121,6 +122,34 @@ export default function PremiumPage() {
           <RedeemCode />
         </motion.div>
 
+        {plan !== "elite" && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.04 }}
+            className={`${cardClass} mb-4`}
+          >
+            <label
+              htmlFor="discountCode"
+              className="text-sm font-semibold text-gray-900 dark:text-white"
+            >
+              Code de réduction
+            </label>
+            <p className="mt-0.5 text-xs text-gray-400 dark:text-zinc-500">
+              Applique une remise au moment du paiement.
+            </p>
+            <input
+              id="discountCode"
+              type="text"
+              autoComplete="off"
+              value={discountCode}
+              onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+              placeholder="Ex : MOVALINK10"
+              className="mt-2 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm uppercase tracking-wide text-gray-900 placeholder:normal-case placeholder:tracking-normal dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+            />
+          </motion.div>
+        )}
+
         <div className="grid gap-4 sm:grid-cols-2">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -149,7 +178,7 @@ export default function PremiumPage() {
             </ul>
             <div className="mt-5">
               {plan === "free" ? (
-                <BuyButton plan="pro" className={solidBtn}>
+                <BuyButton plan="pro" className={solidBtn} discountCode={discountCode}>
                   Passer Pro — {PLAN_PRICES.pro.label}
                 </BuyButton>
               ) : (
@@ -206,7 +235,7 @@ export default function PremiumPage() {
             </ul>
             <div className="mt-5">
               {plan !== "elite" ? (
-                <BuyButton plan="elite" className={plan === "free" ? outlineBtn : solidBtn}>
+                <BuyButton plan="elite" className={plan === "free" ? outlineBtn : solidBtn} discountCode={discountCode}>
                   {plan === "pro"
                     ? `Passer Elite — ${formatCents(upgradePriceCents("pro", "elite"))}`
                     : `Passer Elite — ${PLAN_PRICES.elite.label}`}
