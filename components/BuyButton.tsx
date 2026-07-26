@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 
 export default function BuyButton({
   plan,
+  billing = "monthly",
   className,
   children,
   discountCode,
 }: {
   plan: "pro" | "elite";
+  billing?: "monthly" | "lifetime";
   className?: string;
   children: React.ReactNode;
   discountCode?: string;
@@ -27,6 +29,7 @@ export default function BuyButton({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           plan,
+          billing,
           discountCode: discountCode?.trim() || undefined,
         }),
       });

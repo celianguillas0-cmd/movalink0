@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PublicShell from "@/components/PublicShell";
 import BuyButton from "@/components/BuyButton";
-import { PLAN_PRICES } from "@/lib/types";
+import { LIFETIME_PRICE, MONTHLY_PRICES } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Tarifs",
   description:
-    "Movalink est gratuit pour toujours. Les plans Pro et Elite sont des paiements uniques, sans abonnement.",
+    "Movalink est gratuit pour toujours. Passe Pro (5 €/mois) ou Elite (10 €/mois), ou débloque tout à vie en un seul paiement.",
 };
 
 function Check() {
@@ -56,8 +56,8 @@ const PLANS: {
   {
     id: "pro",
     name: "Pro",
-    price: PLAN_PRICES.pro.label,
-    priceNote: "en une fois",
+    price: MONTHLY_PRICES.pro.label,
+    priceNote: "/mois",
     tagline: "Pour te démarquer",
     popular: true,
     features: [
@@ -74,8 +74,8 @@ const PLANS: {
   {
     id: "elite",
     name: "Elite",
-    price: PLAN_PRICES.elite.label,
-    priceNote: "en une fois",
+    price: MONTHLY_PRICES.elite.label,
+    priceNote: "/mois",
     tagline: "Pour tout débloquer",
     features: [
       "Tout le plan Pro",
@@ -97,7 +97,8 @@ export default function PricingPage() {
             Tarifs
           </h1>
           <p className="text-sm text-gray-400 dark:text-zinc-500 mb-6">
-            Paie une fois, garde tout à vie. Aucun abonnement.
+            Abonnement mensuel résiliable à tout moment, ou {LIFETIME_PRICE.label} à
+            vie pour tout débloquer sans renouvellement.
           </p>
 
           <div className="grid gap-4 sm:grid-cols-3">
@@ -145,9 +146,10 @@ export default function PricingPage() {
                   ) : (
                     <BuyButton
                       plan={plan.id}
+                      billing="monthly"
                       className={plan.popular ? solidBtn : outlineBtn}
                     >
-                      Passer {plan.name}
+                      S&apos;abonner {plan.name}
                     </BuyButton>
                   )}
                 </div>
@@ -164,7 +166,7 @@ export default function PricingPage() {
               Paiement sécurisé Stripe
             </span>
             <span aria-hidden>·</span>
-            <span>Paiement unique, pas d'abonnement</span>
+            <span>Résiliable à tout moment · option à vie {LIFETIME_PRICE.label}</span>
             <span aria-hidden>·</span>
             <span>14 jours satisfait ou remboursé</span>
           </div>

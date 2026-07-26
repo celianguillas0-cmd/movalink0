@@ -240,6 +240,19 @@ export async function getUserIdByUsername(username: string): Promise<string | nu
   return kv.get<string>(usernameKey(username));
 }
 
+// ─── Index client Stripe ───────────────────────────────────────────────────
+// Les événements d'abonnement Stripe (renouvellement, annulation…) n'exposent
+// que l'ID client. On mémorise le lien customer → userId pour les retrouver.
+const stripeCustomerKey = (customerId: string) => `stripecustomer:${customerId}`;
+
+export async function linkStripeCustomer(customerId: string, userId: string): Promise<void> {
+  await kv.set(stripeCustomerKey(customerId), userId);
+}
+
+export async function getUserIdByStripeCustomer(customerId: string): Promise<string | null> {
+  return kv.get<string>(stripeCustomerKey(customerId));
+}
+
 export async function saveUser(user: User): Promise<void> {
   await kv.set(userKey(user.id), user);
 }
