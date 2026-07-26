@@ -13,3 +13,10 @@ export const PROMO_CODES: Record<string, "pro" | "elite"> = {
 // Code privé (tests) : remet le compte au plan Gratuit et efface l'historique
 // des codes utilisés, permettant de re-saisir les autres codes. Réutilisable.
 export const RESET_CODE = "AQUOXRESET";
+
+// Codes de réduction appliqués au paiement Stripe : pourcentage de remise sur
+// le prix. Comparés en majuscules. La remise est calculée côté serveur dans
+// /api/checkout — jamais depuis le navigateur — donc infalsifiable.
+export const DISCOUNT_CODES: Record<string, number> = {
+  MOVALINK10: 10,
+};

@@ -7,10 +7,12 @@ export default function BuyButton({
   plan,
   className,
   children,
+  discountCode,
 }: {
   plan: "pro" | "elite";
   className?: string;
   children: React.ReactNode;
+  discountCode?: string;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -23,7 +25,10 @@ export default function BuyButton({
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({
+          plan,
+          discountCode: discountCode?.trim() || undefined,
+        }),
       });
       const data = await res.json();
       if (res.status === 401) {

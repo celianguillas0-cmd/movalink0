@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { saveUser } from "@/lib/store";
+import { DISCOUNT_CODES } from "@/lib/config";
 import { upgradePriceCents } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Non connecté." }, { status: 401 });
   }
 
-  let body: { plan?: string };
+  let body: { plan?: string; discountCode?: string };
   try {
     body = await request.json();
   } catch {
@@ -25,6 +26,20 @@ export async function POST(request: NextRequest) {
   if (user.plan === "elite" || user.plan === plan) {
     return NextResponse.json({ error: "Tu as déjà ce plan." }, { status: 400 });
   }
+
+  // Code de réduction (optionnel) : un code non vide mais inconnu est rejeté
+  // pour éviter de facturer plein tarif sans prévenir l'utilisateur.
+  const rawCode =
+    typeof body.discountCode === "string"
+      ? body.discountCode.trim().toUpperCase()
+      : "";
+  if (rawCode && !DISCOUNT_CODES[rawCode]) {
+    return NextResponse.json(
+      { error: "Code de réduction invalide." },
+      { status: 400 }
+    );
+  }
+  const discountPct = rawCode ? DISCOUNT_CODES[rawCode] : 0;
 
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   const origin = request.nextUrl.origin;
@@ -41,11 +56,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const amountCents = upgradePriceCents(user.plan, plan);
+  const baseCents = upgradePriceCents(user.plan, plan);
+  const amountCents =
+    discountPct > 0
+      ? Math.max(0, Math.round(baseCents * (1 - discountPct / 100)))
+      : baseCents;
   const isUpgrade = user.plan === "pro" && plan === "elite";
-  const productName = isUpgrade
+  const baseName = isUpgrade
     ? "Movalink Elite — mise à niveau depuis Pro"
     : `Movalink ${plan === "pro" ? "Pro" : "Elite"} — accès à vie`;
+  const productName =
+    discountPct > 0 ? `${baseName} (−${discountPct}% · ${rawCode})` : baseName;
   const params = new URLSearchParams({
     mode: "payment",
     "line_items[0][quantity]": "1",
