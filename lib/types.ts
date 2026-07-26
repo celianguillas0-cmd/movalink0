@@ -102,6 +102,14 @@ export interface User {
   referralCode?: string;
   referralCount?: number;
   createdAt: string;
+  // ─── Facturation ───────────────────────────────────────────────────────────
+  lifetime?: boolean;              // achat à vie → plan Elite pour toujours
+  billing?: "monthly" | "lifetime";
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  subscriptionStatus?: string;     // active, past_due, canceled, unpaid…
+  subscriptionPlan?: Plan;         // plan accordé par l'abonnement en cours
+  currentPeriodEnd?: string;       // ISO — fin de la période payée en cours
 }
 
 export interface PublicUser {
@@ -113,6 +121,12 @@ export interface PublicUser {
   referralCode?: string;
   referralCount?: number;
   createdAt: string;
+  // Facturation (sans identifiants Stripe sensibles).
+  lifetime?: boolean;
+  billing?: "monthly" | "lifetime";
+  subscriptionStatus?: string;
+  currentPeriodEnd?: string;
+  hasBillingAccount?: boolean;     // possède un client Stripe → portail de gestion
 }
 
 export interface LinkGroup {
@@ -654,26 +668,19 @@ export function effectiveLimits(plan: Plan, referralCount = 0): PlanLimits {
   };
 }
 
-export const PLAN_PRICES: Record<Exclude<Plan, "free">, { amountCents: number; label: string }> = {
-  pro: { amountCents: 990, label: "9,90 €" },
-  elite: { amountCents: 1490, label: "14,90 €" },
+// Abonnements mensuels (Stripe, mode subscription).
+export const MONTHLY_PRICES: Record<Exclude<Plan, "free">, { amountCents: number; label: string }> = {
+  pro: { amountCents: 500, label: "5 €" },
+  elite: { amountCents: 1000, label: "10 €" },
 };
+
+// Offre à vie (paiement unique) : débloque le plan Elite pour toujours.
+export const LIFETIME_PRICE = { amountCents: 5490, label: "54,90 €", plan: "elite" as const };
+
+export type Billing = "monthly" | "lifetime";
 
 export function formatCents(cents: number): string {
   return (cents / 100).toFixed(2).replace(".", ",") + " €";
-}
-
-// Montant réellement dû pour passer du plan actuel au plan cible.
-// Un client Pro qui passe Elite ne paie que la différence (pas de double paiement).
-export function upgradePriceCents(
-  current: Plan,
-  target: Exclude<Plan, "free">
-): number {
-  const base = PLAN_PRICES[target].amountCents;
-  if (current === "pro" && target === "elite") {
-    return base - PLAN_PRICES.pro.amountCents;
-  }
-  return base;
 }
 
 export const EFFECT_LABELS: Record<EffectId, string> = {
@@ -907,5 +914,10 @@ export function toPublicUser(user: User): PublicUser {
     referralCode: user.referralCode,
     referralCount: user.referralCount ?? 0,
     createdAt: user.createdAt,
+    lifetime: user.lifetime,
+    billing: user.billing,
+    subscriptionStatus: user.subscriptionStatus,
+    currentPeriodEnd: user.currentPeriodEnd,
+    hasBillingAccount: Boolean(user.stripeCustomerId),
   };
 }

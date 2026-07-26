@@ -12,11 +12,10 @@ import {
   pageTitleClass,
 } from "@/lib/ui";
 import {
-  PLAN_PRICES,
+  LIFETIME_PRICE,
+  MONTHLY_PRICES,
   Plan,
   PublicUser,
-  formatCents,
-  upgradePriceCents,
 } from "@/lib/types";
 
 function Check() {
@@ -64,6 +63,26 @@ export default function PremiumPage() {
     getCachedMe()?.user ?? null
   );
   const [discountCode, setDiscountCode] = useState("");
+  const [portalLoading, setPortalLoading] = useState(false);
+  const [portalError, setPortalError] = useState("");
+
+  const openBillingPortal = async () => {
+    setPortalLoading(true);
+    setPortalError("");
+    try {
+      const res = await fetch("/api/billing/portal", { method: "POST" });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        setPortalError(data.error ?? "Impossible d'ouvrir la gestion.");
+      }
+    } catch {
+      setPortalError("Connexion impossible. Réessaie.");
+    } finally {
+      setPortalLoading(false);
+    }
+  };
 
   useEffect(() => {
     let alive = true;
@@ -92,7 +111,7 @@ export default function PremiumPage() {
         >
           <h1 className={pageTitleClass}>Premium</h1>
           <p className={pageSubtitleClass}>
-            Paie une fois, garde tout à vie. Aucun abonnement.
+            Abonne-toi au mois, ou débloque tout à vie en un seul paiement.
           </p>
         </motion.div>
 
@@ -103,13 +122,44 @@ export default function PremiumPage() {
             className={`${cardClass} mb-4 border-zinc-900 dark:border-white`}
           >
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              Tu es sur le plan {plan === "elite" ? "Elite" : "Pro"}
+              {user?.lifetime
+                ? "Accès à vie — plan Elite"
+                : `Tu es sur le plan ${plan === "elite" ? "Elite" : "Pro"}`}
             </p>
             <p className="mt-0.5 text-xs text-gray-400 dark:text-zinc-500">
-              {plan === "elite"
-                ? "Tu as déjà tout débloqué. Merci pour ton soutien."
-                : "Passe Elite pour les effets exclusifs et les statistiques sur 1 an."}
+              {user?.lifetime
+                ? "Tu as tout débloqué pour toujours. Merci pour ton soutien."
+                : user?.billing === "monthly"
+                  ? `Abonnement mensuel ${
+                      user.subscriptionStatus === "past_due"
+                        ? "— paiement en attente"
+                        : "actif"
+                    }${
+                      user.currentPeriodEnd
+                        ? ` · prochaine échéance le ${new Date(
+                            user.currentPeriodEnd
+                          ).toLocaleDateString("fr-FR")}`
+                        : ""
+                    }`
+                  : plan === "elite"
+                    ? "Tu as déjà tout débloqué. Merci pour ton soutien."
+                    : "Passe Elite pour les effets exclusifs et les stats sur 1 an."}
             </p>
+            {user?.billing === "monthly" && user?.hasBillingAccount && (
+              <>
+                <button
+                  type="button"
+                  onClick={openBillingPortal}
+                  disabled={portalLoading}
+                  className="mt-3 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-900 transition-colors hover:border-gray-400 disabled:opacity-50 dark:border-zinc-700 dark:text-white dark:hover:border-zinc-500"
+                >
+                  {portalLoading ? "Ouverture..." : "Gérer mon abonnement"}
+                </button>
+                {portalError && (
+                  <p className="mt-2 text-xs text-red-500">{portalError}</p>
+                )}
+              </>
+            )}
           </motion.div>
         )}
 
@@ -122,7 +172,7 @@ export default function PremiumPage() {
           <RedeemCode />
         </motion.div>
 
-        {plan !== "elite" && (
+        {!user?.lifetime && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -136,7 +186,7 @@ export default function PremiumPage() {
               Code de réduction
             </label>
             <p className="mt-0.5 text-xs text-gray-400 dark:text-zinc-500">
-              Applique une remise au moment du paiement.
+              Applique une remise sur l&apos;offre à vie au moment du paiement.
             </p>
             <input
               id="discountCode"
@@ -150,109 +200,136 @@ export default function PremiumPage() {
           </motion.div>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.03 }}
-            className={`${cardClass} flex flex-col`}
-          >
-            <div className="flex items-baseline justify-between">
-              <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-                Pro
-              </h2>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {PLAN_PRICES.pro.label}
-                <span className="text-xs font-normal text-gray-400 dark:text-zinc-500">
-                  {" "}
-                  une fois
-                </span>
-              </p>
-            </div>
-            <ul className="mt-4 flex flex-1 flex-col gap-2.5 text-sm text-gray-600 dark:text-zinc-300">
-              {PLAN_FEATURES.pro.map((f) => (
-                <li key={f} className="flex items-center gap-2.5">
-                  <Check /> {f}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-5">
-              {plan === "free" ? (
-                <BuyButton plan="pro" className={solidBtn} discountCode={discountCode}>
-                  Passer Pro — {PLAN_PRICES.pro.label}
-                </BuyButton>
-              ) : (
-                <p className="text-center text-xs text-gray-400 dark:text-zinc-500">
-                  {plan === "pro" ? "Ton plan actuel" : "Inclus dans Elite"}
-                </p>
-              )}
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.03 }}
-            className={`${cardClass} flex flex-col`}
-          >
-            <div className="flex items-baseline justify-between">
-              <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-                Elite
-              </h2>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {plan === "pro" ? (
-                  <>
-                    {formatCents(upgradePriceCents("pro", "elite"))}
-                    <span className="ml-1.5 text-xs font-normal text-gray-400 line-through dark:text-zinc-500">
-                      {PLAN_PRICES.elite.label}
+        {!user?.lifetime && (
+          <>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.03 }}
+                className={`${cardClass} flex flex-col`}
+              >
+                <div className="flex items-baseline justify-between">
+                  <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+                    Pro
+                  </h2>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {MONTHLY_PRICES.pro.label}
+                    <span className="text-xs font-normal text-gray-400 dark:text-zinc-500">
+                      {" "}
+                      /mois
                     </span>
-                  </>
-                ) : (
-                  <>
-                    {PLAN_PRICES.elite.label}
+                  </p>
+                </div>
+                <ul className="mt-4 flex flex-1 flex-col gap-2.5 text-sm text-gray-600 dark:text-zinc-300">
+                  {PLAN_FEATURES.pro.map((f) => (
+                    <li key={f} className="flex items-center gap-2.5">
+                      <Check /> {f}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-5">
+                  {plan === "free" ? (
+                    <BuyButton plan="pro" billing="monthly" className={solidBtn}>
+                      S&apos;abonner Pro — {MONTHLY_PRICES.pro.label}/mois
+                    </BuyButton>
+                  ) : (
+                    <p className="text-center text-xs text-gray-400 dark:text-zinc-500">
+                      {plan === "pro" ? "Ton plan actuel" : "Inclus dans Elite"}
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.03 }}
+                className={`${cardClass} flex flex-col`}
+              >
+                <div className="flex items-baseline justify-between">
+                  <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+                    Elite
+                  </h2>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {MONTHLY_PRICES.elite.label}
+                    <span className="text-xs font-normal text-gray-400 dark:text-zinc-500">
+                      {" "}
+                      /mois
+                    </span>
+                  </p>
+                </div>
+                <ul className="mt-4 flex flex-1 flex-col gap-2.5 text-sm text-gray-600 dark:text-zinc-300">
+                  <li className="flex items-center gap-2.5">
+                    <Check /> Tout le plan Pro
+                  </li>
+                  {PLAN_FEATURES.elite.map((f) => (
+                    <li key={f} className="flex items-center gap-2.5">
+                      <Check /> {f}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-5">
+                  {plan !== "elite" ? (
+                    <BuyButton
+                      plan="elite"
+                      billing="monthly"
+                      className={plan === "free" ? outlineBtn : solidBtn}
+                    >
+                      S&apos;abonner Elite — {MONTHLY_PRICES.elite.label}/mois
+                    </BuyButton>
+                  ) : (
+                    <p className="text-center text-xs text-gray-400 dark:text-zinc-500">
+                      Ton plan actuel
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="mt-4 flex flex-col gap-3 rounded-xl border border-zinc-900 bg-white p-5 dark:border-white dark:bg-zinc-900 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <div className="flex items-baseline gap-2">
+                  <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+                    À vie
+                  </h2>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {LIFETIME_PRICE.label}
                     <span className="text-xs font-normal text-gray-400 dark:text-zinc-500">
                       {" "}
                       une fois
                     </span>
-                  </>
-                )}
-              </p>
-            </div>
-            {plan === "pro" && (
-              <p className="mt-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                Prix de mise à niveau : tu ne paies que la différence.
-              </p>
-            )}
-            <ul className="mt-4 flex flex-1 flex-col gap-2.5 text-sm text-gray-600 dark:text-zinc-300">
-              <li className="flex items-center gap-2.5">
-                <Check /> Tout le plan Pro
-              </li>
-              {PLAN_FEATURES.elite.map((f) => (
-                <li key={f} className="flex items-center gap-2.5">
-                  <Check /> {f}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-5">
-              {plan !== "elite" ? (
-                <BuyButton plan="elite" className={plan === "free" ? outlineBtn : solidBtn} discountCode={discountCode}>
-                  {plan === "pro"
-                    ? `Passer Elite — ${formatCents(upgradePriceCents("pro", "elite"))}`
-                    : `Passer Elite — ${PLAN_PRICES.elite.label}`}
-                </BuyButton>
-              ) : (
-                <p className="text-center text-xs text-gray-400 dark:text-zinc-500">
-                  Ton plan actuel
+                  </p>
+                </div>
+                <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">
+                  Tout le plan Elite, pour toujours. Aucun abonnement, aucun
+                  renouvellement.
                 </p>
-              )}
-            </div>
-          </motion.div>
-        </div>
+              </div>
+              <div className="shrink-0 sm:w-56">
+                <BuyButton
+                  plan="elite"
+                  billing="lifetime"
+                  className={solidBtn}
+                  discountCode={discountCode}
+                >
+                  Débloquer à vie — {LIFETIME_PRICE.label}
+                </BuyButton>
+              </div>
+            </motion.div>
+          </>
+        )}
 
         <p className="mt-6 text-center text-xs text-gray-400 dark:text-zinc-500">
-          Paiement sécurisé par Stripe. Droit de rétractation de 14 jours (art.
-          L221-18 du Code de la consommation), sauf renonciation expresse pour
-          accès immédiat. Détails dans les CGU/CGV.
+          Paiement sécurisé par Stripe. Abonnement résiliable à tout moment.
+          Droit de rétractation de 14 jours (art. L221-18 du Code de la
+          consommation), sauf renonciation expresse pour accès immédiat. Détails
+          dans les CGU/CGV.
         </p>
       </div>
     </div>

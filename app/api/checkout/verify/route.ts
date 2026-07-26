@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { saveUser } from "@/lib/store";
+import { linkStripeCustomer, saveUser } from "@/lib/store";
+import { Plan, User } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -32,26 +33,49 @@ export async function GET(request: NextRequest) {
   if (!response.ok) {
     return NextResponse.json({ error: "Session introuvable." }, { status: 404 });
   }
-  if (session.payment_status !== "paid") {
-    return NextResponse.json(
-      { error: "Le paiement n'a pas été confirmé." },
-      { status: 402 }
-    );
-  }
   if (session.metadata?.userId !== user.id) {
     return NextResponse.json(
       { error: "Cette session ne correspond pas à ton compte." },
       { status: 403 }
     );
   }
-
-  const plan = session.metadata?.plan;
-  if (plan !== "pro" && plan !== "elite") {
-    return NextResponse.json({ error: "Plan inconnu." }, { status: 400 });
+  // Une session d'abonnement est "complete" ; un paiement unique est "paid".
+  const settled =
+    session.status === "complete" || session.payment_status === "paid";
+  if (!settled) {
+    return NextResponse.json(
+      { error: "Le paiement n'a pas été confirmé." },
+      { status: 402 }
+    );
   }
 
-  if (user.plan !== plan) {
-    await saveUser({ ...user, plan });
+  const customerId =
+    typeof session.customer === "string" ? session.customer : undefined;
+  if (customerId) await linkStripeCustomer(customerId, user.id);
+
+  const updated: User = { ...user };
+  if (customerId) updated.stripeCustomerId = customerId;
+
+  if (session.metadata?.kind === "lifetime" || session.mode === "payment") {
+    updated.plan = "elite";
+    updated.lifetime = true;
+    updated.billing = "lifetime";
+    await saveUser(updated);
+    return NextResponse.json({ ok: true, plan: "elite", billing: "lifetime" });
   }
-  return NextResponse.json({ ok: true, plan });
+
+  // Abonnement mensuel.
+  const plan: Plan =
+    session.metadata?.plan === "pro" || session.metadata?.plan === "elite"
+      ? session.metadata.plan
+      : "pro";
+  updated.plan = plan;
+  updated.billing = "monthly";
+  updated.subscriptionPlan = plan;
+  updated.subscriptionStatus = "active";
+  if (typeof session.subscription === "string") {
+    updated.stripeSubscriptionId = session.subscription;
+  }
+  await saveUser(updated);
+  return NextResponse.json({ ok: true, plan, billing: "monthly" });
 }
