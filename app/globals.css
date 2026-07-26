@@ -330,6 +330,16 @@ body {
   animation: fx-spotlight-sweep 9s ease-in-out infinite;
 }
 
+/* Arc-en-ciel : dégradé multicolore qui défile */
+@keyframes fx-rainbow-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.fx-rainbow {
+  animation: fx-rainbow-shift 12s linear infinite;
+}
+
 /* Écran de démarrage */
 @keyframes ml-splash-m-in {
   from { opacity: 0; transform: scale(0.5); }

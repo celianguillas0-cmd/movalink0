@@ -28,7 +28,11 @@ export type EffectId =
   | "orbs"
   | "smoke"
   | "spotlight"
-  | "starfall";
+  | "starfall"
+  | "phenix"
+  | "galaxy"
+  | "diamonds"
+  | "rainbow";
 
 export type LayoutId = "card" | "clean";
 
@@ -519,6 +523,10 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
       "smoke",
       "spotlight",
       "starfall",
+      "phenix",
+      "galaxy",
+      "diamonds",
+      "rainbow",
     ],
     fonts: ALL_FONTS,
     buttonStyles: [
@@ -581,14 +589,17 @@ export interface ReferralTier {
 
 export const REFERRAL_TIERS: ReferralTier[] = [
   { count: 1, label: "Effet Paillettes", effect: "glitter" },
-  { count: 2, label: "Police Minimaliste", font: "poppins" },
-  { count: 3, label: "Effet Orbes", effect: "orbs" },
-  { count: 4, label: "Cadre d'avatar Halo", avatarFrame: "glow" },
+  { count: 2, label: "Effet Orbes", effect: "orbs" },
+  { count: 3, label: "Effet Pluie d'étoiles", effect: "starfall" },
+  { count: 4, label: "Effet Fumée", effect: "smoke" },
   { count: 5, label: "Badge Movalink retiré", removeWatermark: true },
-  { count: 6, label: "Effet Fumée", effect: "smoke" },
-  { count: 7, label: "Bouton Verre", buttonStyle: "glass" },
-  { count: 8, label: "Effet Projecteur", effect: "spotlight" },
-  { count: 9, label: "Effet Pluie d'étoiles", effect: "starfall" },
+  { count: 6, label: "Effet Projecteur", effect: "spotlight" },
+  { count: 7, label: "Effet Diamants", effect: "diamonds" },
+  { count: 8, label: "Cadre d'avatar Halo", avatarFrame: "glow" },
+  { count: 9, label: "Effet Galaxie", effect: "galaxy" },
+  { count: 10, label: "Effet Arc-en-ciel", effect: "rainbow" },
+  { count: 11, label: "Bouton Verre", buttonStyle: "glass" },
+  { count: 12, label: "Effet Phénix 🔥", effect: "phenix" },
 ];
 
 // Limites effectives = limites du plan + tous les paliers de parrainage atteints.
@@ -670,6 +681,10 @@ export const EFFECT_LABELS: Record<EffectId, string> = {
   smoke: "Fumée",
   spotlight: "Projecteur",
   starfall: "Pluie d'étoiles",
+  phenix: "Phénix",
+  galaxy: "Galaxie",
+  diamonds: "Diamants",
+  rainbow: "Arc-en-ciel",
 };
 
 export const FONT_META: Record<

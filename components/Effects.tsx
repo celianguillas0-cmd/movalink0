@@ -64,6 +64,9 @@ function CanvasEffect({
         glitter: 85,
         orbs: 22,
         starfall: 70,
+        phenix: 75,
+        galaxy: 120,
+        diamonds: 45,
       };
       const count = counts[effect] ?? 110;
       particles = makeParticles(count, canvas.width, canvas.height);
@@ -279,21 +282,75 @@ function CanvasEffect({
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
             ctx.fill();
+          } else if (effect === "phenix") {
+            // Phénix : plume de feu qui s'élève (orange/or/rouge, lueur, braises).
+            p.y -= (0.6 + p.vy) * 1.1;
+            p.x += Math.sin(t / 40 + p.phase) * 0.9;
+            const life = 0.3 + 0.7 * Math.abs(Math.sin(t / 45 + p.phase));
+            const hue = 15 + Math.floor((p.phase * 20) % 40); // 15-55 : rouge→or
+            ctx.save();
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = `hsl(${hue}, 100%, 55%)`;
+            ctx.globalAlpha = life;
+            ctx.fillStyle = `hsl(${hue}, 100%, 60%)`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 0.95, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          } else if (effect === "galaxy") {
+            // Galaxie : étoiles colorées en rotation lente autour du centre.
+            const cx = w / 2;
+            const cy = h / 2;
+            const dx = p.x - cx;
+            const dy = p.y - cy;
+            const a = 0.004;
+            p.x = cx + (dx * Math.cos(a) - dy * Math.sin(a));
+            p.y = cy + (dx * Math.sin(a) + dy * Math.cos(a));
+            const alpha = 0.3 + 0.7 * Math.abs(Math.sin(t / 40 + p.phase));
+            const hue = Math.floor((p.phase * 57) % 360);
+            ctx.fillStyle = `hsla(${hue}, 80%, 72%, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 0.7, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (effect === "diamonds") {
+            // Diamants : gemmes scintillantes multicolores qui tombent.
+            p.x += Math.sin(t / 50 + p.phase) * 0.3;
+            p.y += p.vy * 0.8;
+            const s = p.size * 1.3;
+            const tw = 0.4 + 0.6 * Math.abs(Math.sin(t / 20 + p.phase));
+            const hue = Math.floor((p.phase * 40) % 360);
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.globalAlpha = tw;
+            ctx.fillStyle = `hsl(${hue}, 90%, 75%)`;
+            ctx.beginPath();
+            ctx.moveTo(0, -s);
+            ctx.lineTo(s * 0.7, 0);
+            ctx.lineTo(0, s);
+            ctx.lineTo(-s * 0.7, 0);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
           }
-          // Recyclage des particules : les braises remontent, les autres tombent.
-          if (effect === "embers") {
-            if (p.y < -20) {
-              p.y = h + 10;
+          // Recyclage des particules : les braises/phénix remontent, les autres
+          // tombent. La galaxie tourne en boucle : pas de recyclage.
+          if (effect === "galaxy") {
+            // rotation continue autour du centre, rien à recycler
+          } else {
+            if (effect === "embers" || effect === "phenix") {
+              if (p.y < -20) {
+                p.y = h + 10;
+                p.x = Math.random() * w;
+              }
+            } else if (p.y > h + 20) {
+              p.y = -10;
               p.x = Math.random() * w;
+            } else if (p.y < -20) {
+              p.y = h + 10;
             }
-          } else if (p.y > h + 20) {
-            p.y = -10;
-            p.x = Math.random() * w;
-          } else if (p.y < -20) {
-            p.y = h + 10;
+            if (p.x > w + 20) p.x = -10;
+            if (p.x < -20) p.x = w + 10;
           }
-          if (p.x > w + 20) p.x = -10;
-          if (p.x < -20) p.x = w + 10;
         }
 
         // Éclairs de l'orage : flash blanc bref et aléatoire.
@@ -454,6 +511,21 @@ export default function EffectLayer({
             background: `conic-gradient(from 90deg at 50% -10%, transparent 0deg, ${accent}66 20deg, transparent 40deg, transparent 320deg, ${accent}66 340deg, transparent 360deg)`,
             maskImage: "linear-gradient(180deg, black, transparent 80%)",
             WebkitMaskImage: "linear-gradient(180deg, black, transparent 80%)",
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (effect === "rainbow") {
+    return (
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div
+          className="fx-rainbow absolute inset-0 opacity-30"
+          style={{
+            backgroundImage:
+              "linear-gradient(115deg, #ff004c, #ff8a00, #ffe600, #00e07a, #00b3ff, #7a5cff, #ff004c)",
+            backgroundSize: "300% 300%",
           }}
         />
       </div>
