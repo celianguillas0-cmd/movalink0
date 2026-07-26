@@ -60,7 +60,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "liens", label: "Liens" },
   { id: "reseaux", label: "Réseaux" },
   { id: "jeux", label: "Jeux" },
-  { id: "promos", label: "Codes promo" },
+  { id: "promos", label: "Codes" },
   { id: "apparence", label: "Style" },
   { id: "avance", label: "Avancé" },
 ];
