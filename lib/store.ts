@@ -12,6 +12,7 @@ import {
   LeaderboardEntry,
   SavedProfileSlot,
   emptyStats,
+  emptyProfile,
 } from "./types";
 
 export interface UserStats {
@@ -261,6 +262,47 @@ export async function deleteUserRecords(user: User): Promise<void> {
     profileKey(user.username),
     statsKey(user.username)
   );
+}
+
+// Renomme le pseudo d'un compte. Le pseudo sert de clé pour le profil, les
+// stats et l'index uname:, donc on migre ces enregistrements vers les
+// nouvelles clés puis on efface les anciennes. L'ID utilisateur (donc la
+// session), l'email et le code de parrainage ne dépendent pas du pseudo et
+// restent inchangés. `newUsername` doit être validé/disponible en amont.
+export async function renameUser(user: User, newUsername: string): Promise<User> {
+  const oldUsername = user.username;
+  const profile = await getProfile(oldUsername);
+  const stats = await getStats(oldUsername);
+  const updatedUser: User = { ...user, username: newUsername };
+  const updatedProfile: Profile = profile
+    ? { ...profile, username: newUsername }
+    : { ...emptyProfile(newUsername) };
+
+  await Promise.all([
+    kv.set(userKey(user.id), updatedUser),
+    kv.set(usernameKey(newUsername), user.id),
+    kv.set(profileKey(newUsername), updatedProfile),
+    kv.set(statsKey(newUsername), stats),
+  ]);
+  await kv.del(
+    usernameKey(oldUsername),
+    profileKey(oldUsername),
+    statsKey(oldUsername)
+  );
+
+  // Le classement est indexé par pseudo : reporter le renommage sur l'entrée.
+  const board = await getLeaderboard();
+  const idx = board.findIndex((e) => e.username === oldUsername);
+  if (idx >= 0) {
+    board[idx] = {
+      ...board[idx],
+      username: newUsername,
+      displayName: updatedProfile.displayName,
+    };
+    await kv.set(LEADERBOARD_KEY, board);
+  }
+
+  return updatedUser;
 }
 
 export async function getProfile(username: string): Promise<Profile | null> {

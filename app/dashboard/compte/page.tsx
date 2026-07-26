@@ -54,6 +54,10 @@ export default function ComptePage() {
   const [newPassword, setNewPassword] = useState("");
   const [changing, setChanging] = useState(false);
 
+  const [newUsername, setNewUsername] = useState("");
+  const [usernamePassword, setUsernamePassword] = useState("");
+  const [renaming, setRenaming] = useState(false);
+
   useEffect(() => {
     let alive = true;
     fetchMe().then(({ me, unauthorized }) => {
@@ -127,6 +131,41 @@ export default function ComptePage() {
       setError("Connexion impossible. Réessaie.");
     } finally {
       setChanging(false);
+    }
+  };
+
+  const changeUsername = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !profile) return;
+    setRenaming(true);
+    setError("");
+    setMessage("");
+    try {
+      const res = await fetch("/api/account", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentPassword: usernamePassword,
+          newUsername,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Une erreur est survenue.");
+        return;
+      }
+      const updatedUser = { ...user, username: data.username };
+      const updatedProfile = { ...profile, username: data.username };
+      setUser(updatedUser);
+      setProfile(updatedProfile);
+      setCachedMe({ user: updatedUser, profile: updatedProfile });
+      setMessage(`Pseudo modifié. Ta page : movalink.vercel.app/${data.username}`);
+      setNewUsername("");
+      setUsernamePassword("");
+    } catch {
+      setError("Connexion impossible. Réessaie.");
+    } finally {
+      setRenaming(false);
     }
   };
 
@@ -295,6 +334,61 @@ export default function ComptePage() {
                   )}
                 </div>
               </div>
+
+              <form onSubmit={changeUsername} className={`${cardClass} mb-4 flex flex-col gap-4`}>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                  Changer de pseudo
+                </p>
+                <div>
+                  <label htmlFor="newUsername" className={labelClass}>
+                    Nouveau pseudo
+                  </label>
+                  <div className="flex items-center">
+                    <span className="shrink-0 rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500">
+                      movalink.vercel.app/
+                    </span>
+                    <input
+                      id="newUsername"
+                      type="text"
+                      required
+                      minLength={3}
+                      maxLength={20}
+                      autoComplete="off"
+                      value={newUsername}
+                      onChange={(e) =>
+                        setNewUsername(e.target.value.toLowerCase())
+                      }
+                      placeholder={user.username}
+                      className={`${inputClass} rounded-l-none`}
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-gray-400 dark:text-zinc-500">
+                    3 à 20 caractères : lettres minuscules, chiffres, tirets et
+                    underscores.
+                  </p>
+                </div>
+                <div>
+                  <label htmlFor="usernamePassword" className={labelClass}>
+                    Mot de passe actuel
+                  </label>
+                  <input
+                    id="usernamePassword"
+                    type="password"
+                    required
+                    autoComplete="current-password"
+                    value={usernamePassword}
+                    onChange={(e) => setUsernamePassword(e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={renaming}
+                  className={`${smallBtnClass} self-start`}
+                >
+                  {renaming ? "Modification..." : "Modifier le pseudo"}
+                </button>
+              </form>
 
               <form onSubmit={changePassword} className={`${cardClass} flex flex-col gap-4`}>
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">
