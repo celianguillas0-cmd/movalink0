@@ -50,6 +50,7 @@ function CanvasEffect({
       canvas.height = canvas.offsetHeight;
       const counts: Partial<Record<EffectId, number>> = {
         stars: 90,
+        constellation: 60,
         sakura: 45,
         fireflies: 45,
         embers: 70,
@@ -124,6 +125,16 @@ function CanvasEffect({
             ctx.fillStyle = `rgba(255,255,255,${alpha})`;
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (effect === "constellation") {
+            // Constellation : étoiles qui dérivent lentement ; les lignes qui
+            // les relient sont tracées après la boucle (voir plus bas).
+            p.x += p.vx * 0.5;
+            p.y += (p.vy - 1) * 0.5;
+            const alpha = 0.55 + 0.45 * Math.abs(Math.sin(t / 55 + p.phase));
+            ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 0.5 + 0.4, 0, Math.PI * 2);
             ctx.fill();
           } else if (effect === "sakura") {
             p.x += Math.sin(t / 50 + p.phase) * 0.8 + 0.3;
@@ -350,6 +361,29 @@ function CanvasEffect({
             }
             if (p.x > w + 20) p.x = -10;
             if (p.x < -20) p.x = w + 10;
+          }
+        }
+
+        // Constellation : relier chaque paire d'étoiles proches par une ligne
+        // dont l'opacité décroît avec la distance (réseau type ciel étoilé).
+        if (effect === "constellation") {
+          const maxDist = 130;
+          ctx.lineWidth = 1;
+          for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+              const a = particles[i];
+              const b = particles[j];
+              const dx = a.x - b.x;
+              const dy = a.y - b.y;
+              const dist = Math.hypot(dx, dy);
+              if (dist < maxDist) {
+                ctx.strokeStyle = `rgba(255,255,255,${0.2 * (1 - dist / maxDist)})`;
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.stroke();
+              }
+            }
           }
         }
 

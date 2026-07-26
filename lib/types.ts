@@ -5,6 +5,7 @@ export type EffectId =
   | "snow"
   | "rain"
   | "stars"
+  | "constellation"
   | "sakura"
   | "aurora"
   | "plasma"
@@ -454,6 +455,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
       "snow",
       "rain",
       "stars",
+      "constellation",
       "sakura",
       "aurora",
       "bubbles",
@@ -501,6 +503,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
       "snow",
       "rain",
       "stars",
+      "constellation",
       "sakura",
       "aurora",
       "plasma",
@@ -659,6 +662,7 @@ export const EFFECT_LABELS: Record<EffectId, string> = {
   snow: "Neige",
   rain: "Pluie",
   stars: "Étoiles",
+  constellation: "Constellation",
   sakura: "Sakura",
   aurora: "Aurore",
   plasma: "Plasma",
