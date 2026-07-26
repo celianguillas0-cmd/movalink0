@@ -162,7 +162,7 @@ export interface GameEntry {
 export interface PromoCode {
   id: string;
   brand: string; // nom de la marque (ex : Gymshark)
-  code: string; // le code promo (ex : CELIAN10)
+  code: string; // le code promo (ex : PROMO10)
   description?: string; // l'offre (ex : -10% sur tout le site)
   url?: string; // lien d'affiliation optionnel
 }

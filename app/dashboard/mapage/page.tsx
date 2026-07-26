@@ -1494,7 +1494,7 @@ function MaPageEditor() {
                               <input
                                 value={promo.code}
                                 maxLength={40}
-                                placeholder="Code promo (ex : CELIAN10)"
+                                placeholder="Code promo (ex : PROMO10)"
                                 onChange={(e) => {
                                   const promoCodes = [...(profile.promoCodes ?? [])];
                                   promoCodes[i] = { ...promo, code: e.target.value };

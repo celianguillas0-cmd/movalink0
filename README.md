@@ -52,7 +52,7 @@ Les limites sont appliquées côté serveur dans `app/api/profile/route.ts` (`PL
 
 ## Déploiement
 
-Projet Vercel `movalink` (compte celianguillas0-cmd). `vercel --prod` depuis ce dossier. Pour la persistance en production, l'intégration marketplace **Upstash for Redis** doit être connectée au projet (fournit `KV_REST_API_URL`/`KV_REST_API_TOKEN`).
+Projet Vercel `movalink`. `vercel --prod` depuis ce dossier. Pour la persistance en production, l'intégration marketplace **Upstash for Redis** doit être connectée au projet (fournit `KV_REST_API_URL`/`KV_REST_API_TOKEN`).
 
 ## À compléter avant une vraie commercialisation
 
