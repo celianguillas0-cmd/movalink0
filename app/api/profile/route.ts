@@ -80,27 +80,30 @@ export async function PUT(request: NextRequest) {
   const links: ProfileLink[] = Array.isArray(body.links)
     ? body.links
         .slice(0, limits.links)
+        // On conserve les lignes en cours d'édition (URL encore vide) pour que
+        // l'autosave n'efface pas une ligne que l'utilisateur vient d'ajouter.
+        // Les liens sans URL sont simplement ignorés au rendu de la page publique.
         .map((l) => {
-          const url = sanitizeUrl(typeof l?.url === "string" ? l.url : "");
-          if (!url) return null;
-          const rawColor = typeof l.color === "string" ? l.color : "";
+          const url = sanitizeUrl(typeof l?.url === "string" ? l.url : "") ?? "";
+          const rawColor = typeof l?.color === "string" ? l.color : "";
           const color =
             limits.perLinkColor && /^#[0-9a-fA-F]{6}$/.test(rawColor)
               ? rawColor
               : undefined;
-          const icon = clampText(l.icon, 8);
-          const rawExpiry = typeof l.expiresAt === "string" ? l.expiresAt : "";
+          const icon = clampText(l?.icon, 8);
+          const rawExpiry = typeof l?.expiresAt === "string" ? l.expiresAt : "";
           const expiresAt = rawExpiry && !isNaN(Date.parse(rawExpiry)) ? rawExpiry : undefined;
           return {
-            id: typeof l.id === "string" && l.id ? l.id.slice(0, 32) : newId(),
-            label: clampText(l.label, 60) || url.replace(/^https?:\/\//, "").slice(0, 60),
+            id: typeof l?.id === "string" && l.id ? l.id.slice(0, 32) : newId(),
+            label:
+              clampText(l?.label, 60) ||
+              (url ? url.replace(/^https?:\/\//, "").slice(0, 60) : ""),
             url,
             ...(color ? { color } : {}),
             ...(icon ? { icon } : {}),
             ...(expiresAt ? { expiresAt } : {}),
           };
         })
-        .filter((l): l is ProfileLink => l !== null)
     : current.links;
 
   const games: GameEntry[] = Array.isArray(body.games)
@@ -386,12 +389,14 @@ export async function PUT(request: NextRequest) {
     return days.length ? { days, timeStart, ...(timeEnd ? { timeEnd } : {}) } : null;
   })();
 
+  // On conserve les clips en cours d'édition (URL vide) pour que l'autosave
+  // n'efface pas une ligne fraîchement ajoutée ; ils sont ignorés au rendu.
   const clips: Profile["clips"] = limits.clips > 0 && Array.isArray(body.clips)
     ? body.clips.slice(0, limits.clips).map((c) => {
-        const url = sanitizeUrl(clampText(c?.url, 300));
+        const url = sanitizeUrl(clampText(c?.url, 300)) ?? "";
         const title = clampText(c?.title, 80);
-        return url ? { url, ...(title ? { title } : {}) } : null;
-      }).filter((c): c is { url: string; title?: string } => c !== null)
+        return { url, ...(title ? { title } : {}) };
+      })
     : [];
 
   // ─── Advanced settings (all plans) ──────────────────────────────────────

@@ -502,11 +502,13 @@ function StreamSchedule({ days, timeStart, timeEnd }: { days: number[]; timeStar
 
 // ─── Clips grid ──────────────────────────────────────────────────────────────
 function ClipsGrid({ clips }: { clips: NonNullable<Profile["clips"]> }) {
+  const shown = clips.filter((c) => c.url);
+  if (shown.length === 0) return null;
   return (
     <div className="mt-6 w-full">
       <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-white/50">🎬 Clips</p>
       <div className="grid grid-cols-2 gap-2">
-        {clips.map((clip, i) => (
+        {shown.map((clip, i) => (
           <a
             key={i}
             href={clip.url}
@@ -1020,7 +1022,9 @@ export default function ProfileView({
         <div className="mt-7 flex w-full flex-col gap-3">
           {(() => {
             const now = new Date();
-            const active = profile.links.filter((l) => !l.expiresAt || new Date(l.expiresAt) > now);
+            const active = profile.links.filter(
+              (l) => l.url && (!l.expiresAt || new Date(l.expiresAt) > now)
+            );
             const groups = profile.linkGroups ?? [];
 
             if (groups.length === 0) {
