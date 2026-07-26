@@ -1,6 +1,6 @@
 export const SITE_NAME = "Movalink";
 export const SITE_URL = "https://movalink.vercel.app";
-export const CONTACT_EMAIL = "contact@movalink.app";
+export const CONTACT_EMAIL = "movalink.help@gmail.com";
 export const SITE_TAGLINE = "Tout ton univers gaming. Un seul lien.";
 
 // Codes cadeaux : débloquent un plan sans paiement. Comparés en majuscules.
