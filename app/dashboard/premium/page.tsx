@@ -41,7 +41,7 @@ const outlineBtn =
 const PLAN_FEATURES: Record<Exclude<Plan, "free">, string[]> = {
   pro: [
     "15 liens · 15 jeux · emoji par lien",
-    "9 effets + 8 styles de boutons + 13 polices",
+    "10 effets + 8 styles de boutons + 13 polices",
     "Full custom : couleurs, dégradé, carte, bordure, avatar",
     "Animation d'entrée de la carte",
     "Musique de fond + curseur image importés",
@@ -50,7 +50,7 @@ const PLAN_FEATURES: Record<Exclude<Plan, "free">, string[]> = {
   ],
   elite: [
     "50 liens · 50 jeux",
-    "21 effets dont pluie d'emoji au choix (orage, glitch, synthwave…)",
+    "39 effets animés très travaillés (feux d'artifice, hyperespace, éclairs, papillons, lanternes…)",
     "Statut Discord en direct sur ta page",
     "Thèmes exclusifs Elite · jusqu'à 5 décorations",
     "Filigrane movalink.vercel.app retiré",

@@ -33,7 +33,17 @@ export type EffectId =
   | "phenix"
   | "galaxy"
   | "diamonds"
-  | "rainbow";
+  | "rainbow"
+  // Effets élaborés (Elite)
+  | "fireworks"
+  | "lightning"
+  | "hyperspace"
+  | "vortex"
+  | "bokeh"
+  | "lanterns"
+  | "goldDust"
+  | "butterflies"
+  | "ripple";
 
 export type LayoutId = "card" | "clean";
 
@@ -530,6 +540,15 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
       "galaxy",
       "diamonds",
       "rainbow",
+      "fireworks",
+      "lightning",
+      "hyperspace",
+      "vortex",
+      "bokeh",
+      "lanterns",
+      "goldDust",
+      "butterflies",
+      "ripple",
     ],
     fonts: ALL_FONTS,
     buttonStyles: [
@@ -689,6 +708,15 @@ export const EFFECT_LABELS: Record<EffectId, string> = {
   galaxy: "Galaxie",
   diamonds: "Diamants",
   rainbow: "Arc-en-ciel",
+  fireworks: "Feux d'artifice",
+  lightning: "Éclairs",
+  hyperspace: "Hyperespace",
+  vortex: "Vortex",
+  bokeh: "Bokeh",
+  lanterns: "Lanternes",
+  goldDust: "Poussière d'or",
+  butterflies: "Papillons",
+  ripple: "Ondes",
 };
 
 export const FONT_META: Record<

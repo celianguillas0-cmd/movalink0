@@ -10,6 +10,9 @@ interface Particle {
   vy: number;
   size: number;
   phase: number;
+  // Champs optionnels pour les effets à cycle de vie (ondes, etc.).
+  r?: number;
+  life?: number;
 }
 
 function makeParticles(count: number, w: number, h: number): Particle[] {
@@ -45,6 +48,14 @@ function CanvasEffect({
     let columns: number[] = [];
     const glyphs = "01アイウエオカキクケコサシスセソ<>#$%&";
 
+    // État des effets autonomes (gérés hors de la boucle de particules).
+    const fwRockets: { x: number; y: number; vy: number; ty: number; hue: number }[] = [];
+    const fwSparks: { x: number; y: number; vx: number; vy: number; life: number; hue: number }[] = [];
+    let fwTimer = 0;
+    let bolt: { x: number; y: number }[][] = [];
+    let boltLife = 0;
+    let boltCooldown = 30;
+
     const resize = () => {
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
@@ -68,6 +79,15 @@ function CanvasEffect({
         phenix: 75,
         galaxy: 120,
         diamonds: 45,
+        hyperspace: 150,
+        vortex: 140,
+        bokeh: 26,
+        lanterns: 16,
+        goldDust: 130,
+        butterflies: 14,
+        ripple: 7,
+        fireworks: 0,
+        lightning: 0,
       };
       const count = counts[effect] ?? 110;
       particles = makeParticles(count, canvas.width, canvas.height);
@@ -101,6 +121,132 @@ function CanvasEffect({
           ctx.fillText(char, i * 16, y);
           columns[i] = y > h + Math.random() * 400 ? 0 : y + 14;
         });
+      } else if (effect === "fireworks") {
+        // Feux d'artifice : des fusées montent puis explosent en gerbes
+        // d'étincelles colorées qui retombent sous l'effet de la gravité.
+        // On estompe la frame précédente (destination-out) pour les traînées.
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.18)";
+        ctx.fillRect(0, 0, w, h);
+        ctx.globalCompositeOperation = "source-over";
+
+        fwTimer -= 1;
+        if (fwTimer <= 0) {
+          fwRockets.push({
+            x: w * (0.15 + Math.random() * 0.7),
+            y: h,
+            vy: -(6 + Math.random() * 3),
+            ty: h * (0.12 + Math.random() * 0.33),
+            hue: Math.floor(Math.random() * 360),
+          });
+          fwTimer = 18 + Math.random() * 30;
+        }
+        for (let i = fwRockets.length - 1; i >= 0; i--) {
+          const r = fwRockets[i];
+          r.y += r.vy;
+          ctx.save();
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = `hsl(${r.hue}, 90%, 65%)`;
+          ctx.fillStyle = `hsl(${r.hue}, 90%, 80%)`;
+          ctx.beginPath();
+          ctx.arc(r.x, r.y, 1.9, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+          if (r.y <= r.ty) {
+            const n = 46 + Math.floor(Math.random() * 26);
+            for (let k = 0; k < n; k++) {
+              const a = (Math.PI * 2 * k) / n + Math.random() * 0.12;
+              const sp = 1.4 + Math.random() * 3.6;
+              fwSparks.push({
+                x: r.x,
+                y: r.y,
+                vx: Math.cos(a) * sp,
+                vy: Math.sin(a) * sp,
+                life: 1,
+                hue: r.hue + (Math.random() * 40 - 20),
+              });
+            }
+            fwRockets.splice(i, 1);
+          }
+        }
+        for (let i = fwSparks.length - 1; i >= 0; i--) {
+          const s = fwSparks[i];
+          s.vy += 0.045;
+          s.vx *= 0.99;
+          s.vy *= 0.99;
+          s.x += s.vx;
+          s.y += s.vy;
+          s.life -= 0.012;
+          if (s.life <= 0) {
+            fwSparks.splice(i, 1);
+            continue;
+          }
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, s.life);
+          ctx.shadowBlur = 6;
+          ctx.shadowColor = `hsl(${s.hue}, 90%, 60%)`;
+          ctx.fillStyle = `hsl(${s.hue}, 90%, 70%)`;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, 1.7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      } else if (effect === "lightning") {
+        // Éclairs : un éclair fractal (tronc + ramifications) frappe par
+        // intermittence, accompagné d'un bref flash lumineux.
+        ctx.clearRect(0, 0, w, h);
+        boltCooldown -= 1;
+        if (boltCooldown <= 0) {
+          bolt = [];
+          const steps = 14;
+          const main: { x: number; y: number }[] = [];
+          let x = w * (0.2 + Math.random() * 0.6);
+          let y = 0;
+          for (let s = 0; s <= steps; s++) {
+            main.push({ x, y });
+            y += h / steps;
+            x += (Math.random() - 0.5) * (w * 0.08);
+          }
+          bolt.push(main);
+          const branches = 2 + Math.floor(Math.random() * 2);
+          for (let b = 0; b < branches; b++) {
+            const idx = 3 + Math.floor(Math.random() * (steps - 6));
+            const base = main[idx];
+            const seg: { x: number; y: number }[] = [{ x: base.x, y: base.y }];
+            let bx = base.x;
+            let by = base.y;
+            const dir = Math.random() < 0.5 ? -1 : 1;
+            const bsteps = 4 + Math.floor(Math.random() * 4);
+            for (let s = 0; s < bsteps; s++) {
+              bx += dir * (10 + Math.random() * 32);
+              by += 10 + Math.random() * 30;
+              seg.push({ x: bx, y: by });
+            }
+            bolt.push(seg);
+          }
+          boltLife = 7;
+          boltCooldown = 45 + Math.floor(Math.random() * 140);
+        }
+        if (boltLife > 0) {
+          const intensity = boltLife / 7;
+          ctx.fillStyle = `rgba(200, 220, 255, ${0.12 * intensity})`;
+          ctx.fillRect(0, 0, w, h);
+          ctx.save();
+          ctx.strokeStyle = `rgba(235, 242, 255, ${0.9 * intensity})`;
+          ctx.lineWidth = 2;
+          ctx.lineJoin = "round";
+          ctx.shadowBlur = 16;
+          ctx.shadowColor = "rgba(150, 190, 255, 0.9)";
+          for (const seg of bolt) {
+            ctx.beginPath();
+            seg.forEach((pt, i) =>
+              i ? ctx.lineTo(pt.x, pt.y) : ctx.moveTo(pt.x, pt.y)
+            );
+            ctx.stroke();
+          }
+          ctx.restore();
+          boltLife -= 1;
+        }
       } else {
         ctx.clearRect(0, 0, w, h);
         for (const p of particles) {
@@ -342,11 +488,150 @@ function CanvasEffect({
             ctx.closePath();
             ctx.fill();
             ctx.restore();
+          } else if (effect === "hyperspace") {
+            // Hyperespace : les étoiles filent depuis le centre en accélérant,
+            // laissant une traînée orientée vers le point de fuite.
+            const cx = w / 2;
+            const cy = h / 2;
+            const dx = p.x - cx;
+            const dy = p.y - cy;
+            const dist = Math.hypot(dx, dy) || 0.001;
+            p.x += dx * 0.045;
+            p.y += dy * 0.045;
+            const alpha = Math.min(1, dist / (Math.min(w, h) * 0.5));
+            ctx.strokeStyle = `rgba(255,255,255,${0.15 + alpha * 0.75})`;
+            ctx.lineWidth = 0.6 + alpha * 1.6;
+            ctx.beginPath();
+            ctx.moveTo(cx + dx * 0.92, cy + dy * 0.92);
+            ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+            if (p.x < -30 || p.x > w + 30 || p.y < -30 || p.y > h + 30) {
+              const a = Math.random() * Math.PI * 2;
+              const rr = Math.random() * 24;
+              p.x = cx + Math.cos(a) * rr;
+              p.y = cy + Math.sin(a) * rr;
+            }
+          } else if (effect === "vortex") {
+            // Vortex : les particules colorées spiralent vers le centre puis
+            // ressurgissent en périphérie (tunnel tourbillonnant).
+            const cx = w / 2;
+            const cy = h / 2;
+            const dx = p.x - cx;
+            const dy = p.y - cy;
+            let dist = Math.hypot(dx, dy) || 0.001;
+            const ang = Math.atan2(dy, dx) + 0.02 + 1.4 / dist;
+            dist -= 0.35;
+            if (dist < 4) dist = 40 + Math.random() * Math.min(w, h) * 0.5;
+            p.x = cx + Math.cos(ang) * dist;
+            p.y = cy + Math.sin(ang) * dist;
+            const hue = Math.floor((p.phase * 57) % 360);
+            const alpha = 0.25 + 0.55 * Math.abs(Math.sin(t / 40 + p.phase));
+            ctx.fillStyle = `hsla(${hue}, 80%, 68%, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 0.7, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (effect === "bokeh") {
+            // Bokeh : larges halos colorés flous qui montent doucement, façon
+            // flou d'arrière-plan photographique.
+            p.y -= p.vy * 0.35;
+            p.x += Math.sin(t / 90 + p.phase) * 0.4;
+            const hue = Math.floor((p.phase * 57) % 360);
+            const R = p.size * 6 + 8;
+            const a = 0.1 + 0.1 * Math.abs(Math.sin(t / 70 + p.phase));
+            const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, R);
+            grad.addColorStop(0, `hsla(${hue}, 80%, 72%, ${a})`);
+            grad.addColorStop(1, `hsla(${hue}, 80%, 72%, 0)`);
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, R, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (effect === "lanterns") {
+            // Lanternes : lampions chauds qui s'élèvent lentement en ondulant,
+            // avec halo lumineux vacillant.
+            p.y -= 0.3 + p.vy * 0.3;
+            p.x += Math.sin(t / 80 + p.phase) * 0.5;
+            const flick = 0.7 + 0.3 * Math.abs(Math.sin(t / 15 + p.phase));
+            const s = p.size * 2 + 4;
+            ctx.save();
+            ctx.shadowBlur = 22;
+            ctx.shadowColor = "rgba(255, 170, 60, 0.9)";
+            ctx.globalAlpha = flick;
+            ctx.fillStyle = "rgba(255, 185, 85, 0.95)";
+            ctx.beginPath();
+            ctx.ellipse(p.x, p.y, s * 0.62, s * 0.82, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          } else if (effect === "goldDust") {
+            // Poussière d'or : fines particules dorées scintillantes qui
+            // tourbillonnent vers le haut.
+            p.y -= (0.2 + p.vy * 0.5) * 0.6;
+            p.x += Math.sin(t / 40 + p.phase) * 0.9;
+            const tw = 0.2 + 0.8 * Math.abs(Math.sin(t / 10 + p.phase * 3));
+            ctx.save();
+            ctx.globalAlpha = tw;
+            ctx.shadowBlur = 6;
+            ctx.shadowColor = "#ffcf5a";
+            ctx.fillStyle = "#ffe08a";
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 0.45, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          } else if (effect === "butterflies") {
+            // Papillons : ailes colorées qui battent (échelle modulée) le long
+            // d'une trajectoire errante.
+            p.x += Math.sin(t / 70 + p.phase) * 0.9 + 0.4;
+            p.y += Math.cos(t / 55 + p.phase) * 0.7;
+            const flap = Math.abs(Math.sin(t / 6 + p.phase));
+            const s = p.size * 2 + 3;
+            const hue = Math.floor((p.phase * 80) % 360);
+            const wingW = s * (0.3 + 0.7 * flap);
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(Math.sin(t / 70 + p.phase) * 0.4);
+            ctx.fillStyle = `hsla(${hue}, 85%, 66%, 0.9)`;
+            ctx.beginPath();
+            ctx.ellipse(-wingW * 0.6, 0, wingW, s, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(wingW * 0.6, 0, wingW, s, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "rgba(40, 30, 50, 0.9)";
+            ctx.beginPath();
+            ctx.ellipse(0, 0, s * 0.14, s * 0.9, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          } else if (effect === "ripple") {
+            // Ondes : anneaux concentriques qui s'étendent et s'estompent, comme
+            // des gouttes sur l'eau ; réapparaissent ailleurs en fin de vie.
+            if (p.life === undefined || p.life <= 0) {
+              p.x = Math.random() * w;
+              p.y = Math.random() * h;
+              p.r = 0;
+              p.life = 1;
+              p.phase = Math.random() * Math.PI * 2;
+            }
+            p.r = (p.r ?? 0) + 0.9;
+            p.life -= 0.011;
+            const a = Math.max(0, p.life) * 0.5;
+            ctx.strokeStyle = `rgba(255,255,255,${a})`;
+            ctx.lineWidth = 1.4;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r ?? 0, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.strokeStyle = `rgba(255,255,255,${a * 0.5})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, (p.r ?? 0) * 0.6, 0, Math.PI * 2);
+            ctx.stroke();
           }
           // Recyclage des particules : les braises/phénix remontent, les autres
           // tombent. La galaxie tourne en boucle : pas de recyclage.
-          if (effect === "galaxy") {
-            // rotation continue autour du centre, rien à recycler
+          if (
+            effect === "galaxy" ||
+            effect === "hyperspace" ||
+            effect === "vortex" ||
+            effect === "ripple"
+          ) {
+            // position gérée dans la branche de l'effet, rien à recycler ici
           } else {
             if (effect === "embers" || effect === "phenix") {
               if (p.y < -20) {
