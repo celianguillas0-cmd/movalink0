@@ -18,6 +18,7 @@ import {
   PlanLimits,
   Profile,
   PublicUser,
+  REFERRAL_TIERS,
   SocialLinks,
   Stats,
 } from "@/lib/types";
@@ -337,6 +338,43 @@ export default function DashboardHomePage() {
             <p className="mt-2 text-xs text-gray-500 dark:text-zinc-400">
               {user.referralCount ?? 0} {(user.referralCount ?? 0) > 1 ? "personnes parrainées" : "personne parrainée"}
             </p>
+
+            {/* Paliers de récompenses : 1 parrainage = 1 palier */}
+            <div className="mt-4 border-t border-gray-100 pt-4 dark:border-zinc-800">
+              <p className="text-xs font-semibold text-gray-900 dark:text-white">
+                Récompenses à débloquer
+              </p>
+              <ul className="mt-2 flex flex-col gap-1.5">
+                {REFERRAL_TIERS.map((tier) => {
+                  const unlocked = (user.referralCount ?? 0) >= tier.count;
+                  return (
+                    <li
+                      key={tier.count}
+                      className={`flex items-center gap-2.5 text-xs ${
+                        unlocked
+                          ? "text-gray-900 dark:text-white"
+                          : "text-gray-400 dark:text-zinc-500"
+                      }`}
+                    >
+                      <span
+                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                          unlocked
+                            ? "bg-emerald-500 text-white"
+                            : "bg-gray-100 text-gray-500 dark:bg-zinc-800 dark:text-zinc-400"
+                        }`}
+                      >
+                        {unlocked ? "✓" : tier.count}
+                      </span>
+                      <span className={unlocked ? "" : ""}>
+                        <span className="font-medium">{tier.count} parrainage{tier.count > 1 ? "s" : ""}</span>
+                        {" · "}
+                        {tier.label}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </motion.div>
         )}
       </div>

@@ -553,6 +553,63 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   },
 };
 
+// ─── Récompenses de parrainage ───────────────────────────────────────────────
+// Un palier par parrainage (1, 2, 3 … 9). Chaque palier débloque un bonus
+// (effet, police, cadre, style de bouton, ou retrait du badge Movalink),
+// quel que soit le plan. Trié par nombre croissant de parrainages.
+export interface ReferralTier {
+  count: number; // nombre de parrainages requis
+  label: string; // libellé de la récompense (affiché à l'utilisateur)
+  effect?: EffectId;
+  font?: FontId;
+  buttonStyle?: ButtonStyleId;
+  avatarFrame?: AvatarFrameId;
+  cursor?: CursorId;
+  removeWatermark?: boolean; // retire le badge "made with movalink"
+}
+
+export const REFERRAL_TIERS: ReferralTier[] = [
+  { count: 1, label: "Effet Neige", effect: "snow" },
+  { count: 2, label: "Police Poppins", font: "poppins" },
+  { count: 3, label: "Effet Pluie", effect: "rain" },
+  { count: 4, label: "Cadre d'avatar Halo", avatarFrame: "glow" },
+  { count: 5, label: "Badge Movalink retiré", removeWatermark: true },
+  { count: 6, label: "Effet Étoiles", effect: "stars" },
+  { count: 7, label: "Bouton Verre", buttonStyle: "glass" },
+  { count: 8, label: "Effet Sakura", effect: "sakura" },
+  { count: 9, label: "Effet Aurore", effect: "aurora" },
+];
+
+// Limites effectives = limites du plan + tous les paliers de parrainage atteints.
+export function effectiveLimits(plan: Plan, referralCount = 0): PlanLimits {
+  const base = PLAN_LIMITS[plan];
+  if (!referralCount || referralCount < 1) return base;
+  const effects = new Set(base.effects);
+  const fonts = new Set(base.fonts);
+  const buttonStyles = new Set(base.buttonStyles);
+  const avatarFrames = new Set(base.avatarFrames);
+  const cursors = new Set(base.cursors);
+  let watermark = base.watermark;
+  for (const tier of REFERRAL_TIERS) {
+    if (referralCount < tier.count) break; // triés par count croissant
+    if (tier.effect) effects.add(tier.effect);
+    if (tier.font) fonts.add(tier.font);
+    if (tier.buttonStyle) buttonStyles.add(tier.buttonStyle);
+    if (tier.avatarFrame) avatarFrames.add(tier.avatarFrame);
+    if (tier.cursor) cursors.add(tier.cursor);
+    if (tier.removeWatermark) watermark = false;
+  }
+  return {
+    ...base,
+    effects: [...effects],
+    fonts: [...fonts],
+    buttonStyles: [...buttonStyles],
+    avatarFrames: [...avatarFrames],
+    cursors: [...cursors],
+    watermark,
+  };
+}
+
 export const PLAN_PRICES: Record<Exclude<Plan, "free">, { amountCents: number; label: string }> = {
   pro: { amountCents: 349, label: "3,49 €" },
   elite: { amountCents: 599, label: "5,99 €" },

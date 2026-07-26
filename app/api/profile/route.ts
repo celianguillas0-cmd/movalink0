@@ -20,7 +20,7 @@ import {
   LinkGroup,
   NAME_EFFECT_LABELS,
   NameEffect,
-  PLAN_LIMITS,
+  effectiveLimits,
   Profile,
   ProfileLink,
   PromoCode,
@@ -71,7 +71,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
   }
 
-  const limits = PLAN_LIMITS[user.plan];
+  const limits = effectiveLimits(user.plan, user.referralCount ?? 0);
   const current = await getProfile(user.username);
   if (!current) {
     return NextResponse.json({ error: "Profil introuvable." }, { status: 404 });

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { getProfile, getStats } from "@/lib/store";
-import { PLAN_LIMITS, toPublicUser } from "@/lib/types";
+import { effectiveLimits, toPublicUser } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +20,6 @@ export async function GET() {
     user: { ...toPublicUser(user), isAdmin },
     profile,
     stats,
-    limits: PLAN_LIMITS[user.plan],
+    limits: effectiveLimits(user.plan, user.referralCount ?? 0),
   });
 }

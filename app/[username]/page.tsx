@@ -6,7 +6,7 @@ import ProfileView from "@/components/ProfileView";
 import LockScreen from "@/components/LockScreen";
 import { getProfile, getStats, getUserById, getUserIdByUsername, getSavedSlots } from "@/lib/store";
 import { RESERVED_USERNAMES } from "@/lib/slug";
-import { PLAN_LIMITS, Profile } from "@/lib/types";
+import { effectiveLimits, Profile } from "@/lib/types";
 
 export const revalidate = 30;
 
@@ -75,8 +75,9 @@ export default async function PublicProfilePage({ params }: Props) {
     }
   }
 
-  const branding = PLAN_LIMITS[owner.plan].branding;
-  const watermark = PLAN_LIMITS[owner.plan].watermark;
+  const ownerLimits = effectiveLimits(owner.plan, owner.referralCount ?? 0);
+  const branding = ownerLimits.branding;
+  const watermark = ownerLimits.watermark;
 
   return (
     <div className="flex min-h-screen flex-col bg-zinc-950">
