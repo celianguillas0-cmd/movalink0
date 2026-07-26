@@ -309,6 +309,27 @@ body {
   animation: fx-band-sweep 7s linear infinite;
 }
 
+/* Fumée : nappes floues qui dérivent lentement */
+@keyframes fx-smoke-drift {
+  0% { transform: translate(-6%, 4%) scale(1.1); }
+  50% { transform: translate(6%, -4%) scale(1.25); }
+  100% { transform: translate(-6%, 4%) scale(1.1); }
+}
+.fx-smoke {
+  filter: blur(14px);
+  animation: fx-smoke-drift 16s ease-in-out infinite;
+}
+
+/* Projecteur : halo lumineux qui balaie la scène */
+@keyframes fx-spotlight-sweep {
+  0% { transform: translateX(-30%) rotate(-10deg); }
+  50% { transform: translateX(30%) rotate(10deg); }
+  100% { transform: translateX(-30%) rotate(-10deg); }
+}
+.fx-spotlight {
+  animation: fx-spotlight-sweep 9s ease-in-out infinite;
+}
+
 /* Écran de démarrage */
 @keyframes ml-splash-m-in {
   from { opacity: 0; transform: scale(0.5); }

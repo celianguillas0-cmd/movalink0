@@ -29,7 +29,7 @@ Sans variables Upstash (`UPSTASH_REDIS_REST_URL`/`KV_REST_API_URL`), les donnée
 
 ## Plans
 
-| | Gratuit | Pro (3,49 € à vie) | Elite (5,99 € à vie) |
+| | Gratuit | Pro (9,90 € à vie) | Elite (14,90 € à vie) |
 |---|---|---|---|
 | Liens | 5 | 15 | 50 |
 | Jeux | 5 | 15 | 50 |

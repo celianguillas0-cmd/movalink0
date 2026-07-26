@@ -22,7 +22,13 @@ export type EffectId =
   | "glitch"
   | "vhs"
   | "synthwave"
-  | "emoji";
+  | "emoji"
+  // Effets débloqués par parrainage
+  | "glitter"
+  | "orbs"
+  | "smoke"
+  | "spotlight"
+  | "starfall";
 
 export type LayoutId = "card" | "clean";
 
@@ -508,6 +514,11 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
       "vhs",
       "synthwave",
       "emoji",
+      "glitter",
+      "orbs",
+      "smoke",
+      "spotlight",
+      "starfall",
     ],
     fonts: ALL_FONTS,
     buttonStyles: [
@@ -569,15 +580,15 @@ export interface ReferralTier {
 }
 
 export const REFERRAL_TIERS: ReferralTier[] = [
-  { count: 1, label: "Effet Neige", effect: "snow" },
-  { count: 2, label: "Police Poppins", font: "poppins" },
-  { count: 3, label: "Effet Pluie", effect: "rain" },
+  { count: 1, label: "Effet Paillettes", effect: "glitter" },
+  { count: 2, label: "Police Minimaliste", font: "poppins" },
+  { count: 3, label: "Effet Orbes", effect: "orbs" },
   { count: 4, label: "Cadre d'avatar Halo", avatarFrame: "glow" },
   { count: 5, label: "Badge Movalink retiré", removeWatermark: true },
-  { count: 6, label: "Effet Étoiles", effect: "stars" },
+  { count: 6, label: "Effet Fumée", effect: "smoke" },
   { count: 7, label: "Bouton Verre", buttonStyle: "glass" },
-  { count: 8, label: "Effet Sakura", effect: "sakura" },
-  { count: 9, label: "Effet Aurore", effect: "aurora" },
+  { count: 8, label: "Effet Projecteur", effect: "spotlight" },
+  { count: 9, label: "Effet Pluie d'étoiles", effect: "starfall" },
 ];
 
 // Limites effectives = limites du plan + tous les paliers de parrainage atteints.
@@ -611,8 +622,8 @@ export function effectiveLimits(plan: Plan, referralCount = 0): PlanLimits {
 }
 
 export const PLAN_PRICES: Record<Exclude<Plan, "free">, { amountCents: number; label: string }> = {
-  pro: { amountCents: 349, label: "3,49 €" },
-  elite: { amountCents: 599, label: "5,99 €" },
+  pro: { amountCents: 990, label: "9,90 €" },
+  elite: { amountCents: 1490, label: "14,90 €" },
 };
 
 export function formatCents(cents: number): string {
@@ -654,6 +665,11 @@ export const EFFECT_LABELS: Record<EffectId, string> = {
   vhs: "VHS",
   synthwave: "Synthwave",
   emoji: "Pluie d'emoji",
+  glitter: "Paillettes",
+  orbs: "Orbes",
+  smoke: "Fumée",
+  spotlight: "Projecteur",
+  starfall: "Pluie d'étoiles",
 };
 
 export const FONT_META: Record<

@@ -61,6 +61,9 @@ function CanvasEffect({
         storm: 130,
         emoji: 32,
         matrix: 0,
+        glitter: 85,
+        orbs: 22,
+        starfall: 70,
       };
       const count = counts[effect] ?? 110;
       particles = makeParticles(count, canvas.width, canvas.height);
@@ -230,6 +233,52 @@ function CanvasEffect({
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p.x + len * 0.7, p.y - len);
             ctx.stroke();
+          } else if (effect === "glitter") {
+            // Paillettes : petits losanges scintillants (accent + doré) qui tombent.
+            p.x += Math.sin(t / 50 + p.phase) * 0.3;
+            p.y += p.vy * 0.5;
+            const tw = 0.15 + 0.85 * Math.abs(Math.sin(t / 12 + p.phase));
+            const s = p.size * 0.9;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(Math.PI / 4);
+            ctx.globalAlpha = tw;
+            ctx.fillStyle = p.phase > Math.PI ? "#ffd970" : accent;
+            ctx.fillRect(-s / 2, -s / 2, s, s);
+            ctx.restore();
+          } else if (effect === "orbs") {
+            // Orbes : boules lumineuses colorées qui flottent vers le haut.
+            p.y -= p.vy * 0.5;
+            p.x += Math.sin(t / 70 + p.phase) * 0.6;
+            const glow = 0.2 + 0.5 * Math.abs(Math.sin(t / 50 + p.phase));
+            const hue = Math.floor((p.phase * 57) % 360);
+            ctx.save();
+            ctx.globalAlpha = glow;
+            ctx.shadowBlur = 18;
+            ctx.shadowColor = `hsl(${hue}, 80%, 65%)`;
+            ctx.fillStyle = `hsl(${hue}, 80%, 65%)`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 2.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          } else if (effect === "starfall") {
+            // Pluie d'étoiles : traits verticaux brillants qui tombent.
+            p.y += p.vy * 3;
+            p.x += p.vx * 0.5;
+            const len = 8 + p.size * 4;
+            const grad = ctx.createLinearGradient(p.x, p.y - len, p.x, p.y);
+            grad.addColorStop(0, "rgba(255,255,255,0)");
+            grad.addColorStop(1, "rgba(255,255,255,0.9)");
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 1.4;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y - len);
+            ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+            ctx.fillStyle = "rgba(255,255,255,0.95)";
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
+            ctx.fill();
           }
           // Recyclage des particules : les braises remontent, les autres tombent.
           if (effect === "embers") {
@@ -377,6 +426,34 @@ export default function EffectLayer({
             transformOrigin: "top center",
             maskImage: "linear-gradient(180deg, transparent, black 25%)",
             WebkitMaskImage: "linear-gradient(180deg, transparent, black 25%)",
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (effect === "smoke") {
+    return (
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div
+          className="fx-smoke absolute inset-[-15%] opacity-50"
+          style={{
+            backgroundImage: `radial-gradient(40% 40% at 30% 65%, ${accent}55, transparent 70%), radial-gradient(38% 38% at 70% 35%, rgba(210,210,230,0.28), transparent 72%), radial-gradient(30% 30% at 55% 55%, ${accent}33, transparent 70%)`,
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (effect === "spotlight") {
+    return (
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div
+          className="fx-spotlight absolute inset-[-20%] opacity-45"
+          style={{
+            background: `conic-gradient(from 90deg at 50% -10%, transparent 0deg, ${accent}66 20deg, transparent 40deg, transparent 320deg, ${accent}66 340deg, transparent 360deg)`,
+            maskImage: "linear-gradient(180deg, black, transparent 80%)",
+            WebkitMaskImage: "linear-gradient(180deg, black, transparent 80%)",
           }}
         />
       </div>

@@ -96,13 +96,13 @@ export default function CguPage() {
             </tr>
             <tr>
               <td className="px-4 py-3 font-semibold text-gray-800 dark:text-zinc-200">Pro</td>
-              <td className="px-4 py-3">3,49 € (une fois)</td>
+              <td className="px-4 py-3">9,90 € (une fois)</td>
               <td className="px-4 py-3">15</td>
               <td className="px-4 py-3">30 jours</td>
             </tr>
             <tr>
               <td className="px-4 py-3 font-semibold text-gray-800 dark:text-zinc-200">Elite</td>
-              <td className="px-4 py-3">5,99 € (une fois)</td>
+              <td className="px-4 py-3">14,90 € (une fois)</td>
               <td className="px-4 py-3">50</td>
               <td className="px-4 py-3">1 an</td>
             </tr>
@@ -581,7 +581,7 @@ export default function CguPage() {
           de vie du Service.
         </li>
         <li>
-          <strong>Prix total TTC</strong> : 3,49 € (Pro) ou 5,99 € (Elite),
+          <strong>Prix total TTC</strong> : 9,90 € (Pro) ou 14,90 € (Elite),
           paiement unique, TVA non applicable (art. 293 B CGI).
         </li>
         <li>
