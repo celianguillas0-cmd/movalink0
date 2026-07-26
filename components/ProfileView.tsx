@@ -11,6 +11,7 @@ import {
   LogoMark,
   SOCIAL_ICONS,
   SOCIAL_LABELS,
+  TagIcon,
   socialHref,
 } from "./Icons";
 import {
@@ -693,6 +694,68 @@ function ShareButton({ username }: { username: string }) {
   );
 }
 
+// Carte d'un code promo / partenariat : marque, offre, et le code copiable en
+// un clic. Lien d'affiliation optionnel.
+function PromoCard({
+  promo,
+  accent,
+  interactive,
+  username,
+}: {
+  promo: { id: string; brand: string; code: string; description?: string; url?: string };
+  accent: string;
+  interactive: boolean;
+  username: string;
+}) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard?.writeText(promo.code).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+    if (interactive) track(username, "click", `promo-${promo.id}`);
+  };
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/5 p-3.5">
+      <div className="flex items-center justify-between gap-2">
+        <p className="truncate text-sm font-semibold">{promo.brand}</p>
+        {promo.url && (
+          <a
+            href={promo.url}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            onClick={() => {
+              if (interactive) track(username, "click", `promo-link-${promo.id}`);
+            }}
+            className="shrink-0 text-xs text-white/60 underline transition-colors hover:text-white/90"
+          >
+            Voir l&apos;offre
+          </a>
+        )}
+      </div>
+      {promo.description && (
+        <p className="mt-0.5 truncate text-xs text-white/60">{promo.description}</p>
+      )}
+      {promo.code && (
+        <button
+          type="button"
+          onClick={copy}
+          title={copied ? "Copié" : "Cliquer pour copier le code"}
+          className="mt-2.5 flex w-full items-center justify-between gap-2 rounded-lg border border-dashed border-white/25 bg-white/5 px-3 py-2 text-left transition-colors hover:bg-white/10"
+          style={{ borderColor: `${accent}55` }}
+        >
+          <span className="truncate font-mono text-sm font-semibold tracking-wide">
+            {promo.code}
+          </span>
+          <span className="flex shrink-0 items-center gap-1 text-xs text-white/60">
+            <CopyIcon className="h-3.5 w-3.5" />
+            {copied ? "Copié !" : "Copier"}
+          </span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function ProfileView({
   profile,
   branding,
@@ -1061,6 +1124,28 @@ export default function ProfileView({
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {(profile.promoCodes ?? []).filter((p) => p.brand && p.code).length > 0 && (
+        <div className="mt-8 w-full">
+          <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-white/50">
+            <TagIcon className="h-4 w-4" />
+            Codes promo
+          </div>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {(profile.promoCodes ?? [])
+              .filter((p) => p.brand && p.code)
+              .map((promo) => (
+                <PromoCard
+                  key={promo.id}
+                  promo={promo}
+                  accent={accent}
+                  interactive={interactive}
+                  username={profile.username}
+                />
+              ))}
           </div>
         </div>
       )}

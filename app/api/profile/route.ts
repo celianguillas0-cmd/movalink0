@@ -23,6 +23,7 @@ import {
   PLAN_LIMITS,
   Profile,
   ProfileLink,
+  PromoCode,
   SocialLinks,
   THEME_DEFAULTS,
 } from "@/lib/types";
@@ -111,6 +112,24 @@ export async function PUT(request: NextRequest) {
           pseudo: clampText(g?.pseudo, 50),
         }))
     : current.games;
+
+  // Codes promo / partenariats : réservés aux plans dont limits.promoCodes > 0.
+  const promoCodes: PromoCode[] = Array.isArray(body.promoCodes)
+    ? body.promoCodes
+        .slice(0, limits.promoCodes)
+        .map((p) => {
+          const description = clampText(p?.description, 80);
+          const rawUrl = typeof p?.url === "string" ? p.url : "";
+          const url = rawUrl ? sanitizeUrl(rawUrl) : "";
+          return {
+            id: typeof p?.id === "string" && p.id ? p.id.slice(0, 32) : newId(),
+            brand: clampText(p?.brand, 40),
+            code: clampText(p?.code, 40),
+            ...(description ? { description } : {}),
+            ...(url ? { url } : {}),
+          };
+        })
+    : (current.promoCodes ?? []);
 
   const socials: SocialLinks = {};
   const rawSocials = (body.socials ?? {}) as Record<string, unknown>;
@@ -404,6 +423,7 @@ export async function PUT(request: NextRequest) {
     links,
     socials,
     games,
+    promoCodes,
     theme: {
       accent,
       effect,

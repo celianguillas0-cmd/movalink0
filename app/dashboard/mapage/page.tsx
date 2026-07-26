@@ -53,13 +53,14 @@ import {
   THEME_DEFAULTS,
 } from "@/lib/types";
 
-type Tab = "profil" | "liens" | "reseaux" | "jeux" | "apparence" | "avance";
+type Tab = "profil" | "liens" | "reseaux" | "jeux" | "promos" | "apparence" | "avance";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "profil", label: "Profil" },
   { id: "liens", label: "Liens" },
   { id: "reseaux", label: "Réseaux" },
   { id: "jeux", label: "Jeux" },
+  { id: "promos", label: "Codes promo" },
   { id: "apparence", label: "Style" },
   { id: "avance", label: "Avancé" },
 ];
@@ -1437,6 +1438,112 @@ function MaPageEditor() {
                         </button>
                       </div>
                     ))}
+                  </div>
+                )}
+
+                {tab === "promos" && (
+                  <div className="flex flex-col gap-4">
+                    {limits.promoCodes === 0 ? (
+                      <div className={`${cardClass} flex flex-col items-start gap-2 !p-5`}>
+                        <p className="text-sm font-semibold">Codes promo & partenariats 🤝</p>
+                        <p className="text-sm text-gray-500 dark:text-zinc-400">
+                          Affiche tes codes promo de marques (Gymshark, etc.) sur ta page,
+                          copiables en un clic par tes abonnés. Réservé aux créateurs avec un{" "}
+                          <Link href="/dashboard/premium" className="underline">
+                            plan payant
+                          </Link>
+                          .
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-gray-500 dark:text-zinc-400">
+                            {(profile.promoCodes ?? []).length}/{limits.promoCodes} codes affichés
+                          </p>
+                          <button
+                            type="button"
+                            className={smallBtnClass}
+                            disabled={(profile.promoCodes ?? []).length >= limits.promoCodes}
+                            onClick={() =>
+                              update({
+                                promoCodes: [
+                                  ...(profile.promoCodes ?? []),
+                                  { id: newId(), brand: "", code: "", description: "", url: "" },
+                                ],
+                              })
+                            }
+                          >
+                            Ajouter un code
+                          </button>
+                        </div>
+                        {(profile.promoCodes ?? []).map((promo, i) => (
+                          <div key={promo.id} className={`${cardClass} flex flex-col gap-3 !p-4`}>
+                            <div className="flex flex-col gap-3 sm:flex-row">
+                              <input
+                                value={promo.brand}
+                                maxLength={40}
+                                placeholder="Marque (ex : Gymshark)"
+                                onChange={(e) => {
+                                  const promoCodes = [...(profile.promoCodes ?? [])];
+                                  promoCodes[i] = { ...promo, brand: e.target.value };
+                                  update({ promoCodes });
+                                }}
+                                className={inputClass}
+                              />
+                              <input
+                                value={promo.code}
+                                maxLength={40}
+                                placeholder="Code promo (ex : CELIAN10)"
+                                onChange={(e) => {
+                                  const promoCodes = [...(profile.promoCodes ?? [])];
+                                  promoCodes[i] = { ...promo, code: e.target.value };
+                                  update({ promoCodes });
+                                }}
+                                className={inputClass}
+                              />
+                            </div>
+                            <input
+                              value={promo.description ?? ""}
+                              maxLength={80}
+                              placeholder="Offre (ex : -10% sur tout le site)"
+                              onChange={(e) => {
+                                const promoCodes = [...(profile.promoCodes ?? [])];
+                                promoCodes[i] = { ...promo, description: e.target.value };
+                                update({ promoCodes });
+                              }}
+                              className={inputClass}
+                            />
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                              <input
+                                value={promo.url ?? ""}
+                                maxLength={500}
+                                placeholder="Lien d'affiliation (https://…, optionnel)"
+                                onChange={(e) => {
+                                  const promoCodes = [...(profile.promoCodes ?? [])];
+                                  promoCodes[i] = { ...promo, url: e.target.value };
+                                  update({ promoCodes });
+                                }}
+                                className={inputClass}
+                              />
+                              <button
+                                type="button"
+                                className={`${smallBtnClass} shrink-0`}
+                                onClick={() =>
+                                  update({
+                                    promoCodes: (profile.promoCodes ?? []).filter(
+                                      (p) => p.id !== promo.id
+                                    ),
+                                  })
+                                }
+                              >
+                                Supprimer
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
                   </div>
                 )}
 

@@ -218,6 +218,20 @@ export function CopyIcon({ className }: IconProps) {
   );
 }
 
+export function TagIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
+      <path
+        d="M3 11.5V4a1 1 0 011-1h7.5a2 2 0 011.42.59l7.5 7.5a2 2 0 010 2.82l-6.5 6.5a2 2 0 01-2.82 0l-7.5-7.5A2 2 0 013 11.5z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <circle cx="7.5" cy="7.5" r="1.4" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function SnapchatIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>

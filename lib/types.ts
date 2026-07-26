@@ -147,6 +147,16 @@ export interface GameEntry {
   pseudo: string;
 }
 
+// Code promo / partenariat de marque (ex : Gymshark) — pour les créateurs
+// qui ont des partenariats d'affiliation. Le code est copiable en un clic.
+export interface PromoCode {
+  id: string;
+  brand: string; // nom de la marque (ex : Gymshark)
+  code: string; // le code promo (ex : CELIAN10)
+  description?: string; // l'offre (ex : -10% sur tout le site)
+  url?: string; // lien d'affiliation optionnel
+}
+
 export interface Theme {
   accent: string;
   effect: EffectId;
@@ -297,6 +307,7 @@ export interface Profile {
   links: ProfileLink[];
   socials: SocialLinks;
   games: GameEntry[];
+  promoCodes?: PromoCode[]; // codes promo / partenariats (Pro & Elite)
   theme: Theme;
   decoration?: Decoration | null; // legacy : décoration unique
   decorations?: Decoration[]; // décorations superposées (Pro/Elite)
@@ -349,6 +360,7 @@ export interface Report {
 export interface PlanLimits {
   links: number;
   games: number;
+  promoCodes: number; // codes promo / partenariats (0 = verrouillé)
   effects: EffectId[];
   fonts: FontId[];
   buttonStyles: ButtonStyleId[];
@@ -399,6 +411,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   free: {
     links: 5,
     games: 5,
+    promoCodes: 0,
     effects: ["none"],
     fonts: ["classic"],
     buttonStyles: ["rounded"],
@@ -425,6 +438,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   pro: {
     links: 15,
     games: 15,
+    promoCodes: 10,
     effects: [
       "none",
       "snow",
@@ -471,6 +485,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   elite: {
     links: 50,
     games: 50,
+    promoCodes: 30,
     effects: [
       "none",
       "snow",
@@ -743,6 +758,7 @@ export function emptyProfile(username: string): Profile {
     links: [],
     socials: {},
     games: [],
+    promoCodes: [],
     theme: {
       accent: "#6366f1",
       effect: "none",
