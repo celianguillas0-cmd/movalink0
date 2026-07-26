@@ -17,7 +17,6 @@ export const RESERVED_USERNAMES = new Set([
   "assets",
   "static",
   "public",
-  "movalink",
   "support",
   "contact",
   "help",
