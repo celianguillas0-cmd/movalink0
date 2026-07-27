@@ -59,12 +59,16 @@ export default function PrivacyPage() {
         elles sont visibles par toute personne disposant de ton lien de profil.
         Ces données relèvent de ta seule responsabilité.
       </p>
-      <h3>2.3 Données de paiement</h3>
+      <h3>2.3 Données de paiement et d'abonnement</h3>
       <p>
         Les paiements sont traités exclusivement par Stripe. Nous ne stockons
         ni ne voyons aucune donnée de carte bancaire (numéro, date d'expiration,
-        CVV). Stripe nous communique uniquement la confirmation du paiement, le
-        plan acheté et l'adresse email associée. Voir la{" "}
+        CVV). Stripe nous communique la confirmation du paiement, le plan
+        acheté et l'adresse email associée. Pour la gestion des abonnements
+        (renouvellement, résiliation, changement de carte), nous conservons des
+        identifiants techniques Stripe rattachés à ton compte — identifiant
+        client, identifiant d'abonnement, statut de l'abonnement et date de fin
+        de période — à l'exclusion de toute donnée bancaire. Voir la{" "}
         <a
           href="https://stripe.com/fr/privacy"
           target="_blank"

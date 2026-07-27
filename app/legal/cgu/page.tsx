@@ -57,8 +57,9 @@ export default function CguPage() {
           sa Page de profil (textes, liens, pseudonymes, images, sons, etc.).
         </li>
         <li>
-          « Plan payant » : plan Pro ou Elite, acquis par paiement unique, par
-          opposition au plan Gratuit.
+          « Plan payant » : accès aux fonctionnalités Pro ou Elite, souscrit
+          soit par abonnement mensuel reconductible, soit par achat unique de
+          l'offre « à vie », par opposition au plan Gratuit.
         </li>
       </ul>
 
@@ -96,13 +97,19 @@ export default function CguPage() {
             </tr>
             <tr>
               <td className="px-4 py-3 font-semibold text-gray-800 dark:text-zinc-200">Pro</td>
-              <td className="px-4 py-3">9,90 € (une fois)</td>
+              <td className="px-4 py-3">4,90 €/mois</td>
               <td className="px-4 py-3">15</td>
               <td className="px-4 py-3">30 jours</td>
             </tr>
             <tr>
               <td className="px-4 py-3 font-semibold text-gray-800 dark:text-zinc-200">Elite</td>
-              <td className="px-4 py-3">14,90 € (une fois)</td>
+              <td className="px-4 py-3">9,90 €/mois</td>
+              <td className="px-4 py-3">50</td>
+              <td className="px-4 py-3">1 an</td>
+            </tr>
+            <tr>
+              <td className="px-4 py-3 font-semibold text-gray-800 dark:text-zinc-200">À vie</td>
+              <td className="px-4 py-3">54,90 € (une fois)</td>
               <td className="px-4 py-3">50</td>
               <td className="px-4 py-3">1 an</td>
             </tr>
@@ -137,12 +144,23 @@ export default function CguPage() {
       {/* ── PARTIE II — CGV ─────────────────────────────────────────── */}
       <h2>Article 5 — Plans payants et conditions de vente (CGV)</h2>
 
-      <h3>5.1 Prix, TVA et paiement</h3>
+      <h3>5.1 Prix, TVA et formules</h3>
       <p>
-        Les plans Pro et Elite sont vendus aux prix affichés sur la page{" "}
-        <Link href="/pricing">Tarifs</Link> au moment de l'achat. Les prix sont
-        indiqués en euros.
+        Les plans payants sont proposés aux prix affichés sur la page{" "}
+        <Link href="/pricing">Tarifs</Link> au moment de la commande, indiqués
+        en euros. Deux formules sont disponibles :
       </p>
+      <ul>
+        <li>
+          <strong>Abonnement mensuel</strong> : Pro à 4,90 €/mois ou Elite à
+          9,90 €/mois, facturé chaque mois jusqu'à résiliation.
+        </li>
+        <li>
+          <strong>Offre « à vie »</strong> : paiement unique de 54,90 € donnant
+          accès aux fonctionnalités Elite pour la durée de vie commerciale du
+          Service, sans abonnement ni renouvellement.
+        </li>
+      </ul>
       <p>
         <strong>TVA :</strong> l'Éditeur exerce en qualité de
         micro-entrepreneur dont le chiffre d'affaires est inférieur au seuil de
@@ -150,37 +168,63 @@ export default function CguPage() {
         <strong>TVA non applicable — article 293 B du Code général des impôts</strong>.
         Les prix affichés sont donc des prix nets, sans TVA.
       </p>
+
+      <h3>5.2 Modalités de paiement</h3>
       <p>
-        Le paiement s'effectue en une seule fois, par carte bancaire, via le
-        prestataire de paiement sécurisé Stripe (Stripe, Inc., 354 Oyster Point
-        Blvd, South San Francisco, CA 94080, États-Unis). Aucun abonnement ni
-        prélèvement récurrent n'est mis en place. Le paiement est débité dès la
-        validation de la commande.
+        Le paiement s'effectue par carte bancaire, via le prestataire de
+        paiement sécurisé Stripe (Stripe, Inc., 354 Oyster Point Blvd, South
+        San Francisco, CA 94080, États-Unis). Pour l'offre à vie, le paiement
+        est débité en une seule fois dès la validation de la commande. Pour un
+        abonnement mensuel, le premier paiement est débité à la souscription,
+        puis reconduit automatiquement à chaque échéance mensuelle tant que
+        l'abonnement n'a pas été résilié.
       </p>
 
-      <h3>5.2 Accès « à vie »</h3>
+      <h3>5.3 Abonnement mensuel : durée, reconduction et résiliation</h3>
       <p>
-        L'achat d'un plan payant donne accès aux fonctionnalités du plan
-        concerné pour toute la durée de vie commerciale du Service, sans
-        paiement supplémentaire. La mention « à vie » s'entend de la durée
-        d'exploitation du Service par l'Éditeur et non de la durée de vie de
-        l'Utilisateur.
+        L'abonnement mensuel est conclu pour une durée indéterminée et se
+        reconduit <strong>tacitement chaque mois</strong>, par prélèvement
+        automatique du montant en vigueur, jusqu'à sa résiliation.
+      </p>
+      <p>
+        Tu peux <strong>résilier ton abonnement à tout moment</strong>, sans
+        frais ni préavis, directement depuis ton espace compte via le portail
+        de gestion (bouton « Gérer mon abonnement »), conformément à ton droit
+        de résiliation par voie électronique (article L215-1-1 du Code de la
+        consommation). La résiliation prend effet à la fin de la période
+        mensuelle en cours : tu conserves l'accès aux fonctionnalités payantes
+        jusqu'à cette date, sans remboursement du mois entamé. À l'issue de la
+        période, ton compte repasse automatiquement au plan Gratuit.
+      </p>
+      <p>
+        En cas d'échec de paiement (carte expirée, provision insuffisante…),
+        l'accès aux fonctionnalités payantes peut être suspendu, puis le compte
+        rétrogradé au plan Gratuit si la régularisation n'intervient pas.
+      </p>
+      <p>
+        L'Éditeur peut faire évoluer les prix ou les fonctionnalités incluses
+        dans chaque plan, notamment pour des raisons techniques, légales ou de
+        sécurité. Toute augmentation de prix d'un abonnement en cours est
+        notifiée par email au moins 30 jours avant sa prise d'effet ; elle ne
+        s'applique qu'aux échéances postérieures et t'ouvre le droit de résilier
+        sans frais avant son entrée en vigueur.
+      </p>
+
+      <h3>5.4 Offre « à vie »</h3>
+      <p>
+        L'achat de l'offre à vie donne accès aux fonctionnalités Elite pour
+        toute la durée de vie commerciale du Service, sans paiement
+        supplémentaire. La mention « à vie » s'entend de la durée d'exploitation
+        du Service par l'Éditeur et non de la durée de vie de l'Utilisateur.
       </p>
       <p>
         En cas d'arrêt définitif du Service, les Utilisateurs ayant souscrit
-        un plan payant au cours des 12 derniers mois seront informés par email
+        l'offre à vie au cours des 12 derniers mois seront informés par email
         avec un préavis minimum de 30 jours. Passé ce délai, aucun
         remboursement prorata temporis ne pourra être exigé.
       </p>
-      <p>
-        L'Éditeur peut faire évoluer les fonctionnalités incluses dans chaque
-        plan, notamment pour des raisons techniques, légales ou de sécurité,
-        sans que cela n'ouvre droit à remboursement, à condition de ne pas
-        dégrader substantiellement les fonctionnalités principales du plan
-        acquis.
-      </p>
 
-      <h3>5.3 Droit de rétractation</h3>
+      <h3>5.5 Droit de rétractation</h3>
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/40 rounded-xl p-4 mb-4">
         <p className="!text-sm !font-semibold !text-blue-800 dark:!text-blue-300 !mb-1">
           Délai légal de 14 jours — article L221-18 du Code de la consommation
@@ -203,27 +247,23 @@ export default function CguPage() {
         celui utilisé lors de l'achat.
       </p>
 
-      <h3>5.4 Renonciation expresse au droit de rétractation</h3>
+      <h3>5.6 Renonciation au droit de rétractation (accès immédiat)</h3>
       <p>
-        Conformément à l'article L221-28 1° du Code de la consommation, lors
-        de l'achat d'un plan payant, il t'est demandé de cocher la case
-        suivante avant de valider le paiement :
+        Conformément à l'article L221-28 1° du Code de la consommation, en
+        validant ta commande tu demandes expressément l'exécution immédiate du
+        Service et reconnais que, une fois les fonctionnalités payantes
+        pleinement mises à ta disposition, tu perds ton droit de rétractation.
       </p>
-      <blockquote className="border-l-4 border-gray-300 dark:border-zinc-600 pl-4 italic text-gray-600 dark:text-zinc-400 text-sm my-4">
-        « Je demande l'exécution immédiate du contrat et reconnais expressément
-        renoncer à mon droit de rétractation dès lors que le service numérique
-        m'est entièrement fourni. »
-      </blockquote>
       <p>
-        Si tu coches cette case et que les fonctionnalités du plan sont
-        immédiatement accessibles après le paiement, le droit de rétractation
-        ne pourra plus être exercé. Si tu ne coches pas cette case, le délai
-        de étractation de 14 jours s'applique pleinement, mais l'accès aux
-        fonctionnalités payantes sera suspendu jusqu'à l'expiration de ce
-        délai.
+        Les fonctionnalités payantes étant débloquées immédiatement après le
+        paiement, ton droit de rétractation ne peut donc plus être exercé
+        au-delà de cette mise à disposition. Pour les abonnements mensuels,
+        cette règle concerne uniquement la première période souscrite : les
+        échéances suivantes relèvent de la faculté de résiliation décrite au
+        point 5.3, et non du droit de rétractation.
       </p>
 
-      <h3>5.5 Facturation</h3>
+      <h3>5.7 Facturation</h3>
       <p>
         Un reçu de paiement est émis automatiquement par Stripe et envoyé à
         l'adresse email du compte après chaque achat. Sur demande écrite à{" "}
@@ -427,9 +467,11 @@ export default function CguPage() {
           <strong>Par l'Utilisateur</strong> : tu peux supprimer ton compte à
           tout moment depuis le dashboard (section Compte → Supprimer mon
           compte). La suppression prend effet immédiatement et est définitive :
-          ta Page de profil, tes données et tes statistiques sont effacées. La
-          suppression du compte ne donne pas droit au remboursement d'un plan
-          payant.
+          ta Page de profil, tes données et tes statistiques sont effacées. Si
+          un abonnement mensuel est actif, pense à le résilier au préalable
+          depuis le portail de gestion ; la suppression du compte ne donne pas
+          droit au remboursement d'une période d'abonnement déjà réglée ni de
+          l'offre à vie.
         </li>
         <li>
           <strong>Par l'Éditeur</strong> : en cas de violation des présentes
@@ -576,22 +618,24 @@ export default function CguPage() {
           <Link href="/legal/mentions-legales">mentions légales</Link>.
         </li>
         <li>
-          <strong>Caractéristiques essentielles</strong> : accès permanent aux
-          fonctionnalités du plan choisi (voir page Tarifs) pour toute la durée
-          de vie du Service.
+          <strong>Caractéristiques essentielles</strong> : accès aux
+          fonctionnalités du plan choisi (voir page Tarifs), en abonnement
+          mensuel ou via l'offre à vie.
         </li>
         <li>
-          <strong>Prix total TTC</strong> : 9,90 € (Pro) ou 14,90 € (Elite),
-          paiement unique, TVA non applicable (art. 293 B CGI).
+          <strong>Prix total TTC</strong> : Pro 4,90 €/mois, Elite 9,90 €/mois,
+          ou offre à vie 54,90 € (paiement unique). TVA non applicable
+          (art. 293 B CGI).
         </li>
         <li>
-          <strong>Modalités de paiement</strong> : carte bancaire via Stripe,
-          débit immédiat à la validation.
+          <strong>Modalités de paiement</strong> : carte bancaire via Stripe.
+          Débit immédiat à la validation, puis mensuel pour les abonnements
+          jusqu'à résiliation.
         </li>
         <li>
           <strong>Droit de rétractation</strong> : 14 jours à compter de
-          l'achat (sauf renonciation expresse pour accès immédiat — voir art.
-          5.4 ci-dessus).
+          l'achat (sauf renonciation pour accès immédiat — voir art. 5.6
+          ci-dessus).
         </li>
         <li>
           <strong>Formulaire de rétractation</strong> : Annexe I ci-dessus ou
