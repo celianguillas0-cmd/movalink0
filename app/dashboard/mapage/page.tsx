@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import ProfileView from "@/components/ProfileView";
 import DecorationEditor from "@/components/DecorationEditor";
-import { SOCIAL_LABELS } from "@/components/Icons";
+import { SOCIAL_LABELS, SOCIAL_PREFIXES } from "@/components/Icons";
 import {
   cardClass,
   inputClass,
@@ -1354,25 +1354,48 @@ function MaPageEditor() {
 
                 {tab === "reseaux" && (
                   <div className={`${cardClass} flex flex-col gap-4`}>
-                    {SOCIAL_KEYS.map((key) => (
-                      <div key={key}>
-                        <label htmlFor={`social-${key}`} className={labelClass}>
-                          {SOCIAL_LABELS[key]}
-                        </label>
-                        <input
-                          id={`social-${key}`}
-                          value={profile.socials[key] ?? ""}
-                          maxLength={120}
-                          placeholder={SOCIAL_PLACEHOLDERS[key]}
-                          onChange={(e) =>
-                            update({
-                              socials: { ...profile.socials, [key]: e.target.value },
-                            })
-                          }
-                          className={inputClass}
-                        />
-                      </div>
-                    ))}
+                    <p className="text-xs text-gray-400 dark:text-zinc-500">
+                      Entre juste ton pseudo : le lien se construit tout seul. Tu
+                      peux aussi coller une URL complète.
+                    </p>
+                    {SOCIAL_KEYS.map((key) => {
+                      const value = profile.socials[key] ?? "";
+                      const prefix = SOCIAL_PREFIXES[key];
+                      const isUrl = /^https?:\/\//i.test(value);
+                      const showPrefix = Boolean(prefix) && !isUrl;
+                      return (
+                        <div key={key}>
+                          <label htmlFor={`social-${key}`} className={labelClass}>
+                            {SOCIAL_LABELS[key]}
+                          </label>
+                          <div className={showPrefix ? "flex items-center" : ""}>
+                            {showPrefix && (
+                              <span className="shrink-0 rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500">
+                                {prefix}
+                              </span>
+                            )}
+                            <input
+                              id={`social-${key}`}
+                              value={value}
+                              maxLength={120}
+                              placeholder={
+                                showPrefix
+                                  ? key === "whatsapp"
+                                    ? "numéro (ex : 33612…)"
+                                    : "pseudo"
+                                  : SOCIAL_PLACEHOLDERS[key]
+                              }
+                              onChange={(e) =>
+                                update({
+                                  socials: { ...profile.socials, [key]: e.target.value },
+                                })
+                              }
+                              className={showPrefix ? `${inputClass} rounded-l-none` : inputClass}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
 
