@@ -12,12 +12,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Non connecté." }, { status: 401 });
   }
 
-  let body: { plan?: string; billing?: string; discountCode?: string };
+  let body: {
+    plan?: string;
+    billing?: string;
+    discountCode?: string;
+    consent?: boolean;
+  };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
   }
+
+  // Consentement à l'exécution immédiate + renonciation au droit de
+  // rétractation (art. L221-28 1° du Code de la consommation). Obligatoire
+  // avant tout paiement ; on horodate ce consentement comme preuve.
+  if (body.consent !== true) {
+    return NextResponse.json(
+      {
+        error:
+          "Merci de confirmer ta demande d'exécution immédiate avant de payer.",
+      },
+      { status: 400 }
+    );
+  }
+  const consentAt = new Date().toISOString();
 
   const billing: Billing = body.billing === "lifetime" ? "lifetime" : "monthly";
   // L'offre à vie débloque Elite ; les abonnements ciblent le plan choisi.
@@ -76,6 +95,7 @@ export async function POST(request: NextRequest) {
           plan: "elite",
           lifetime: true,
           billing: "lifetime",
+          lastCheckoutConsentAt: consentAt,
         });
       } else {
         await saveUser({
@@ -84,6 +104,7 @@ export async function POST(request: NextRequest) {
           billing: "monthly",
           subscriptionStatus: "active",
           subscriptionPlan: plan,
+          lastCheckoutConsentAt: consentAt,
         });
       }
       return NextResponse.json({ ok: true, upgraded: true });
@@ -94,12 +115,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Trace le consentement dès l'initiation du paiement (preuve conservée
+  // même si l'utilisateur abandonne sur la page Stripe).
+  await saveUser({ ...user, lastCheckoutConsentAt: consentAt });
+
   const planLabel = plan === "pro" ? "Pro" : "Elite";
   const params = new URLSearchParams({
     success_url: `${origin}/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/pricing`,
     customer_email: user.email,
     "metadata[userId]": user.id,
+    "metadata[consentAt]": consentAt,
   });
 
   if (billing === "lifetime") {
