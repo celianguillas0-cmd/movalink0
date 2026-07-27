@@ -7,7 +7,7 @@ import { LIFETIME_PRICE, MONTHLY_PRICES } from "@/lib/types";
 export const metadata: Metadata = {
   title: "Tarifs",
   description:
-    "Movalink est gratuit pour toujours. Passe Pro (5 €/mois) ou Elite (10 €/mois), ou débloque tout à vie en un seul paiement.",
+    "Movalink est gratuit pour toujours. Passe Pro (4,90 €/mois) ou Elite (9,90 €/mois), ou débloque tout à vie en un seul paiement.",
 };
 
 function Check() {
