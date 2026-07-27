@@ -11,7 +11,7 @@ export default function CguPage() {
     <article>
       <h1>Conditions générales d'utilisation et de vente (CGU / CGV)</h1>
       <p className="!text-gray-400 dark:!text-zinc-500 !mb-12">
-        Dernière mise à jour : 27 juillet 2026 · Version 1.4
+        Dernière mise à jour : 27 juillet 2026 · Version 1.5
       </p>
 
       {/* ── PARTIE I — CGU ──────────────────────────────────────────── */}
@@ -400,6 +400,29 @@ export default function CguPage() {
         retirer un contenu licite, est passible de sanctions pénales
         (article 6-I-4 de la LCEN, article 226-10 du Code pénal).
       </p>
+      <p>
+        <strong>Motivation des décisions (article 17 DSA) :</strong> lorsqu'un
+        contenu est retiré, restreint ou qu'un compte est suspendu, l'Éditeur
+        informe l'Utilisateur concerné, dans la mesure du possible, des motifs
+        de la décision, du fondement (légal ou contractuel) retenu et des voies
+        de recours disponibles.
+      </p>
+      <p>
+        <strong>Réclamation interne :</strong> tout Utilisateur destinataire
+        d'une décision de modération peut la contester, pendant six mois, en
+        écrivant à {CONTACT_EMAIL}. La réclamation est réexaminée dans un délai
+        raisonnable par une personne, et non par un dispositif exclusivement
+        automatisé ; si elle est fondée, la décision est rapportée sans délai.
+      </p>
+      <p>
+        <strong>Point de contact (articles 11 et 12 DSA) :</strong> l'adresse{" "}
+        {CONTACT_EMAIL} constitue le point de contact unique de l'Éditeur pour
+        les Utilisateurs et pour les autorités, en langue française ou anglaise.
+        L'Éditeur relevant de la catégorie des micro et petites entreprises, il
+        est exempté de certaines obligations propres aux grandes plateformes
+        (notamment les rapports de transparence périodiques), sans préjudice de
+        ses obligations d'hébergeur.
+      </p>
 
       <h2>Article 9 — Propriété intellectuelle de l'Éditeur</h2>
       <p>
@@ -584,6 +607,49 @@ export default function CguPage() {
       <p>
         L'Éditeur s'engage à accuser réception de toute demande dans un délai
         de 48 heures ouvrées et à y répondre dans un délai raisonnable.
+      </p>
+
+      <h2>Article 18 — Dispositions générales</h2>
+      <p>
+        <strong>Intégralité :</strong> les présentes Conditions, ainsi que la
+        page <Link href="/pricing">Tarifs</Link> et la{" "}
+        <Link href="/legal/confidentialite">politique de confidentialité</Link>{" "}
+        auxquelles elles renvoient, constituent l'intégralité de l'accord entre
+        l'Utilisateur et l'Éditeur relatif au Service et remplacent tout accord
+        antérieur ayant le même objet.
+      </p>
+      <p>
+        <strong>Divisibilité :</strong> si une stipulation des présentes
+        Conditions est jugée nulle, illégale ou inapplicable par une juridiction
+        compétente, elle sera réputée non écrite et remplacée par une
+        stipulation valable d'effet équivalent, sans que cela n'affecte la
+        validité des autres stipulations, qui demeurent pleinement en vigueur.
+      </p>
+      <p>
+        <strong>Non-renonciation :</strong> le fait pour l'Éditeur de ne pas se
+        prévaloir, à un moment donné, d'une stipulation des présentes Conditions
+        ne saurait valoir renonciation à s'en prévaloir ultérieurement.
+      </p>
+      <p>
+        <strong>Cession :</strong> l'Éditeur peut céder ou transférer les
+        présentes Conditions, notamment en cas de fusion, cession d'actifs ou
+        réorganisation, à condition que les droits de l'Utilisateur n'en soient
+        pas diminués. L'Utilisateur ne peut céder ses droits sans l'accord
+        préalable écrit de l'Éditeur.
+      </p>
+      <p>
+        <strong>Convention de preuve :</strong> les Utilisateurs reconnaissent
+        que les enregistrements informatiques, journaux de connexion et
+        horodatages conservés par l'Éditeur et ses sous-traitants techniques
+        (notamment la preuve de l'acceptation des présentes Conditions et du
+        consentement à l'exécution immédiate) font foi entre les parties, sauf
+        preuve contraire, et constituent des moyens de preuve recevables au sens
+        des articles 1366 et suivants du Code civil.
+      </p>
+      <p>
+        <strong>Langue :</strong> les présentes Conditions sont rédigées en
+        français, seule version faisant foi. Toute traduction n'est fournie qu'à
+        titre indicatif.
       </p>
 
       {/* ── ANNEXE I ─────────────────────────────────────────────────── */}
