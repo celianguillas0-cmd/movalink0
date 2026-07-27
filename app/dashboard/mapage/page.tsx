@@ -41,7 +41,9 @@ import {
   FontId,
   FULLCUSTOM_DEFAULTS,
   LAYOUT_DEFAULTS,
+  LIFETIME_PRICE,
   LinkGroup,
+  MONTHLY_PRICES,
   NAME_EFFECT_LABELS,
   NameEffect,
   PLAN_LIMITS,
@@ -403,6 +405,7 @@ function OptionGrid<T extends string>({
   labels,
   columns = 4,
   onSelect,
+  onLockedPreview,
   previewFont,
 }: {
   label: string;
@@ -412,6 +415,7 @@ function OptionGrid<T extends string>({
   labels: Record<T, string>;
   columns?: number;
   onSelect: (v: T, locked: boolean) => void;
+  onLockedPreview?: (label: string) => void;
   previewFont?: (v: T) => string | undefined;
 }) {
   const hasLocked = options.some((o) => !allowed.includes(o));
@@ -430,7 +434,10 @@ function OptionGrid<T extends string>({
               key={opt}
               type="button"
               title={ok ? labels[opt] : `${labels[opt]} — aperçu Premium`}
-              onClick={() => onSelect(opt, !ok)}
+              onClick={() => {
+                onSelect(opt, !ok);
+                if (!ok) onLockedPreview?.(labels[opt]);
+              }}
               style={previewFont ? { fontFamily: previewFont(opt) } : undefined}
               className={`flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
                 selected
@@ -613,6 +620,13 @@ function MaPageEditor() {
   // Aperçu d'options Premium verrouillées : visibles dans l'aperçu mais
   // jamais enregistrées (teaser). Réinitialisé au chargement.
   const [preview, setPreview] = useState<Partial<Profile["theme"]>>({});
+  // Incitation à l'achat : libellé de l'option Premium en cours d'aperçu.
+  const [upsell, setUpsell] = useState<string | null>(null);
+  useEffect(() => {
+    if (!upsell) return;
+    const t = setTimeout(() => setUpsell(null), 7000);
+    return () => clearTimeout(t);
+  }, [upsell]);
   // Aperçu : sur desktop à droite, sur mobile collant en haut (rétractable).
   // On ne rend qu'une seule instance à la fois (évite deux animations canvas).
   const [isDesktop, setIsDesktop] = useState(true);
@@ -1973,6 +1987,7 @@ function MaPageEditor() {
                       labels={EFFECT_LABELS}
                       columns={4}
                       onSelect={(effect, locked) => selectTheme("effect", effect, locked)}
+                      onLockedPreview={setUpsell}
                     />
 
                     {(preview.effect ?? profile.theme.effect) === "emoji" &&
@@ -2011,6 +2026,7 @@ function MaPageEditor() {
                       columns={3}
                       previewFont={(f) => FONT_META[f].family}
                       onSelect={(font, locked) => selectTheme("font", font, locked)}
+                      onLockedPreview={setUpsell}
                     />
 
                     <OptionGrid
@@ -2034,6 +2050,7 @@ function MaPageEditor() {
                       onSelect={(nameFont, locked) =>
                         selectTheme("nameFont", nameFont, locked)
                       }
+                      onLockedPreview={setUpsell}
                     />
 
                     <OptionGrid
@@ -2050,6 +2067,7 @@ function MaPageEditor() {
                       onSelect={(buttonStyle, locked) =>
                         selectTheme("buttonStyle", buttonStyle, locked)
                       }
+                      onLockedPreview={setUpsell}
                     />
 
                     <OptionGrid
@@ -2066,6 +2084,7 @@ function MaPageEditor() {
                       onSelect={(avatarFrame, locked) =>
                         selectTheme("avatarFrame", avatarFrame, locked)
                       }
+                      onLockedPreview={setUpsell}
                     />
 
                     <OptionGrid
@@ -2078,6 +2097,7 @@ function MaPageEditor() {
                       labels={CURSOR_LABELS}
                       columns={4}
                       onSelect={(cursor, locked) => selectTheme("cursor", cursor, locked)}
+                      onLockedPreview={setUpsell}
                     />
 
                     <div>
@@ -2655,6 +2675,43 @@ function MaPageEditor() {
           )}
         </div>
       </div>
+
+      <AnimatePresence>
+        {upsell && (
+          <motion.div
+            initial={{ opacity: 0, y: 44, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 44, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+            className="fixed inset-x-4 bottom-4 z-[60] mx-auto max-w-md sm:inset-x-auto sm:left-1/2 sm:w-[26rem] sm:-translate-x-1/2"
+          >
+            <div className="relative overflow-hidden rounded-2xl border border-indigo-400/40 bg-gradient-to-br from-indigo-600 to-violet-600 p-4 pr-10 shadow-2xl shadow-indigo-900/30">
+              <button
+                type="button"
+                onClick={() => setUpsell(null)}
+                aria-label="Fermer"
+                className="absolute right-3 top-3 text-lg leading-none text-white/70 transition-colors hover:text-white"
+              >
+                ✕
+              </button>
+              <p className="text-sm font-semibold text-white">
+                ✨ « {upsell} » te plaît ?
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-indigo-100">
+                C&apos;est un effet Premium. Débloque-le — et tous les autres —
+                dès {MONTHLY_PRICES.pro.label}/mois, ou {LIFETIME_PRICE.label} à
+                vie pour tout garder à jamais.
+              </p>
+              <Link
+                href="/dashboard/premium"
+                className="mt-3 block rounded-lg bg-white py-2 text-center text-sm font-bold text-indigo-700 transition-transform hover:scale-[1.02]"
+              >
+                Débloquer maintenant →
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
