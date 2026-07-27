@@ -265,8 +265,10 @@ export default function PrivacyPage() {
       <ul>
         <li>
           <strong>Directement depuis le dashboard</strong> : modification du
-          contenu de profil, changement d'email ou de mot de passe, suppression
-          du compte (effet immédiat).
+          contenu de profil, changement de pseudo ou de mot de passe,
+          téléchargement de toutes tes données au format JSON (Compte →
+          Paramètres → « Télécharger mes données », au titre de la portabilité),
+          et suppression du compte (effet immédiat).
         </li>
         <li>
           <strong>Par email</strong> à {CONTACT_EMAIL} : réponse garantie dans

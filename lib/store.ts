@@ -268,13 +268,16 @@ export async function createUserRecords(user: User, profile: Profile): Promise<v
 }
 
 export async function deleteUserRecords(user: User): Promise<void> {
-  await kv.del(
+  const keys = [
     userKey(user.id),
     emailKey(user.email),
     usernameKey(user.username),
     profileKey(user.username),
-    statsKey(user.username)
-  );
+    statsKey(user.username),
+  ];
+  // Supprime aussi l'index client Stripe pour ne pas laisser de mapping orphelin.
+  if (user.stripeCustomerId) keys.push(stripeCustomerKey(user.stripeCustomerId));
+  await kv.del(...keys);
 }
 
 // Renomme le pseudo d'un compte. Le pseudo sert de clé pour le profil, les

@@ -454,6 +454,23 @@ export default function ComptePage() {
                 </button>
               </div>
 
+              <div className={`${cardClass} mb-4`}>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                  Mes données
+                </p>
+                <p className="mt-0.5 text-xs text-gray-400 dark:text-zinc-500">
+                  Télécharge une copie de toutes tes données (droit à la
+                  portabilité — art. 20 RGPD), au format JSON.
+                </p>
+                <a
+                  href="/api/account/export"
+                  download
+                  className={`${smallBtnClass} mt-3 inline-block`}
+                >
+                  Télécharger mes données
+                </a>
+              </div>
+
               <div className="rounded-xl border border-red-200 bg-white p-5 dark:border-red-900 dark:bg-zinc-900">
                 <p className="text-sm font-semibold text-red-600 dark:text-red-400">
                   Zone dangereuse

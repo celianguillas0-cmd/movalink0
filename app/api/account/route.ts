@@ -84,6 +84,30 @@ export async function DELETE() {
   if (!user) {
     return NextResponse.json({ error: "Non connecté." }, { status: 401 });
   }
+
+  // Annule l'abonnement Stripe AVANT d'effacer le compte : sans cela,
+  // l'utilisateur continuerait d'être prélevé pour un service supprimé
+  // (litiges bancaires, non-conformité). Best-effort : on n'empêche jamais la
+  // suppression (droit à l'effacement), mais on tente l'annulation.
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  if (stripeKey && user.stripeSubscriptionId) {
+    try {
+      const res = await fetch(
+        `https://api.stripe.com/v1/subscriptions/${encodeURIComponent(user.stripeSubscriptionId)}`,
+        { method: "DELETE", headers: { Authorization: `Bearer ${stripeKey}` } }
+      );
+      if (!res.ok) {
+        console.error(
+          "Stripe subscription cancel on account deletion failed:",
+          res.status,
+          await res.text()
+        );
+      }
+    } catch (e) {
+      console.error("Stripe subscription cancel error:", e);
+    }
+  }
+
   await deleteUserRecords(user);
   await decrementUserStats(user.plan);
   await destroySession();
