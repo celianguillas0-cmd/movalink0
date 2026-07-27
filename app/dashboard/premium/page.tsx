@@ -194,7 +194,7 @@ export default function PremiumPage() {
               autoComplete="off"
               value={discountCode}
               onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-              placeholder="Ex : MOVALINK10"
+              placeholder="Ton code"
               className="mt-2 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm uppercase tracking-wide text-gray-900 placeholder:normal-case placeholder:tracking-normal dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
             />
           </motion.div>
