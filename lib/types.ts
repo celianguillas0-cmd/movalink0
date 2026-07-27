@@ -670,8 +670,8 @@ export function effectiveLimits(plan: Plan, referralCount = 0): PlanLimits {
 
 // Abonnements mensuels (Stripe, mode subscription).
 export const MONTHLY_PRICES: Record<Exclude<Plan, "free">, { amountCents: number; label: string }> = {
-  pro: { amountCents: 500, label: "5 €" },
-  elite: { amountCents: 1000, label: "10 €" },
+  pro: { amountCents: 490, label: "4,90 €" },
+  elite: { amountCents: 990, label: "9,90 €" },
 };
 
 // Offre à vie (paiement unique) : débloque le plan Elite pour toujours.
