@@ -520,11 +520,11 @@ export default function CguPage() {
           <strong>Par l'Utilisateur</strong> : tu peux supprimer ton compte à
           tout moment depuis le dashboard (section Compte → Supprimer mon
           compte). La suppression prend effet immédiatement et est définitive :
-          ta Page de profil, tes données et tes statistiques sont effacées. Si
-          un abonnement mensuel est actif, pense à le résilier au préalable
-          depuis le portail de gestion ; la suppression du compte ne donne pas
-          droit au remboursement d'une période d'abonnement déjà réglée ni de
-          l'offre à vie.
+          ta Page de profil, tes données et tes statistiques sont effacées, et
+          tout abonnement mensuel en cours est automatiquement résilié afin
+          qu'aucun prélèvement ultérieur n'intervienne. La suppression ne donne
+          pas droit au remboursement d'une période d'abonnement déjà réglée ni
+          de l'offre à vie.
         </li>
         <li>
           <strong>Par l'Éditeur</strong> : en cas de violation des présentes
