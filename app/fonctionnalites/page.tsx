@@ -11,29 +11,29 @@ import {
 export const metadata: Metadata = {
   title: "Fonctionnalités",
   description:
-    "Liens, réseaux, bibliothèque de jeux, effets animés et statistiques : tout ce que ta page Movalink sait faire.",
+    "Liens, réseaux, bibliothèque de jeux, 39 effets animés très travaillés et statistiques en direct : tout ce que ta page Movalink sait faire.",
 };
 
 const FEATURES = [
   {
     icon: LinkIcon,
     title: "Tous tes liens au même endroit",
-    text: "Discord, Twitch, YouTube, TikTok, Steam et tes liens personnalisés. Une seule URL pour toutes tes bios.",
+    text: "Discord, Twitch, YouTube, TikTok, Steam et une vingtaine de réseaux — tu entres juste ton pseudo, le lien se construit tout seul. Une seule URL pour toutes tes bios.",
   },
   {
     icon: GamepadIcon,
     title: "Ta bibliothèque de jeux",
-    text: "Tes jeux avec tes pseudos in-game, pour que tes amis te retrouvent en deux secondes.",
+    text: "Tes jeux avec tes pseudos in-game, pour que ta communauté te retrouve et te rejoigne en deux secondes.",
   },
   {
     icon: PaletteIcon,
-    title: "Un style qui te ressemble",
-    text: "Couleur d'accent, deux mises en page, huit effets animés : neige, pluie, sakura, étoiles, aurora, plasma, matrix.",
+    title: "Une page qui claque, pas un simple lien",
+    text: "39 effets animés très travaillés — feux d'artifice, hyperespace, éclairs, aurore, papillons — plus couleurs, dégradés, polices gaming et thèmes exclusifs. Une page que personne d'autre n'a.",
   },
   {
     icon: ChartIcon,
     title: "Des statistiques claires",
-    text: "Vues, clics par lien, évolution jour par jour. Visibles par toi seul.",
+    text: "Vues, clics par lien, évolution jour par jour. Sache ce qui marche, visible par toi seul.",
   },
 ];
 

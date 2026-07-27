@@ -11,23 +11,27 @@ export const metadata: Metadata = {
 const FAQ = [
   {
     q: "C'est vraiment gratuit ?",
-    a: "Oui. Le plan gratuit est complet et sans limite de durée : URL personnalisée, liens, réseaux, bibliothèque de jeux, effets de base et statistiques sur 7 jours. Aucune carte bancaire n'est demandée.",
+    a: "Oui. Le plan Gratuit est complet et sans limite de durée : URL personnalisée, liens, réseaux, bibliothèque de jeux, effets de base et statistiques sur 7 jours. Aucune carte bancaire n'est demandée pour commencer.",
   },
   {
-    q: "C'est quoi, un paiement « à vie » ?",
-    a: "Les plans Pro et Elite sont des achats uniques : tu paies une seule fois et tu gardes les fonctionnalités pour toute la durée de vie du service. Pas d'abonnement, pas de facturation récurrente.",
+    q: "Combien ça coûte pour débloquer plus ?",
+    a: "Deux abonnements, résiliables à tout moment : Pro à 4,90 €/mois (15 liens, full custom, 10 effets, sans badge) et Elite à 9,90 €/mois (50 liens, les 39 effets animés, statut Discord en direct, stats sur 1 an). Tu préfères ne payer qu'une fois ? L'offre à vie à 54,90 € débloque tout l'Elite pour toujours, sans aucun abonnement.",
+  },
+  {
+    q: "Je peux annuler mon abonnement ?",
+    a: "Oui, en un clic depuis ton compte : le portail de facturation Stripe te permet de résilier ou de changer de carte quand tu veux. Tu gardes l'accès jusqu'à la fin de la période déjà payée. L'offre à vie, elle, ne s'annule jamais : c'est acquis pour toujours.",
+  },
+  {
+    q: "Je peux changer de pseudo ?",
+    a: "Oui, directement depuis ton compte : Compte → Changer de pseudo. Ton profil, tes statistiques et ton classement suivent automatiquement, et ta nouvelle URL est active aussitôt.",
   },
   {
     q: "Je peux installer Movalink comme une appli ?",
     a: "Oui. Sur Chrome (ordinateur ou Android), un bouton « Installer l'application » apparaît sur le site : Movalink s'installe alors comme une vraie appli, avec son icône et sa propre fenêtre. Sur iPhone : Partager puis « Sur l'écran d'accueil ».",
   },
   {
-    q: "Je peux changer de pseudo ?",
-    a: "Ton pseudo définit ton URL publique. Pour en changer, contacte le support : nous vérifions que le nouveau pseudo est libre avant de faire la bascule.",
-  },
-  {
     q: "Quels réseaux sont supportés ?",
-    a: "Discord, Twitch, YouTube, X, TikTok, Instagram, GitHub, Steam et Kick, plus autant de liens personnalisés que ton plan le permet vers n'importe quel site.",
+    a: "Une vingtaine : Discord, Twitch, YouTube, X, TikTok, Instagram, Snapchat, Telegram, Reddit, WhatsApp, Threads, Facebook, Pinterest, LinkedIn, Spotify, SoundCloud, Patreon, GitHub, Steam, Kick et Skool — plus autant de liens personnalisés que ton plan le permet, vers n'importe quel site. Tu entres juste ton pseudo, le lien se construit tout seul.",
   },
   {
     q: "Mes statistiques sont-elles privées ?",
