@@ -113,6 +113,21 @@ export default function PremiumPage() {
           <p className={pageSubtitleClass}>
             Abonne-toi au mois, ou débloque tout à vie en un seul paiement.
           </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {[
+              "Sans engagement",
+              "Résiliable en 1 clic",
+              "14 jours satisfait ou remboursé",
+              "Paiement sécurisé Stripe",
+            ].map((t) => (
+              <span
+                key={t}
+                className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-medium text-gray-600 dark:bg-zinc-800 dark:text-zinc-300"
+              >
+                <span className="text-emerald-500">✓</span> {t}
+              </span>
+            ))}
+          </div>
         </motion.div>
 
         {plan !== "free" && (
@@ -294,10 +309,13 @@ export default function PremiumPage() {
               className="mt-4 flex flex-col gap-3 rounded-xl border border-zinc-900 bg-white p-5 dark:border-white dark:bg-zinc-900 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
-                <div className="flex items-baseline gap-2">
+                <div className="flex flex-wrap items-baseline gap-2">
                   <h2 className="text-base font-semibold text-gray-900 dark:text-white">
                     À vie
                   </h2>
+                  <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                    Meilleure offre
+                  </span>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {LIFETIME_PRICE.label}
                     <span className="text-xs font-normal text-gray-400 dark:text-zinc-500">
@@ -307,7 +325,8 @@ export default function PremiumPage() {
                   </p>
                 </div>
                 <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">
-                  Tout le plan Elite, pour toujours. Aucun abonnement, aucun
+                  Tout le plan Elite, pour toujours. Rentabilisé en ~6 mois, puis
+                  plus jamais de paiement — aucun abonnement, aucun
                   renouvellement.
                 </p>
               </div>
