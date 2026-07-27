@@ -400,6 +400,32 @@ export const SOCIAL_LABELS: Record<keyof SocialLinks, string> = {
   kick: "Kick",
 };
 
+// Début d'URL affiché en préfixe dans l'éditeur : l'utilisateur ne complète
+// qu'avec son pseudo. Doit rester cohérent avec socialHref ci-dessous.
+// Discord est absent : il accepte un lien d'invitation, pas un simple pseudo.
+export const SOCIAL_PREFIXES: Partial<Record<keyof SocialLinks, string>> = {
+  twitch: "twitch.tv/",
+  youtube: "youtube.com/@",
+  x: "x.com/",
+  tiktok: "tiktok.com/@",
+  instagram: "instagram.com/",
+  github: "github.com/",
+  steam: "steamcommunity.com/id/",
+  kick: "kick.com/",
+  snapchat: "snapchat.com/add/",
+  telegram: "t.me/",
+  reddit: "reddit.com/user/",
+  skool: "skool.com/",
+  whatsapp: "wa.me/",
+  threads: "threads.net/@",
+  facebook: "facebook.com/",
+  pinterest: "pinterest.com/",
+  linkedin: "linkedin.com/in/",
+  spotify: "open.spotify.com/user/",
+  soundcloud: "soundcloud.com/",
+  patreon: "patreon.com/",
+};
+
 export function socialHref(key: keyof SocialLinks, value: string): string | null {
   const v = value.trim();
   if (!v) return null;
