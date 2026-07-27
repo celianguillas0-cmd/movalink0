@@ -121,7 +121,8 @@ function SignupForm() {
         >
           politique de confidentialité
         </Link>
-        . <span className="text-red-400">*</span>
+        , et je certifie avoir au moins 15 ans (ou disposer de l'accord de mon
+        représentant légal). <span className="text-red-400">*</span>
       </CheckboxRow>
       <CheckboxRow checked={newsletter} onChange={setNewsletter}>
         J'accepte de recevoir des emails sur les nouveautés et offres de
