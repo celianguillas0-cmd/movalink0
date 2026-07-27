@@ -9,18 +9,35 @@ export default function BuyButton({
   className,
   children,
   discountCode,
+  consent,
+  requireConsent,
 }: {
   plan: "pro" | "elite";
   billing?: "monthly" | "lifetime";
   className?: string;
   children: React.ReactNode;
   discountCode?: string;
+  // Consentement à l'exécution immédiate (renonciation au droit de
+  // rétractation). Soit piloté par le parent via `consent`, soit géré par une
+  // case interne via `requireConsent`.
+  consent?: boolean;
+  requireConsent?: boolean;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selfConsent, setSelfConsent] = useState(false);
   const router = useRouter();
 
+  const consentEnforced = requireConsent === true || consent !== undefined;
+  const consentValue = requireConsent ? selfConsent : consent === true;
+
   const buy = async () => {
+    if (consentEnforced && !consentValue) {
+      setError(
+        "Merci de cocher la case de consentement ci-dessus pour continuer."
+      );
+      return;
+    }
     setLoading(true);
     setError("");
     try {
@@ -31,6 +48,7 @@ export default function BuyButton({
           plan,
           billing,
           discountCode: discountCode?.trim() || undefined,
+          consent: consentValue === true,
         }),
       });
       const data = await res.json();
@@ -56,6 +74,20 @@ export default function BuyButton({
 
   return (
     <div className="flex flex-col gap-2">
+      {requireConsent && (
+        <label className="flex cursor-pointer items-start gap-2 text-left text-[11px] leading-snug text-gray-500 dark:text-zinc-400">
+          <input
+            type="checkbox"
+            checked={selfConsent}
+            onChange={(e) => setSelfConsent(e.target.checked)}
+            className="mt-0.5 shrink-0"
+          />
+          <span>
+            Je demande l&apos;exécution immédiate et renonce à mon droit de
+            rétractation une fois le service pleinement fourni.
+          </span>
+        </label>
+      )}
       <button type="button" onClick={buy} disabled={loading} className={className}>
         {loading ? "Redirection..." : children}
       </button>

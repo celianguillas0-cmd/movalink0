@@ -11,7 +11,7 @@ export default function CguPage() {
     <article>
       <h1>Conditions générales d'utilisation et de vente (CGU / CGV)</h1>
       <p className="!text-gray-400 dark:!text-zinc-500 !mb-12">
-        Dernière mise à jour : 17 juillet 2026 · Version 1.3
+        Dernière mise à jour : 27 juillet 2026 · Version 1.4
       </p>
 
       {/* ── PARTIE I — CGU ──────────────────────────────────────────── */}
@@ -249,10 +249,21 @@ export default function CguPage() {
 
       <h3>5.6 Renonciation au droit de rétractation (accès immédiat)</h3>
       <p>
-        Conformément à l'article L221-28 1° du Code de la consommation, en
-        validant ta commande tu demandes expressément l'exécution immédiate du
-        Service et reconnais que, une fois les fonctionnalités payantes
-        pleinement mises à ta disposition, tu perds ton droit de rétractation.
+        Conformément à l'article L221-28 1° du Code de la consommation, avant
+        tout paiement, une case à cocher obligatoire te demande de confirmer la
+        déclaration suivante :
+      </p>
+      <blockquote className="border-l-4 border-gray-300 dark:border-zinc-600 pl-4 italic text-gray-600 dark:text-zinc-400 text-sm my-4">
+        « Je demande l'exécution immédiate du service et reconnais renoncer à
+        mon droit de rétractation une fois les fonctionnalités payantes
+        pleinement fournies. »
+      </blockquote>
+      <p>
+        Tant que cette case n'est pas cochée, le paiement ne peut être validé.
+        En la cochant, tu demandes expressément l'exécution immédiate du Service
+        et reconnais que, une fois les fonctionnalités payantes pleinement mises
+        à ta disposition, tu perds ton droit de rétractation. La date et l'heure
+        de ce consentement sont conservées à titre de preuve.
       </p>
       <p>
         Les fonctionnalités payantes étant débloquées immédiatement après le
@@ -273,6 +284,25 @@ export default function CguPage() {
       <p>
         Conformément à l'article 293 B du CGI, la mention « TVA non applicable
         » figure sur toute facture émise par l'Éditeur.
+      </p>
+
+      <h3>5.8 Garantie légale de conformité</h3>
+      <p>
+        Indépendamment de toute garantie commerciale, l'Utilisateur consommateur
+        bénéficie de la <strong>garantie légale de conformité</strong> des
+        contenus et services numériques prévue aux articles L224-25-1 et
+        suivants du Code de la consommation. À ce titre, l'Éditeur est tenu de
+        fournir un service conforme au contrat et de remédier à tout défaut de
+        conformité existant au moment de la fourniture et apparaissant pendant
+        la durée de fourniture.
+      </p>
+      <p>
+        En cas de défaut de conformité, l'Utilisateur peut en obtenir la mise en
+        conformité sans frais, dans un délai raisonnable et sans inconvénient
+        majeur, ou, dans les conditions prévues par la loi, obtenir une
+        réduction de prix ou la résolution du contrat. Toute demande peut être
+        adressée à {CONTACT_EMAIL}. Ces droits s'exercent sans préjudice du
+        droit de rétractation et de la faculté de résiliation prévus ci-dessus.
       </p>
 
       <h2>Article 6 — Contenu Utilisateur</h2>
@@ -538,19 +568,6 @@ export default function CguPage() {
         La demande de médiation doit être formulée dans un délai d'un an
         suivant la réclamation écrite adressée à l'Éditeur. La médiation est
         gratuite pour le consommateur.
-      </p>
-      <p>
-        Tu peux également utiliser la plateforme européenne de règlement en
-        ligne des litiges (RLL) mise à disposition par la Commission
-        européenne :{" "}
-        <a
-          href="https://ec.europa.eu/consumers/odr"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          ec.europa.eu/consumers/odr
-        </a>
-        .
       </p>
       <p>
         À défaut de résolution amiable ou par médiation, les tribunaux

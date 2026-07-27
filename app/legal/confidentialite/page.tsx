@@ -10,7 +10,7 @@ export default function PrivacyPage() {
   return (
     <article>
       <h1>Politique de confidentialité</h1>
-      <p>Dernière mise à jour : 17 juillet 2026</p>
+      <p>Dernière mise à jour : 27 juillet 2026</p>
       <p>
         Cette politique décrit comment {SITE_NAME} ({SITE_URL}) collecte,
         utilise et protège tes données personnelles, conformément au règlement
@@ -68,7 +68,9 @@ export default function PrivacyPage() {
         (renouvellement, résiliation, changement de carte), nous conservons des
         identifiants techniques Stripe rattachés à ton compte — identifiant
         client, identifiant d'abonnement, statut de l'abonnement et date de fin
-        de période — à l'exclusion de toute donnée bancaire. Voir la{" "}
+        de période — à l'exclusion de toute donnée bancaire. Nous conservons
+        également la date et l'heure de ton consentement à l'exécution immédiate
+        du service, à titre de preuve. Voir la{" "}
         <a
           href="https://stripe.com/fr/privacy"
           target="_blank"

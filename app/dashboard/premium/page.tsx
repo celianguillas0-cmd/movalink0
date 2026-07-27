@@ -63,6 +63,7 @@ export default function PremiumPage() {
     getCachedMe()?.user ?? null
   );
   const [discountCode, setDiscountCode] = useState("");
+  const [waiver, setWaiver] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
   const [portalError, setPortalError] = useState("");
 
@@ -217,6 +218,21 @@ export default function PremiumPage() {
 
         {!user?.lifetime && (
           <>
+            <label className="mb-4 flex cursor-pointer items-start gap-2.5 rounded-xl border border-gray-100 bg-white p-3.5 text-xs leading-relaxed text-gray-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
+              <input
+                type="checkbox"
+                checked={waiver}
+                onChange={(e) => setWaiver(e.target.checked)}
+                className="mt-0.5 shrink-0"
+              />
+              <span>
+                Je demande l&apos;exécution immédiate du service et reconnais
+                renoncer à mon droit de rétractation une fois les
+                fonctionnalités payantes pleinement fournies (art. L221-28 1° du
+                Code de la consommation).
+              </span>
+            </label>
+
             <div className="grid gap-4 sm:grid-cols-2">
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
@@ -245,7 +261,7 @@ export default function PremiumPage() {
                 </ul>
                 <div className="mt-5">
                   {plan === "free" ? (
-                    <BuyButton plan="pro" billing="monthly" className={solidBtn}>
+                    <BuyButton plan="pro" billing="monthly" className={solidBtn} consent={waiver}>
                       S&apos;abonner Pro — {MONTHLY_PRICES.pro.label}/mois
                     </BuyButton>
                   ) : (
@@ -290,6 +306,7 @@ export default function PremiumPage() {
                       plan="elite"
                       billing="monthly"
                       className={plan === "free" ? outlineBtn : solidBtn}
+                      consent={waiver}
                     >
                       S&apos;abonner Elite — {MONTHLY_PRICES.elite.label}/mois
                     </BuyButton>
@@ -336,6 +353,7 @@ export default function PremiumPage() {
                   billing="lifetime"
                   className={solidBtn}
                   discountCode={discountCode}
+                  consent={waiver}
                 >
                   Débloquer à vie — {LIFETIME_PRICE.label}
                 </BuyButton>

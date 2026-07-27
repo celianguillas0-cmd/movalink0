@@ -110,6 +110,7 @@ export interface User {
   subscriptionStatus?: string;     // active, past_due, canceled, unpaid…
   subscriptionPlan?: Plan;         // plan accordé par l'abonnement en cours
   currentPeriodEnd?: string;       // ISO — fin de la période payée en cours
+  lastCheckoutConsentAt?: string;  // preuve du consentement à l'exécution immédiate
 }
 
 export interface PublicUser {

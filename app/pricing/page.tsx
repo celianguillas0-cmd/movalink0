@@ -147,6 +147,7 @@ export default function PricingPage() {
                     <BuyButton
                       plan={plan.id}
                       billing="monthly"
+                      requireConsent
                       className={plan.popular ? solidBtn : outlineBtn}
                     >
                       S&apos;abonner {plan.name}
