@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import ProfileView from "@/components/ProfileView";
 import DecorationEditor from "@/components/DecorationEditor";
 import { SOCIAL_LABELS, SOCIAL_PREFIXES } from "@/components/Icons";
+import { haptics } from "@/lib/haptics";
 import {
   cardClass,
   inputClass,
@@ -435,11 +436,12 @@ function OptionGrid<T extends string>({
               type="button"
               title={ok ? labels[opt] : `${labels[opt]} — aperçu Premium`}
               onClick={() => {
+                haptics.select();
                 onSelect(opt, !ok);
                 if (!ok) onLockedPreview?.(labels[opt]);
               }}
               style={previewFont ? { fontFamily: previewFont(opt) } : undefined}
-              className={`flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
+              className={`flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-sm font-medium transition-all duration-150 active:scale-95 ${
                 selected
                   ? ok
                     ? "border-zinc-900 bg-zinc-900 text-white dark:border-white dark:bg-white dark:text-zinc-900"
@@ -1926,7 +1928,7 @@ function MaPageEditor() {
                                     });
                                   }
                                 }}
-                                className={`flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
+                                className={`flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-sm font-medium transition-all duration-150 active:scale-95 ${
                                   locked
                                     ? "border-dashed border-gray-300 text-gray-400 hover:border-indigo-400 hover:text-indigo-500 dark:border-zinc-700 dark:text-zinc-500"
                                     : "border-gray-200 text-gray-600 hover:border-gray-400 dark:border-zinc-700 dark:text-zinc-300"

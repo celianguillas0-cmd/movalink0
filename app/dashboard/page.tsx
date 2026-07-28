@@ -14,6 +14,7 @@ import {
 import InstallButton from "@/components/InstallButton";
 import { SOCIAL_LABELS } from "@/components/Icons";
 import { fetchMe, getCachedMe } from "@/lib/me-client";
+import { haptics } from "@/lib/haptics";
 import {
   PlanLimits,
   Profile,
@@ -137,11 +138,12 @@ export default function DashboardHomePage() {
               className={smallBtnClass}
               onClick={() => {
                 navigator.clipboard?.writeText(`https://${publicUrl}`).catch(() => {});
+                haptics.success();
                 setCopied(true);
                 setTimeout(() => setCopied(false), 1500);
               }}
             >
-              {copied ? "Copié" : "Copier le lien"}
+              {copied ? "Copié ✓" : "Copier le lien"}
             </button>
             <Link href={`/${user.username}`} target="_blank" className={smallBtnClass}>
               Voir ma page
@@ -330,7 +332,10 @@ export default function DashboardHomePage() {
               <button
                 type="button"
                 className={smallBtnClass}
-                onClick={() => navigator.clipboard?.writeText(`https://movalink.vercel.app/signup?ref=${user.referralCode}`).catch(() => {})}
+                onClick={() => {
+                  navigator.clipboard?.writeText(`https://movalink.vercel.app/signup?ref=${user.referralCode}`).catch(() => {});
+                  haptics.success();
+                }}
               >
                 Copier
               </button>

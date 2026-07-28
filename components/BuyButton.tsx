@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { haptics } from "@/lib/haptics";
 
 export default function BuyButton({
   plan,
@@ -33,11 +34,13 @@ export default function BuyButton({
 
   const buy = async () => {
     if (consentEnforced && !consentValue) {
+      haptics.error();
       setError(
         "Merci de cocher la case de consentement ci-dessus pour continuer."
       );
       return;
     }
+    haptics.tap();
     setLoading(true);
     setError("");
     try {
@@ -63,6 +66,7 @@ export default function BuyButton({
       if (data.url) {
         window.location.href = data.url;
       } else if (data.upgraded) {
+        haptics.success();
         router.push("/dashboard?upgraded=1");
       }
     } catch {
@@ -79,7 +83,10 @@ export default function BuyButton({
           <input
             type="checkbox"
             checked={selfConsent}
-            onChange={(e) => setSelfConsent(e.target.checked)}
+            onChange={(e) => {
+              haptics.toggle();
+              setSelfConsent(e.target.checked);
+            }}
             className="mt-0.5 shrink-0"
           />
           <span>

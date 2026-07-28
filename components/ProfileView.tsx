@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import QRCode from "qrcode";
 import EffectLayer from "./Effects";
+import { haptics } from "@/lib/haptics";
 import {
   CopyIcon,
   GamepadIcon,
@@ -604,6 +605,7 @@ function ShareButton({ username }: { username: string }) {
 
   const copy = async () => {
     try { await navigator.clipboard.writeText(url); } catch { /* noop */ }
+    haptics.success();
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
@@ -712,6 +714,7 @@ function PromoCard({
   const [copied, setCopied] = useState(false);
   const copy = () => {
     navigator.clipboard?.writeText(promo.code).catch(() => {});
+    haptics.success();
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
     if (interactive) track(username, "click", `promo-${promo.id}`);

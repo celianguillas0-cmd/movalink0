@@ -1,5 +1,7 @@
 "use client";
 
+import { haptics } from "@/lib/haptics";
+
 // Case à cocher custom : toute la ligne est cliquable (cible tactile large),
 // rendu identique sur tous les navigateurs, liens internes isolés du toggle.
 export default function CheckboxRow({
@@ -11,19 +13,23 @@ export default function CheckboxRow({
   onChange: (checked: boolean) => void;
   children: React.ReactNode;
 }) {
+  const toggle = () => {
+    haptics.toggle();
+    onChange(!checked);
+  };
   return (
     <div
       role="checkbox"
       aria-checked={checked}
       tabIndex={0}
-      onClick={() => onChange(!checked)}
+      onClick={toggle}
       onKeyDown={(e) => {
         if (e.key === " " || e.key === "Enter") {
           e.preventDefault();
-          onChange(!checked);
+          toggle();
         }
       }}
-      className="-m-1.5 flex cursor-pointer select-none items-start gap-3 rounded-lg p-1.5 transition-colors hover:bg-gray-50 dark:hover:bg-zinc-800/50"
+      className="-m-1.5 flex cursor-pointer select-none items-start gap-3 rounded-lg p-1.5 transition-colors hover:bg-gray-50 active:scale-[0.99] dark:hover:bg-zinc-800/50"
     >
       <span
         aria-hidden
