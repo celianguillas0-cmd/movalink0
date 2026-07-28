@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CONTACT_EMAIL, SITE_NAME, SITE_URL } from "@/lib/config";
+import ContactEmail from "@/components/ContactEmail";
 
 export const metadata: Metadata = {
   title: "Mentions légales",
@@ -160,7 +161,7 @@ export default function MentionsLegalesPage() {
 
       <h2>8. Contact</h2>
       <p>
-        Pour toute question ou réclamation : {CONTACT_EMAIL}
+        Pour toute question ou réclamation : <ContactEmail />
       </p>
       <p>
         L'Éditeur s'engage à répondre à toute demande dans un délai raisonnable

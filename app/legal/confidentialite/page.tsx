@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT_EMAIL, SITE_NAME, SITE_URL } from "@/lib/config";
+import ContactEmail from "@/components/ContactEmail";
 
 export const metadata: Metadata = {
   title: "Politique de confidentialité",
@@ -271,7 +272,7 @@ export default function PrivacyPage() {
           et suppression du compte (effet immédiat).
         </li>
         <li>
-          <strong>Par email</strong> à {CONTACT_EMAIL} : réponse garantie dans
+          <strong>Par email</strong> à <ContactEmail /> : réponse garantie dans
           un délai maximal d'un mois (art. 12 RGPD), extensible à trois mois en
           cas de demande complexe avec information préalable.
         </li>

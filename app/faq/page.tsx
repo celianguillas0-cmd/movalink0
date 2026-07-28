@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PublicShell from "@/components/PublicShell";
-import { CONTACT_EMAIL } from "@/lib/config";
+import ContactEmail from "@/components/ContactEmail";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -83,13 +83,8 @@ export default function FaqPage() {
           </div>
 
           <p className="mt-6 text-center text-xs text-gray-400 dark:text-zinc-500">
-            Une autre question ?{" "}
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className="text-gray-600 hover:underline dark:text-zinc-300"
-            >
-              Écris-nous
-            </a>{" "}
+            Une autre question ? Écris-nous à{" "}
+            <ContactEmail className="inline font-medium text-gray-600 underline decoration-dotted underline-offset-2 transition-colors hover:text-gray-900 active:scale-95 dark:text-zinc-300 dark:hover:text-white" />{" "}
             ou{" "}
             <Link href="/" className="text-gray-600 hover:underline dark:text-zinc-300">
               lance-toi directement
