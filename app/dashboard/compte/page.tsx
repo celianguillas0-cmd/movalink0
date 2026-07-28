@@ -170,9 +170,10 @@ export default function ComptePage() {
   };
 
   const logout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
+    const res = await fetch("/api/auth/logout", { method: "POST" });
+    const data = await res.json().catch(() => ({}));
     clearCachedMe();
-    router.push("/");
+    window.location.assign(data.switchedTo ? "/dashboard" : "/");
   };
 
   const deleteAccount = async () => {

@@ -4,9 +4,9 @@ import NavShell, {
   DASHBOARD_ITEMS,
   DASHBOARD_MOBILE,
   NavItem,
-  UserCardFooter,
   useMe,
 } from "./NavShell";
+import AccountSwitcher from "./AccountSwitcher";
 
 const adminIcon = (s: number) => (
   <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -41,7 +41,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <NavShell
       items={items}
       mobileItems={mobileItems}
-      footer={<UserCardFooter me={me} />}
+      footer={<AccountSwitcher />}
       showAbout
       aboutUsername={me.username}
       avatarUrl={me.avatarUrl}

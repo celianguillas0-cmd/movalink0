@@ -31,7 +31,7 @@ function checkSignupLimit(email: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
-  let body: { email?: string; username?: string; password?: string; ref?: string };
+  let body: { email?: string; username?: string; password?: string; ref?: string; add?: boolean };
   try {
     body = await request.json();
   } catch {
@@ -98,6 +98,6 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  await createSession(user.id);
+  await createSession(user.id, { add: body.add === true });
   return NextResponse.json({ ok: true, username: user.username });
 }
