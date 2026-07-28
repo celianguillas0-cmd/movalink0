@@ -253,6 +253,36 @@ export async function getUserIdByStripeCustomer(customerId: string): Promise<str
   return kv.get<string>(stripeCustomerKey(customerId));
 }
 
+// ─── Sondage de découverte ───────────────────────────────────────────────────
+const DISCOVERY_COUNTS_KEY = "discovery:counts";
+const DISCOVERY_OTHERS_KEY = "discovery:others";
+
+export interface DiscoveryStats {
+  counts: Record<string, number>;
+  others: { text: string; at: string }[];
+}
+
+export async function recordDiscovery(source: string, detail?: string): Promise<void> {
+  const counts =
+    (await kv.get<Record<string, number>>(DISCOVERY_COUNTS_KEY)) ?? {};
+  counts[source] = (counts[source] ?? 0) + 1;
+  await kv.set(DISCOVERY_COUNTS_KEY, counts);
+  if (detail && detail.trim()) {
+    const others =
+      (await kv.get<{ text: string; at: string }[]>(DISCOVERY_OTHERS_KEY)) ?? [];
+    others.unshift({ text: detail.trim().slice(0, 200), at: new Date().toISOString() });
+    await kv.set(DISCOVERY_OTHERS_KEY, others.slice(0, 500));
+  }
+}
+
+export async function getDiscoveryStats(): Promise<DiscoveryStats> {
+  const [counts, others] = await Promise.all([
+    kv.get<Record<string, number>>(DISCOVERY_COUNTS_KEY),
+    kv.get<{ text: string; at: string }[]>(DISCOVERY_OTHERS_KEY),
+  ]);
+  return { counts: counts ?? {}, others: others ?? [] };
+}
+
 export async function saveUser(user: User): Promise<void> {
   await kv.set(userKey(user.id), user);
 }

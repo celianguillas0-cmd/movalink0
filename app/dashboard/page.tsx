@@ -12,6 +12,7 @@ import {
   smallBtnClass,
 } from "@/lib/ui";
 import InstallButton from "@/components/InstallButton";
+import DiscoverySurvey from "@/components/DiscoverySurvey";
 import { SOCIAL_LABELS } from "@/components/Icons";
 import { fetchMe, getCachedMe } from "@/lib/me-client";
 import { haptics } from "@/lib/haptics";
@@ -33,6 +34,7 @@ export default function DashboardHomePage() {
   const [limits, setLimits] = useState<PlanLimits | null>(cached?.limits ?? null);
   const [copied, setCopied] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState("");
+  const [surveyDone, setSurveyDone] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -117,6 +119,10 @@ export default function DashboardHomePage() {
             <InstallButton className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-gray-400 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-500" />
           </div>
         </motion.div>
+
+        {user && !user.discoverySource && !surveyDone && (
+          <DiscoverySurvey onDone={() => setSurveyDone(true)} />
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
