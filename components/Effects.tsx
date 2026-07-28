@@ -55,6 +55,7 @@ function CanvasEffect({
     let bolt: { x: number; y: number }[][] = [];
     let boltLife = 0;
     let boltCooldown = 30;
+    let eqBars: number[] = []; // hauteurs lissées des barres de l'égaliseur
 
     const resize = () => {
       canvas.width = canvas.offsetWidth;
@@ -88,12 +89,24 @@ function CanvasEffect({
         ripple: 7,
         fireworks: 0,
         lightning: 0,
+        auroraWaves: 0,
+        waves: 0,
+        dna: 0,
+        equalizer: 0,
+        blackhole: 170,
+        jellyfish: 9,
+        balloons: 12,
+        pixels: 90,
       };
       const count = counts[effect] ?? 110;
       particles = makeParticles(count, canvas.width, canvas.height);
       columns = Array.from(
         { length: Math.ceil(canvas.width / 16) },
         () => Math.random() * canvas.height
+      );
+      eqBars = Array.from(
+        { length: Math.max(12, Math.floor(canvas.width / 22)) },
+        () => Math.random()
       );
     };
     resize();
@@ -247,6 +260,109 @@ function CanvasEffect({
           ctx.restore();
           boltLife -= 1;
         }
+      } else if (effect === "auroraWaves") {
+        // Aurore polaire : rideaux de lumière colorée qui ondulent et se
+        // superposent, façon aurores boréales.
+        ctx.clearRect(0, 0, w, h);
+        const bands = 4;
+        for (let b = 0; b < bands; b++) {
+          const hue = (t * 0.4 + b * 60) % 360;
+          const baseY = h * (0.22 + b * 0.13);
+          const amp = 24 + b * 10;
+          ctx.beginPath();
+          ctx.moveTo(0, baseY);
+          for (let x = 0; x <= w; x += 12) {
+            const y =
+              baseY +
+              Math.sin(x / 140 + t / 40 + b) * amp +
+              Math.sin(x / 60 - t / 55 + b * 2) * (amp * 0.4);
+            ctx.lineTo(x, y);
+          }
+          ctx.lineTo(w, baseY + 130);
+          ctx.lineTo(0, baseY + 130);
+          ctx.closePath();
+          const grad = ctx.createLinearGradient(0, baseY - amp, 0, baseY + 130);
+          grad.addColorStop(0, `hsla(${hue}, 90%, 65%, 0.26)`);
+          grad.addColorStop(1, `hsla(${hue}, 90%, 65%, 0)`);
+          ctx.fillStyle = grad;
+          ctx.fill();
+        }
+      } else if (effect === "waves") {
+        // Vagues : houle océanique en plusieurs couches qui défilent.
+        ctx.clearRect(0, 0, w, h);
+        const layers = 3;
+        for (let l = 0; l < layers; l++) {
+          const baseY = h - h * 0.1 - l * (h * 0.06);
+          const amp = 10 + l * 6;
+          const speed = t / (30 - l * 6);
+          ctx.beginPath();
+          ctx.moveTo(0, h);
+          ctx.lineTo(0, baseY);
+          for (let x = 0; x <= w; x += 10) {
+            const y =
+              baseY +
+              Math.sin(x / 90 + speed + l) * amp +
+              Math.sin(x / 40 - speed) * (amp * 0.3);
+            ctx.lineTo(x, y);
+          }
+          ctx.lineTo(w, h);
+          ctx.closePath();
+          ctx.fillStyle = `hsla(205, 80%, ${45 + l * 6}%, ${0.18 + l * 0.12})`;
+          ctx.fill();
+        }
+      } else if (effect === "dna") {
+        // ADN : double hélice en rotation, brins cyan et magenta, barreaux.
+        ctx.clearRect(0, 0, w, h);
+        const cx = w / 2;
+        const amp = Math.min(w * 0.18, 120);
+        const step = 26;
+        for (let y = -10; y < h + 10; y += step) {
+          const phase = y / 60 + t / 30;
+          const x1 = cx + Math.sin(phase) * amp;
+          const x2 = cx + Math.sin(phase + Math.PI) * amp;
+          const d1 = (Math.cos(phase) + 1) / 2;
+          const d2 = (Math.cos(phase + Math.PI) + 1) / 2;
+          ctx.strokeStyle = "rgba(255,255,255,0.14)";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(x1, y);
+          ctx.lineTo(x2, y);
+          ctx.stroke();
+          const node = (nx: number, depth: number, hue: number) => {
+            ctx.globalAlpha = 0.4 + depth * 0.6;
+            ctx.fillStyle = `hsl(${hue}, 85%, ${55 + depth * 15}%)`;
+            ctx.beginPath();
+            ctx.arc(nx, y, 2 + depth * 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+          };
+          node(x1, d1, 190);
+          node(x2, d2, 330);
+        }
+      } else if (effect === "equalizer") {
+        // Égaliseur : barres de spectre néon qui pulsent en bas de page.
+        ctx.clearRect(0, 0, w, h);
+        const n = eqBars.length;
+        const gap = 3;
+        const bw = (w - gap * (n + 1)) / n;
+        for (let i = 0; i < n; i++) {
+          const target =
+            0.12 +
+            0.88 * Math.abs(Math.sin(t / 18 + i * 0.6) * Math.cos(t / 30 + i));
+          eqBars[i] += (target - eqBars[i]) * 0.2;
+          const bh = eqBars[i] * h * 0.5;
+          const x = gap + i * (bw + gap);
+          const y = h - bh;
+          const hue = (i / n) * 300 + t * 0.5;
+          const grad = ctx.createLinearGradient(0, h, 0, y);
+          grad.addColorStop(0, `hsla(${hue}, 90%, 55%, 0.9)`);
+          grad.addColorStop(1, `hsla(${hue + 40}, 90%, 68%, 0.9)`);
+          ctx.fillStyle = grad;
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = `hsl(${hue}, 90%, 60%)`;
+          ctx.fillRect(x, y, bw, bh);
+        }
+        ctx.shadowBlur = 0;
       } else {
         ctx.clearRect(0, 0, w, h);
         for (const p of particles) {
@@ -622,6 +738,113 @@ function CanvasEffect({
             ctx.beginPath();
             ctx.arc(p.x, p.y, (p.r ?? 0) * 0.6, 0, Math.PI * 2);
             ctx.stroke();
+          } else if (effect === "blackhole") {
+            // Trou noir : les particules spiralent vers le cœur en accélérant
+            // et resurgissent en périphérie ; le cœur est dessiné après la
+            // boucle (disque d'accrétion + horizon des événements).
+            const cx = w / 2;
+            const cy = h / 2;
+            const dx = p.x - cx;
+            const dy = p.y - cy;
+            let dist = Math.hypot(dx, dy) || 0.001;
+            const ang = Math.atan2(dy, dx) + 3 / dist;
+            dist -= 0.6 + 60 / dist;
+            const rmax = Math.hypot(w, h) / 2;
+            if (dist < 18) {
+              p.x = cx + Math.cos(Math.random() * Math.PI * 2) * rmax * (0.6 + Math.random() * 0.5);
+              p.y = cy + Math.sin(Math.random() * Math.PI * 2) * rmax * (0.6 + Math.random() * 0.5);
+            } else {
+              p.x = cx + Math.cos(ang) * dist;
+              p.y = cy + Math.sin(ang) * dist;
+            }
+            const near = 1 - Math.min(1, dist / rmax);
+            ctx.fillStyle = `hsla(${25 + near * 25}, 100%, 60%, ${0.25 + near * 0.65})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (effect === "jellyfish") {
+            // Méduses : ombelles translucides qui pulsent et remontent, avec
+            // des tentacules ondulants.
+            p.y -= 0.3 + p.vy * 0.25;
+            p.x += Math.sin(t / 70 + p.phase) * 0.5;
+            const pulse = 0.5 + 0.5 * Math.sin(t / 22 + p.phase);
+            const s = p.size * 3 + 8;
+            const hue = Math.floor((p.phase * 57) % 360);
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.shadowBlur = 14;
+            ctx.shadowColor = `hsl(${hue}, 80%, 65%)`;
+            const bw = s * (0.8 + pulse * 0.25);
+            const bh = s * (0.7 - pulse * 0.15);
+            ctx.fillStyle = `hsla(${hue}, 80%, 72%, 0.5)`;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, bw, bh, 0, Math.PI, 0);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = `hsla(${hue}, 80%, 78%, 0.4)`;
+            ctx.lineWidth = 1.2;
+            const tent = 5;
+            for (let k = 0; k < tent; k++) {
+              const tx = -bw * 0.6 + (k / (tent - 1)) * bw * 1.2;
+              ctx.beginPath();
+              ctx.moveTo(tx * 0.8, bh * 0.2);
+              for (let seg = 1; seg <= 4; seg++) {
+                const ty = bh * 0.2 + seg * (s * 0.5);
+                const sway = Math.sin(t / 18 + p.phase + k + seg) * 4;
+                ctx.lineTo(tx * 0.8 + sway, ty);
+              }
+              ctx.stroke();
+            }
+            ctx.restore();
+          } else if (effect === "balloons") {
+            // Ballons : baudruches colorées qui s'élèvent avec ficelle, nœud et
+            // reflet.
+            p.y -= 0.4 + p.vy * 0.3;
+            p.x += Math.sin(t / 60 + p.phase) * 0.6;
+            const s = p.size * 2.5 + 6;
+            const hue = Math.floor((p.phase * 80) % 360);
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.strokeStyle = "rgba(255,255,255,0.25)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, s);
+            ctx.quadraticCurveTo(
+              Math.sin(t / 30 + p.phase) * 4,
+              s + s * 0.9,
+              Math.sin(t / 25 + p.phase) * 2,
+              s + s * 1.6
+            );
+            ctx.stroke();
+            ctx.fillStyle = `hsl(${hue}, 75%, 60%)`;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, s * 0.8, s, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(-2, s);
+            ctx.lineTo(2, s);
+            ctx.lineTo(0, s + 4);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = "rgba(255,255,255,0.35)";
+            ctx.beginPath();
+            ctx.ellipse(-s * 0.3, -s * 0.35, s * 0.18, s * 0.28, -0.4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          } else if (effect === "pixels") {
+            // Pixels : petits carrés rétro 8-bit scintillants qui tombent, alignés
+            // sur une grille.
+            p.y += p.vy * 0.9;
+            p.x += Math.sin(t / 50 + p.phase) * 0.2;
+            const grid = 6;
+            const px = Math.round(p.x / grid) * grid;
+            const py = Math.round(p.y / grid) * grid;
+            const tw = 0.4 + 0.6 * Math.abs(Math.sin(t / 12 + p.phase));
+            const hue = Math.floor((p.phase * 57) % 360);
+            ctx.globalAlpha = tw;
+            ctx.fillStyle = `hsl(${hue}, 85%, 62%)`;
+            ctx.fillRect(px, py, grid - 1, grid - 1);
+            ctx.globalAlpha = 1;
           }
           // Recyclage des particules : les braises/phénix remontent, les autres
           // tombent. La galaxie tourne en boucle : pas de recyclage.
@@ -629,7 +852,8 @@ function CanvasEffect({
             effect === "galaxy" ||
             effect === "hyperspace" ||
             effect === "vortex" ||
-            effect === "ripple"
+            effect === "ripple" ||
+            effect === "blackhole"
           ) {
             // position gérée dans la branche de l'effet, rien à recycler ici
           } else {
@@ -670,6 +894,22 @@ function CanvasEffect({
               }
             }
           }
+        }
+
+        // Trou noir : cœur sombre + halo du disque d'accrétion, par-dessus les
+        // particules qui semblent y disparaître.
+        if (effect === "blackhole") {
+          const cx = w / 2;
+          const cy = h / 2;
+          const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, 62);
+          core.addColorStop(0, "rgba(0,0,0,1)");
+          core.addColorStop(0.62, "rgba(0,0,0,0.92)");
+          core.addColorStop(0.85, "rgba(255,150,40,0.5)");
+          core.addColorStop(1, "rgba(255,150,40,0)");
+          ctx.fillStyle = core;
+          ctx.beginPath();
+          ctx.arc(cx, cy, 62, 0, Math.PI * 2);
+          ctx.fill();
         }
 
         // Éclairs de l'orage : flash blanc bref et aléatoire.

@@ -43,7 +43,15 @@ export type EffectId =
   | "lanterns"
   | "goldDust"
   | "butterflies"
-  | "ripple";
+  | "ripple"
+  | "auroraWaves"
+  | "waves"
+  | "dna"
+  | "equalizer"
+  | "blackhole"
+  | "jellyfish"
+  | "balloons"
+  | "pixels";
 
 export type LayoutId = "card" | "clean";
 
@@ -564,6 +572,14 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
       "goldDust",
       "butterflies",
       "ripple",
+      "auroraWaves",
+      "waves",
+      "dna",
+      "equalizer",
+      "blackhole",
+      "jellyfish",
+      "balloons",
+      "pixels",
     ],
     fonts: ALL_FONTS,
     buttonStyles: [
@@ -725,6 +741,14 @@ export const EFFECT_LABELS: Record<EffectId, string> = {
   goldDust: "Poussière d'or",
   butterflies: "Papillons",
   ripple: "Ondes",
+  auroraWaves: "Aurore polaire",
+  waves: "Vagues",
+  dna: "ADN",
+  equalizer: "Égaliseur",
+  blackhole: "Trou noir",
+  jellyfish: "Méduses",
+  balloons: "Ballons",
+  pixels: "Pixels",
 };
 
 export const FONT_META: Record<

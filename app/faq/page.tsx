@@ -15,7 +15,7 @@ const FAQ = [
   },
   {
     q: "Combien ça coûte pour débloquer plus ?",
-    a: "Deux abonnements, résiliables à tout moment : Pro à 4,90 €/mois (15 liens, full custom, 10 effets, sans badge) et Elite à 9,90 €/mois (50 liens, les 39 effets animés, statut Discord en direct, stats sur 1 an). Tu préfères ne payer qu'une fois ? L'offre à vie à 54,90 € débloque tout l'Elite pour toujours, sans aucun abonnement.",
+    a: "Deux abonnements, résiliables à tout moment : Pro à 4,90 €/mois (15 liens, full custom, 10 effets, sans badge) et Elite à 9,90 €/mois (50 liens, les 47 effets animés, statut Discord en direct, stats sur 1 an). Tu préfères ne payer qu'une fois ? L'offre à vie à 54,90 € débloque tout l'Elite pour toujours, sans aucun abonnement.",
   },
   {
     q: "Je peux annuler mon abonnement ?",
