@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
-import { destroySession } from "@/lib/auth";
+import { logoutCurrent } from "@/lib/auth";
 
+// Déconnecte le compte actif. En multi-comptes, bascule vers un autre compte
+// connecté s'il en reste ; sinon efface la session.
 export async function POST() {
-  await destroySession();
-  return NextResponse.json({ ok: true });
+  const { switchedTo } = await logoutCurrent();
+  return NextResponse.json({ ok: true, switchedTo });
 }

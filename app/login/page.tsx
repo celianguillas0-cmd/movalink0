@@ -1,21 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import AuthCard, {
   authButtonClass,
   authInputClass,
   authLabelClass,
 } from "@/components/AuthCard";
 import PasswordInput from "@/components/PasswordInput";
+import { clearCachedMe } from "@/lib/me-client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const [add, setAdd] = useState(false);
+
+  useEffect(() => {
+    setAdd(new URLSearchParams(window.location.search).get("add") === "1");
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,14 +29,15 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, add }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "Une erreur est survenue.");
         return;
       }
-      router.push("/dashboard");
+      clearCachedMe();
+      window.location.assign("/dashboard");
     } catch {
       setError("Connexion impossible. Réessaie.");
     } finally {
@@ -42,13 +47,13 @@ export default function LoginPage() {
 
   return (
     <AuthCard
-      title="Connexion"
-      subtitle="Bienvenue de retour"
+      title={add ? "Ajouter un compte" : "Connexion"}
+      subtitle={add ? "Connecte un autre compte sans quitter le tien" : "Bienvenue de retour"}
       footer={
         <>
           Pas encore de compte ?{" "}
           <Link
-            href="/signup"
+            href={add ? "/signup?add=1" : "/signup"}
             className="text-gray-900 dark:text-white font-medium hover:underline"
           >
             S'inscrire
