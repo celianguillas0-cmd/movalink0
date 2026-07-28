@@ -56,6 +56,9 @@ function CanvasEffect({
     let boltLife = 0;
     let boltCooldown = 30;
     let eqBars: number[] = []; // hauteurs lissées des barres de l'égaliseur
+    // Couleur d'accent + opacité (hex 8 chiffres, supporté par le canvas).
+    const acc = (a: number) =>
+      accent + Math.round(Math.max(0, Math.min(1, a)) * 255).toString(16).padStart(2, "0");
 
     const resize = () => {
       canvas.width = canvas.offsetWidth;
@@ -97,6 +100,13 @@ function CanvasEffect({
         jellyfish: 9,
         balloons: 12,
         pixels: 90,
+        mesh: 0,
+        silk: 0,
+        gradientWaves: 0,
+        dotGrid: 0,
+        topography: 0,
+        godRays: 0,
+        mist: 0,
       };
       const count = counts[effect] ?? 110;
       particles = makeParticles(count, canvas.width, canvas.height);
@@ -363,6 +373,155 @@ function CanvasEffect({
           ctx.fillRect(x, y, bw, bh);
         }
         ctx.shadowBlur = 0;
+      } else if (effect === "mesh") {
+        // Dégradé fluide : blobs pastel flous qui dérivent (esthétique
+        // moderne façon Stripe/Linear).
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < 5; i++) {
+          const hue = (t * 0.3 + i * 62) % 360;
+          const bx = w * (0.5 + 0.42 * Math.sin(t / 90 + i * 1.7));
+          const by = h * (0.5 + 0.42 * Math.cos(t / 110 + i * 2.3));
+          const R = Math.min(w, h) * (0.5 + 0.15 * Math.sin(t / 70 + i));
+          const g = ctx.createRadialGradient(bx, by, 0, bx, by, R);
+          g.addColorStop(0, `hsla(${hue}, 85%, 68%, 0.28)`);
+          g.addColorStop(1, `hsla(${hue}, 85%, 68%, 0)`);
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+        }
+      } else if (effect === "silk") {
+        // Soie : rubans translucides monochromes (couleur d'accent) qui
+        // ondulent avec douceur.
+        ctx.clearRect(0, 0, w, h);
+        for (let r = 0; r < 5; r++) {
+          const baseY = h * (0.16 + r * 0.16);
+          const amp = 18 + r * 6;
+          ctx.beginPath();
+          ctx.moveTo(0, baseY);
+          for (let x = 0; x <= w; x += 14) {
+            const y =
+              baseY +
+              Math.sin(x / 160 + t / 50 + r) * amp +
+              Math.sin(x / 80 - t / 70 + r) * (amp * 0.3);
+            ctx.lineTo(x, y);
+          }
+          ctx.lineTo(w, baseY + 70);
+          ctx.lineTo(0, baseY + 70);
+          ctx.closePath();
+          const g = ctx.createLinearGradient(0, baseY - amp, 0, baseY + 70);
+          g.addColorStop(0, acc(0.16));
+          g.addColorStop(1, acc(0));
+          ctx.fillStyle = g;
+          ctx.fill();
+        }
+      } else if (effect === "gradientWaves") {
+        // Ondulation : bandes d'accent superposées qui glissent lentement.
+        ctx.clearRect(0, 0, w, h);
+        const bands = 5;
+        for (let bnd = 0; bnd < bands; bnd++) {
+          const baseY = (bnd / bands) * h;
+          ctx.beginPath();
+          ctx.moveTo(0, baseY);
+          for (let x = 0; x <= w; x += 12) {
+            const y = baseY + Math.sin(x / 120 + t / 45 + bnd * 0.8) * 20;
+            ctx.lineTo(x, y);
+          }
+          ctx.lineTo(w, h);
+          ctx.lineTo(0, h);
+          ctx.closePath();
+          ctx.fillStyle = acc(0.05 + (bnd / bands) * 0.05);
+          ctx.fill();
+        }
+      } else if (effect === "dotGrid") {
+        // Grille de points : trame tech qui dérive doucement, plus dense et
+        // scintillante au centre (vignette).
+        ctx.clearRect(0, 0, w, h);
+        const gap = 26;
+        const ox = (t * 0.15) % gap;
+        const oy = (t * 0.1) % gap;
+        for (let x = -gap; x < w + gap; x += gap) {
+          for (let y = -gap; y < h + gap; y += gap) {
+            const px = x + ox;
+            const py = y + oy;
+            const d = Math.hypot(px - w / 2, py - h / 2);
+            const fade = Math.max(0, 1 - d / (Math.max(w, h) * 0.6));
+            const tw = 0.5 + 0.5 * Math.sin(t / 30 + x * 0.05 + y * 0.05);
+            ctx.fillStyle = acc(0.06 + fade * 0.32 * tw);
+            ctx.beginPath();
+            ctx.arc(px, py, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      } else if (effect === "topography") {
+        // Topographie : courbes de niveau concentriques ondulantes qui
+        // s'étendent, façon carte topographique minimaliste.
+        ctx.clearRect(0, 0, w, h);
+        const cx = w / 2;
+        const cy = h / 2;
+        const rings = 16;
+        const spacing = Math.max(w, h) / rings;
+        ctx.lineWidth = 1.2;
+        for (let i = 0; i < rings; i++) {
+          const r = i * spacing + ((t * 0.4) % spacing);
+          ctx.beginPath();
+          for (let a = 0; a <= Math.PI * 2 + 0.1; a += 0.1) {
+            const wob =
+              Math.sin(a * 3 + i * 0.5 + t / 60) * 8 +
+              Math.sin(a * 5 - t / 80) * 4;
+            const rr = r + wob;
+            const x = cx + Math.cos(a) * rr;
+            const y = cy + Math.sin(a) * rr;
+            if (a === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          const fade = 1 - r / Math.max(w, h);
+          ctx.strokeStyle = acc(0.05 + Math.max(0, fade) * 0.22);
+          ctx.stroke();
+        }
+      } else if (effect === "godRays") {
+        // Rayons de lumière : faisceaux doux tombant du haut, additifs et
+        // légèrement vacillants (rendu cinématographique).
+        ctx.clearRect(0, 0, w, h);
+        const ox = w * 0.5;
+        const oy = -h * 0.15;
+        const rays = 9;
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (let i = 0; i < rays; i++) {
+          const ang =
+            -Math.PI / 2 + (i - rays / 2) * 0.14 + Math.sin(t / 120 + i) * 0.02;
+          const len = Math.hypot(w, h) * 1.2;
+          const spread = 26;
+          const ex = ox + Math.cos(ang) * len;
+          const ey = oy + Math.sin(ang) * len;
+          const perp = ang + Math.PI / 2;
+          const dx = Math.cos(perp) * spread;
+          const dy = Math.sin(perp) * spread;
+          const flick = 0.1 + 0.08 * Math.abs(Math.sin(t / 40 + i));
+          const g = ctx.createLinearGradient(ox, oy, ex, ey);
+          g.addColorStop(0, acc(flick));
+          g.addColorStop(1, acc(0));
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.moveTo(ox - dx, oy - dy);
+          ctx.lineTo(ox + dx, oy + dy);
+          ctx.lineTo(ex + dx, ey + dy);
+          ctx.lineTo(ex - dx, ey - dy);
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.restore();
+      } else if (effect === "mist") {
+        // Brume : nappes de brouillard douces qui glissent latéralement.
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < 6; i++) {
+          const y = h * (0.15 + i * 0.14);
+          const x = ((t * (0.3 + i * 0.1) + i * 200) % (w + 400)) - 200;
+          const g = ctx.createRadialGradient(x, y, 0, x, y, 260);
+          g.addColorStop(0, `rgba(255,255,255,${0.05 + (i % 2) * 0.02})`);
+          g.addColorStop(1, "rgba(255,255,255,0)");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+        }
       } else {
         ctx.clearRect(0, 0, w, h);
         for (const p of particles) {

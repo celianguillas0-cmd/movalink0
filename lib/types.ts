@@ -51,7 +51,15 @@ export type EffectId =
   | "blackhole"
   | "jellyfish"
   | "balloons"
-  | "pixels";
+  | "pixels"
+  // Effets élégants / pro
+  | "mesh"
+  | "silk"
+  | "gradientWaves"
+  | "dotGrid"
+  | "topography"
+  | "godRays"
+  | "mist";
 
 export type LayoutId = "card" | "clean";
 
@@ -583,6 +591,13 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
       "jellyfish",
       "balloons",
       "pixels",
+      "mesh",
+      "silk",
+      "gradientWaves",
+      "dotGrid",
+      "topography",
+      "godRays",
+      "mist",
     ],
     fonts: ALL_FONTS,
     buttonStyles: [
@@ -767,6 +782,13 @@ export const EFFECT_LABELS: Record<EffectId, string> = {
   jellyfish: "Méduses",
   balloons: "Ballons",
   pixels: "Pixels",
+  mesh: "Dégradé fluide",
+  silk: "Soie",
+  gradientWaves: "Ondulation",
+  dotGrid: "Grille de points",
+  topography: "Topographie",
+  godRays: "Rayons de lumière",
+  mist: "Brume",
 };
 
 export const FONT_META: Record<
