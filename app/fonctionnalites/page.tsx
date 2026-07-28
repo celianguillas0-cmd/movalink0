@@ -11,7 +11,7 @@ import {
 export const metadata: Metadata = {
   title: "Fonctionnalités",
   description:
-    "Liens, réseaux, bibliothèque de jeux, 47 effets animés très travaillés et statistiques en direct : tout ce que ta page Movalink sait faire.",
+    "Liens, réseaux, bibliothèque de jeux, 54 effets animés très travaillés et statistiques en direct : tout ce que ta page Movalink sait faire.",
 };
 
 const FEATURES = [
@@ -28,7 +28,7 @@ const FEATURES = [
   {
     icon: PaletteIcon,
     title: "Une page qui claque, pas un simple lien",
-    text: "47 effets animés très travaillés — feux d'artifice, hyperespace, éclairs, aurore, papillons — plus couleurs, dégradés, polices gaming et thèmes exclusifs. Une page que personne d'autre n'a.",
+    text: "54 effets animés très travaillés — feux d'artifice, hyperespace, éclairs, aurore, papillons — plus couleurs, dégradés, polices gaming et thèmes exclusifs. Une page que personne d'autre n'a.",
   },
   {
     icon: ChartIcon,

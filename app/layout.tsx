@@ -21,19 +21,19 @@ export const metadata: Metadata = {
     template: `%s — ${SITE_NAME}`,
   },
   description:
-    "La page de profil gaming qui claque : tous tes liens, tes jeux et tes stats, sublimés par 47 effets animés que personne d'autre n'a. Une seule URL à partager, partout. Gratuit pour commencer.",
+    "La page de profil gaming qui claque : tous tes liens, tes jeux et tes stats, sublimés par 54 effets animés que personne d'autre n'a. Une seule URL à partager, partout. Gratuit pour commencer.",
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
     title: `${SITE_NAME} — ${SITE_TAGLINE}`,
     description:
-      "Une seule page pour tout ton univers gaming : liens, réseaux, jeux et 47 effets animés que personne d'autre n'a. Crée la tienne gratuitement en 2 minutes.",
+      "Une seule page pour tout ton univers gaming : liens, réseaux, jeux et 54 effets animés que personne d'autre n'a. Crée la tienne gratuitement en 2 minutes.",
   },
   twitter: {
     card: "summary_large_image",
     title: `${SITE_NAME} — ${SITE_TAGLINE}`,
     description:
-      "Tous tes liens gaming sur une seule page qui claque, avec 47 effets animés. Gratuit, prêt en 2 minutes.",
+      "Tous tes liens gaming sur une seule page qui claque, avec 54 effets animés. Gratuit, prêt en 2 minutes.",
   },
   applicationName: SITE_NAME,
   appleWebApp: {
