@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Plan } from "@/lib/types";
+import DiscoveryChart from "@/components/DiscoveryChart";
 
 const PLAN_LABELS: Record<Plan, string> = { free: "Gratuit", pro: "Pro", elite: "Elite" };
 const PLAN_ACCENT: Record<Plan, string> = { free: "#71717a", pro: "#818cf8", elite: "#eab308" };
@@ -165,6 +166,9 @@ export default function AdminPage() {
           </div>
         ))}
       </div>
+
+      {/* Sondage de découverte */}
+      <DiscoveryChart />
 
       {/* Search */}
       <div style={{

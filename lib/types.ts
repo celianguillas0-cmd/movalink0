@@ -119,6 +119,8 @@ export interface User {
   subscriptionPlan?: Plan;         // plan accordé par l'abonnement en cours
   currentPeriodEnd?: string;       // ISO — fin de la période payée en cours
   lastCheckoutConsentAt?: string;  // preuve du consentement à l'exécution immédiate
+  discoverySource?: string;        // réponse au sondage de découverte (clé)
+  discoveryDetail?: string;        // précision libre si « Autre »
 }
 
 export interface PublicUser {
@@ -136,6 +138,7 @@ export interface PublicUser {
   subscriptionStatus?: string;
   currentPeriodEnd?: string;
   hasBillingAccount?: boolean;     // possède un client Stripe → portail de gestion
+  discoverySource?: string;        // a-t-il répondu au sondage de découverte ?
 }
 
 export interface LinkGroup {
@@ -696,6 +699,21 @@ export const LIFETIME_PRICE = { amountCents: 5490, label: "54,90 €", plan: "el
 
 export type Billing = "monthly" | "lifetime";
 
+// Sondage « Comment as-tu découvert Movalink ? ». L'ordre est fixe : il fixe
+// aussi l'attribution des couleurs du camembert admin (couleur = entité, jamais
+// le rang). « other » (Autre) est toujours en gris neutre.
+export const DISCOVERY_OPTIONS: { key: string; label: string }[] = [
+  { key: "tiktok", label: "TikTok" },
+  { key: "instagram", label: "Instagram" },
+  { key: "youtube", label: "YouTube" },
+  { key: "twitch", label: "Twitch" },
+  { key: "x", label: "X (Twitter)" },
+  { key: "discord", label: "Discord" },
+  { key: "friend", label: "Un ami / bouche-à-oreille" },
+  { key: "google", label: "Recherche Google" },
+  { key: "other", label: "Autre" },
+];
+
 export function formatCents(cents: number): string {
   return (cents / 100).toFixed(2).replace(".", ",") + " €";
 }
@@ -944,5 +962,6 @@ export function toPublicUser(user: User): PublicUser {
     subscriptionStatus: user.subscriptionStatus,
     currentPeriodEnd: user.currentPeriodEnd,
     hasBillingAccount: Boolean(user.stripeCustomerId),
+    discoverySource: user.discoverySource,
   };
 }
