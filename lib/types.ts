@@ -249,6 +249,7 @@ export interface Theme {
   effectEmoji?: string; // emoji utilisé par l'effet "emoji" (pluie d'emoji)
   discordId?: string; // ID Discord pour le statut en direct (opt-in, Elite)
   cardIntro?: CardIntro; // animation d'entrée de la carte
+  tilt3d?: boolean; // boutons de liens en 3D qui suivent le curseur au survol
 }
 
 export type CardIntro = "none" | "fade" | "zoom" | "slide";

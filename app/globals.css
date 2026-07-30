@@ -366,3 +366,47 @@ body {
   background: #ffffff;
   color: #18181b;
 }
+
+/* ── Mode 3D des boutons de liens (composant Tilt3D) ─────────────────────── */
+.tilt3d {
+  display: block;
+}
+.tilt3d > * {
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tilt3d > * {
+    position: relative;
+    transform: perspective(650px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+      scale(calc(1 + var(--tilt, 0) * 0.045));
+    box-shadow: 0 calc(var(--tilt, 0) * 16px) calc(var(--tilt, 0) * 30px)
+      rgba(0, 0, 0, calc(var(--tilt, 0) * 0.3));
+  }
+  .tilt3d > *::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      200px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, 0.4),
+      transparent 60%
+    );
+    opacity: var(--tilt, 0);
+    transition: opacity 0.28s;
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tilt3d > * {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .tilt3d > *::after {
+    display: none;
+  }
+}

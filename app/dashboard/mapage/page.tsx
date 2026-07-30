@@ -2102,6 +2102,40 @@ function MaPageEditor() {
                       onLockedPreview={setUpsell}
                     />
 
+                    <div className="flex items-center justify-between gap-4 rounded-lg border border-gray-100 p-3 dark:border-zinc-800">
+                      <div>
+                        <p className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                          Boutons en 3D
+                          {!limits.fullCustom && (
+                            <Link href="/dashboard/premium" className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                              Pro
+                            </Link>
+                          )}
+                        </p>
+                        <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400">
+                          Les boutons s&apos;inclinent vers le curseur au survol, avec un reflet lumineux.
+                        </p>
+                      </div>
+                      {limits.fullCustom ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            haptics.toggle();
+                            update({ theme: { ...profile.theme, tilt3d: !profile.theme.tilt3d } });
+                          }}
+                          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none ${profile.theme.tilt3d ? "bg-zinc-900 dark:bg-white" : "bg-gray-200 dark:bg-zinc-700"}`}
+                          role="switch"
+                          aria-checked={!!profile.theme.tilt3d}
+                        >
+                          <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform dark:bg-zinc-900 ${profile.theme.tilt3d ? "translate-x-5" : "translate-x-0"}`} />
+                        </button>
+                      ) : (
+                        <Link href="/dashboard/premium" className="shrink-0 text-xs font-semibold text-indigo-500 hover:underline">
+                          Débloquer
+                        </Link>
+                      )}
+                    </div>
+
                     <div>
                       <p className={labelClass}>Mise en page</p>
                       <div className="flex gap-2">
