@@ -250,7 +250,32 @@ export interface Theme {
   discordId?: string; // ID Discord pour le statut en direct (opt-in, Elite)
   cardIntro?: CardIntro; // animation d'entrée de la carte
   tilt3d?: boolean; // boutons de liens en 3D qui suivent le curseur au survol
+  ledMode?: LedMode; // bande LED illuminée autour des boutons
+  ledColor?: string; // couleur de la LED (défaut = couleur d'accent)
+  ledSpeed?: number; // durée d'un cycle en dixièmes de seconde (10-80)
 }
+
+// Bande LED autour des boutons, façon ruban LED du commerce.
+export type LedMode =
+  | "off"
+  | "static"
+  | "rainbow"
+  | "breathe"
+  | "chase"
+  | "flash"
+  | "wave"
+  | "comet";
+
+export const LED_MODE_LABELS: Record<LedMode, string> = {
+  off: "Éteinte",
+  static: "Fixe",
+  rainbow: "Arc-en-ciel",
+  breathe: "Respiration",
+  chase: "Poursuite",
+  flash: "Clignotant",
+  wave: "Vague",
+  comet: "Comète",
+};
 
 export type CardIntro = "none" | "fade" | "zoom" | "slide";
 

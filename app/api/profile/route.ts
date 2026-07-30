@@ -18,6 +18,8 @@ import {
   LAYOUT_DEFAULTS,
   LayoutId,
   LinkGroup,
+  LED_MODE_LABELS,
+  LedMode,
   NAME_EFFECT_LABELS,
   NameEffect,
   effectiveLimits,
@@ -250,6 +252,13 @@ export async function PUT(request: NextRequest) {
       ? ciReq
       : undefined;
   const tilt3d = fc.tilt3d === true;
+  const ledReq = fc.ledMode;
+  const ledMode: LedMode | undefined =
+    typeof ledReq === "string" && ledReq in LED_MODE_LABELS
+      ? (ledReq as LedMode)
+      : undefined;
+  const ledColor = hex(fc.ledColor);
+  const ledSpeed = fcClampInt(fc.ledSpeed, 10, 80);
   const fullCustomFields = limits.fullCustom
     ? {
         ...(bgType ? { bgType } : {}),
@@ -270,6 +279,9 @@ export async function PUT(request: NextRequest) {
         ...(nameEffect ? { nameEffect } : {}),
         ...(cardIntro ? { cardIntro } : {}),
         ...(tilt3d ? { tilt3d: true } : {}),
+        ...(ledMode && ledMode !== "off" ? { ledMode } : {}),
+        ...(ledColor ? { ledColor } : {}),
+        ...(ledSpeed !== undefined ? { ledSpeed } : {}),
       }
     : {};
 

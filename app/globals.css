@@ -401,3 +401,160 @@ body {
 }
 /* « Réduire les animations » est géré en JS (Tilt3D) — les variables restent à
    0, donc au repos l'effet est neutre. */
+
+
+/* ── Bande LED autour des boutons (composant LedFrame) ───────────────────── */
+.led {
+  position: relative;
+  display: block;
+  /* --led-color : couleur · --led-radius : arrondi du bouton
+     --led-speed : durée d'un cycle · --led-bg : peinture du ruban (par mode) */
+  --led-bg: var(--led-color, #6366f1);
+}
+/* Le bouton passe au-dessus du ruban : seul le pourtour éclaire. */
+.led > :last-child {
+  position: relative;
+  z-index: 1;
+}
+
+/* Halo diffus. Le flou est porté par le parent et le masque par l'enfant :
+   dans cet ordre, la lumière garde un débord doux vers l'extérieur sans
+   éclairer le centre (sinon elle transparaît à travers les boutons en verre). */
+.led-glow {
+  position: absolute;
+  inset: -7px;
+  filter: blur(10px);
+  opacity: 0.9;
+  z-index: 0;
+  pointer-events: none;
+}
+.led-glow > i {
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--led-radius, 12px) + 7px);
+  background: var(--led-bg);
+  padding: 9px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+/* Ruban net : anneau de 3 px qui ceinture le bouton, centre évidé. */
+.led-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: calc(var(--led-radius, 12px) + 3px);
+  background: var(--led-bg);
+  padding: 3px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Modes ──────────────────────────────────────────────────────────────── */
+/* Les modes défilants peignent un dégradé linéaire plus large que le ruban et
+   font glisser sa position : une propriété standard, donc animable partout
+   (animer une variable CSS ne survit pas à la compilation, et faire tourner la
+   boîte ferait valser le bouton entier). */
+.led[data-mode="rainbow"] .led-glow > i,
+.led[data-mode="rainbow"] .led-ring,
+.led[data-mode="chase"] .led-glow > i,
+.led[data-mode="chase"] .led-ring,
+.led[data-mode="comet"] .led-glow > i,
+.led[data-mode="comet"] .led-ring {
+  background-size: 300% 100%;
+  background-repeat: repeat-x;
+}
+.led[data-mode="rainbow"] {
+  --led-bg: linear-gradient(
+    90deg,
+    #ff004c, #ff8a00, #ffe600, #00e07a, #00b3ff, #7a5cff, #ff004c
+  );
+}
+.led[data-mode="chase"] {
+  --led-bg: linear-gradient(
+    90deg,
+    transparent 0% 30%,
+    var(--led-color, #6366f1) 42%,
+    #fff 50%,
+    var(--led-color, #6366f1) 58%,
+    transparent 70% 100%
+  );
+}
+.led[data-mode="comet"] {
+  --led-bg: linear-gradient(
+    90deg,
+    transparent 0% 18%,
+    color-mix(in srgb, var(--led-color, #6366f1) 30%, transparent) 36%,
+    var(--led-color, #6366f1) 47%,
+    #fff 52%,
+    transparent 56% 100%
+  );
+}
+
+/* Les animations portent sur les éléments qui peignent le ruban. */
+.led[data-mode="rainbow"] .led-glow > i,
+.led[data-mode="rainbow"] .led-ring,
+.led[data-mode="chase"] .led-glow > i,
+.led[data-mode="chase"] .led-ring,
+.led[data-mode="comet"] .led-glow > i,
+.led[data-mode="comet"] .led-ring {
+  animation: led-slide var(--led-speed, 3s) linear infinite;
+}
+.led[data-mode="breathe"] .led-glow > i,
+.led[data-mode="breathe"] .led-ring {
+  animation: led-breathe var(--led-speed, 3s) ease-in-out infinite;
+}
+.led[data-mode="flash"] .led-glow > i,
+.led[data-mode="flash"] .led-ring {
+  animation: led-flash var(--led-speed, 3s) steps(1, end) infinite;
+}
+.led[data-mode="wave"] .led-glow > i,
+.led[data-mode="wave"] .led-ring {
+  animation: led-wave var(--led-speed, 3s) linear infinite;
+}
+
+@keyframes led-slide {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 300% 50%;
+  }
+}
+@keyframes led-breathe {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes led-flash {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.07;
+  }
+}
+@keyframes led-wave {
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
