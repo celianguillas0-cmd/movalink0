@@ -2,11 +2,11 @@
 
 import { useRef } from "react";
 
-// Inclinaison 3D haute qualité : l'élément enfant pivote vers le curseur avec
-// perspective, un léger zoom, une ombre portée dynamique et un reflet
-// spéculaire qui suit la souris. Le rendu (transform/glare) est piloté par CSS
-// (voir globals.css, .tilt3d) via des variables — donc fluide et GPU. Désactivé
-// sur tactile (pas de survol) et en cas de « réduire les animations ».
+// Inclinaison 3D haute qualité : l'élément enfant pivote vers le point actif
+// (curseur au survol sur ordinateur, doigt maintenu appuyé sur mobile) avec
+// perspective, léger zoom, ombre portée dynamique et reflet spéculaire qui suit
+// le point. Le rendu (transform/glare) est piloté par CSS (globals.css, .tilt3d)
+// via des variables — donc fluide et GPU. Désactivé si « réduire les animations ».
 export default function Tilt3D({
   children,
   max = 14,
@@ -16,12 +16,17 @@ export default function Tilt3D({
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
-  const onMove = (e: React.MouseEvent) => {
+  const reduced = () =>
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+  const setFromPoint = (clientX: number, clientY: number) => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || reduced()) return;
     const r = el.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width; // 0..1
-    const py = (e.clientY - r.top) / r.height; // 0..1
+    if (!r.width || !r.height) return;
+    const px = (clientX - r.left) / r.width; // 0..1
+    const py = (clientY - r.top) / r.height; // 0..1
     el.style.setProperty("--rx", `${(0.5 - py) * max}deg`);
     el.style.setProperty("--ry", `${(px - 0.5) * max}deg`);
     el.style.setProperty("--mx", `${px * 100}%`);
@@ -29,7 +34,7 @@ export default function Tilt3D({
     el.style.setProperty("--tilt", "1");
   };
 
-  const onLeave = () => {
+  const reset = () => {
     const el = ref.current;
     if (!el) return;
     el.style.setProperty("--rx", "0deg");
@@ -38,7 +43,22 @@ export default function Tilt3D({
   };
 
   return (
-    <div ref={ref} className="tilt3d" onMouseMove={onMove} onMouseLeave={onLeave}>
+    <div
+      ref={ref}
+      className="tilt3d"
+      onMouseMove={(e) => setFromPoint(e.clientX, e.clientY)}
+      onMouseLeave={reset}
+      onTouchStart={(e) => {
+        const t = e.touches[0];
+        if (t) setFromPoint(t.clientX, t.clientY);
+      }}
+      onTouchMove={(e) => {
+        const t = e.touches[0];
+        if (t) setFromPoint(t.clientX, t.clientY);
+      }}
+      onTouchEnd={reset}
+      onTouchCancel={reset}
+    >
       {children}
     </div>
   );
