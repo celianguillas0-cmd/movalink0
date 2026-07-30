@@ -2113,7 +2113,7 @@ function MaPageEditor() {
                           )}
                         </p>
                         <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400">
-                          Les boutons s&apos;inclinent vers le curseur au survol, avec un reflet lumineux.
+                          Boutons, jeux et réseaux s&apos;inclinent vers le curseur au survol, avec un reflet lumineux.
                         </p>
                       </div>
                       {limits.fullCustom ? (

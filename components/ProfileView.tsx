@@ -1033,16 +1033,19 @@ export default function ProfileView({
 
       {socialEntries.length > 0 && (
         <div className="mt-5 flex flex-wrap justify-center gap-2.5">
-          {socialEntries.map(([key, value]) => (
-            <SocialButton
-              key={key}
-              socialKey={key}
-              value={value}
-              accent={accent}
-              interactive={interactive}
-              username={profile.username}
-            />
-          ))}
+          {socialEntries.map(([key, value]) => {
+            const btn = (
+              <SocialButton
+                key={key}
+                socialKey={key}
+                value={value}
+                accent={accent}
+                interactive={interactive}
+                username={profile.username}
+              />
+            );
+            return tilt3d ? <Tilt3D key={key}>{btn}</Tilt3D> : btn;
+          })}
         </div>
       )}
 
@@ -1096,17 +1099,20 @@ export default function ProfileView({
             Mes jeux
           </div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {profile.games.filter((g) => g.game).map((game) => (
-              <div
-                key={game.id}
-                className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5"
-              >
-                <p className="truncate text-sm font-semibold">{game.game}</p>
-                {game.pseudo && (
-                  <p className="truncate text-xs text-white/60">{game.pseudo}</p>
-                )}
-              </div>
-            ))}
+            {profile.games.filter((g) => g.game).map((game) => {
+              const card = (
+                <div
+                  key={game.id}
+                  className="h-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5"
+                >
+                  <p className="truncate text-sm font-semibold">{game.game}</p>
+                  {game.pseudo && (
+                    <p className="truncate text-xs text-white/60">{game.pseudo}</p>
+                  )}
+                </div>
+              );
+              return tilt3d ? <Tilt3D key={game.id}>{card}</Tilt3D> : card;
+            })}
           </div>
         </div>
       )}
