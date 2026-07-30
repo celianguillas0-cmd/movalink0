@@ -29,12 +29,16 @@ function applyTilt(el: HTMLElement, clientX: number, clientY: number) {
   el.style.setProperty("--mx", `${px * 100}%`);
   el.style.setProperty("--my", `${py * 100}%`);
   el.style.setProperty("--tilt", "1");
+  // Aux angles prononcés l'élément déborde sur ses voisins : il doit passer
+  // au-dessus d'eux pour rester entièrement visible.
+  el.style.zIndex = "10";
 }
 
 function resetTilt(el: HTMLElement) {
   el.style.setProperty("--rx", "0deg");
   el.style.setProperty("--ry", "0deg");
   el.style.setProperty("--tilt", "0");
+  el.style.zIndex = "";
 }
 
 function installTouchTracking() {
@@ -74,7 +78,7 @@ function installTouchTracking() {
 // fluide et accéléré par le GPU.
 export default function Tilt3D({
   children,
-  max = 14,
+  max = 50,
 }: {
   children: React.ReactNode;
   max?: number;
