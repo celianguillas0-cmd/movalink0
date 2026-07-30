@@ -372,41 +372,32 @@ body {
   display: block;
 }
 .tilt3d > * {
+  position: relative;
   transform-style: preserve-3d;
   will-change: transform;
   transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
     box-shadow 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* Piloté par les variables (survol souris OU maintien du doigt sur mobile).
+     Au repos --tilt vaut 0 : rotation nulle, échelle 1, donc aucun effet. */
+  transform: perspective(650px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+    scale(calc(1 + var(--tilt, 0) * 0.045));
+  box-shadow: 0 calc(var(--tilt, 0) * 16px) calc(var(--tilt, 0) * 30px)
+    rgba(0, 0, 0, calc(var(--tilt, 0) * 0.3));
 }
-@media (hover: hover) and (pointer: fine) {
-  .tilt3d > * {
-    position: relative;
-    transform: perspective(650px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
-      scale(calc(1 + var(--tilt, 0) * 0.045));
-    box-shadow: 0 calc(var(--tilt, 0) * 16px) calc(var(--tilt, 0) * 30px)
-      rgba(0, 0, 0, calc(var(--tilt, 0) * 0.3));
-  }
-  .tilt3d > *::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(
-      200px circle at var(--mx, 50%) var(--my, 50%),
-      rgba(255, 255, 255, 0.4),
-      transparent 60%
-    );
-    opacity: var(--tilt, 0);
-    transition: opacity 0.28s;
-    pointer-events: none;
-    mix-blend-mode: soft-light;
-  }
+.tilt3d > *::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    200px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.4),
+    transparent 60%
+  );
+  opacity: var(--tilt, 0);
+  transition: opacity 0.28s;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
 }
-@media (prefers-reduced-motion: reduce) {
-  .tilt3d > * {
-    transform: none !important;
-    box-shadow: none !important;
-  }
-  .tilt3d > *::after {
-    display: none;
-  }
-}
+/* « Réduire les animations » est géré en JS (Tilt3D) — les variables restent à
+   0, donc au repos l'effet est neutre. */
