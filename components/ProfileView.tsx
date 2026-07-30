@@ -5,6 +5,7 @@ import Link from "next/link";
 import QRCode from "qrcode";
 import EffectLayer from "./Effects";
 import Tilt3D from "./Tilt3D";
+import LedFrame from "./LedFrame";
 import { haptics } from "@/lib/haptics";
 import {
   CopyIcon,
@@ -25,6 +26,7 @@ import {
   FontId,
   FULLCUSTOM_DEFAULTS,
   LAYOUT_DEFAULTS,
+  LedMode,
   Profile,
   SocialLinks,
   THEME_DEFAULTS,
@@ -790,6 +792,9 @@ export default function ProfileView({
   const frame = avatarFrameProps(avatarFrame, accent);
   const btn = linkButtonProps(buttonStyle, accent);
   const tilt3d = theme.tilt3d === true;
+  const ledMode: LedMode = theme.ledMode ?? "off";
+  const ledColor = theme.ledColor || accent;
+  const ledSpeed = theme.ledSpeed ?? 30;
   const cursorCss = cursorValue(cursor, accent);
 
   const cardWidth = theme.cardWidth ?? LAYOUT_DEFAULTS.cardWidth;
@@ -883,7 +888,22 @@ export default function ProfileView({
         <LinkIcon className="h-4 w-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
       </a>
     );
-    return tilt3d ? <Tilt3D key={link.id}>{anchor}</Tilt3D> : anchor;
+    // La LED est à l'intérieur du cadre 3D : ruban et bouton s'inclinent ensemble.
+    const lit =
+      ledMode === "off" ? (
+        anchor
+      ) : (
+        <LedFrame
+          key={link.id}
+          mode={ledMode}
+          color={ledColor}
+          speed={ledSpeed}
+          buttonStyle={buttonStyle}
+        >
+          {anchor}
+        </LedFrame>
+      );
+    return tilt3d ? <Tilt3D key={link.id}>{lit}</Tilt3D> : lit;
   };
 
   // Style du pseudo selon l'effet choisi.

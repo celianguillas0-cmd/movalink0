@@ -42,6 +42,8 @@ import {
   FontId,
   FULLCUSTOM_DEFAULTS,
   LAYOUT_DEFAULTS,
+  LED_MODE_LABELS,
+  LedMode,
   LIFETIME_PRICE,
   LinkGroup,
   MONTHLY_PRICES,
@@ -2131,6 +2133,93 @@ function MaPageEditor() {
                         </button>
                       ) : (
                         <Link href="/dashboard/premium" className="shrink-0 text-xs font-semibold text-indigo-500 hover:underline">
+                          Débloquer
+                        </Link>
+                      )}
+                    </div>
+
+                    {/* Bande LED autour des boutons */}
+                    <div className="rounded-lg border border-gray-100 p-3 dark:border-zinc-800">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                            Bande LED
+                            {!limits.fullCustom && (
+                              <Link href="/dashboard/premium" className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                                Pro
+                              </Link>
+                            )}
+                          </p>
+                          <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400">
+                            Un ruban lumineux entoure tes boutons, comme une vraie bande LED.
+                          </p>
+                        </div>
+                      </div>
+
+                      {limits.fullCustom ? (
+                        <>
+                          <div className="mt-3 grid grid-cols-4 gap-2">
+                            {(Object.keys(LED_MODE_LABELS) as LedMode[]).map((m) => {
+                              const on = (profile.theme.ledMode ?? "off") === m;
+                              return (
+                                <button
+                                  key={m}
+                                  type="button"
+                                  onClick={() => {
+                                    haptics.select();
+                                    update({ theme: { ...profile.theme, ledMode: m } });
+                                  }}
+                                  className={`rounded-lg border px-2 py-2 text-xs font-medium transition-all duration-150 active:scale-95 ${
+                                    on
+                                      ? "border-zinc-900 bg-zinc-900 text-white dark:border-white dark:bg-white dark:text-zinc-900"
+                                      : "border-gray-200 text-gray-600 hover:border-gray-400 dark:border-zinc-700 dark:text-zinc-300"
+                                  }`}
+                                >
+                                  {LED_MODE_LABELS[m]}
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {(profile.theme.ledMode ?? "off") !== "off" && (
+                            <div className="mt-3 flex flex-wrap items-center gap-4">
+                              <div className="flex items-center gap-2">
+                                <label className="text-xs text-gray-500 dark:text-zinc-400">
+                                  Couleur
+                                </label>
+                                <input
+                                  type="color"
+                                  value={profile.theme.ledColor ?? profile.theme.accent}
+                                  onChange={(e) =>
+                                    update({ theme: { ...profile.theme, ledColor: e.target.value } })
+                                  }
+                                  className="h-8 w-8 cursor-pointer rounded-full border border-gray-200 bg-transparent dark:border-zinc-700"
+                                />
+                              </div>
+                              <div className="flex min-w-[190px] flex-1 items-center gap-2">
+                                <label className="shrink-0 text-xs text-gray-500 dark:text-zinc-400">
+                                  Vitesse
+                                </label>
+                                <input
+                                  type="range"
+                                  min={10}
+                                  max={80}
+                                  step={5}
+                                  // Curseur inversé : à droite = plus rapide.
+                                  value={90 - (profile.theme.ledSpeed ?? 30)}
+                                  onChange={(e) =>
+                                    update({
+                                      theme: { ...profile.theme, ledSpeed: 90 - Number(e.target.value) },
+                                    })
+                                  }
+                                  className="w-full"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <Link href="/dashboard/premium" className="mt-3 inline-block text-xs font-semibold text-indigo-500 hover:underline">
                           Débloquer
                         </Link>
                       )}
