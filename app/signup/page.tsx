@@ -10,7 +10,6 @@ import AuthCard, {
 } from "@/components/AuthCard";
 import PasswordInput from "@/components/PasswordInput";
 import CheckboxRow from "@/components/CheckboxRow";
-import { clearCachedMe } from "@/lib/me-client";
 
 function SignupForm() {
   const searchParams = useSearchParams();
@@ -23,7 +22,6 @@ function SignupForm() {
   const [newsletter, setNewsletter] = useState(false);
   const router = useRouter();
   const targetPlan = searchParams.get("plan");
-  const add = searchParams.get("add") === "1";
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,19 +35,14 @@ function SignupForm() {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username, password, ref: searchParams.get("ref") ?? "", add }),
+        body: JSON.stringify({ email, username, password, ref: searchParams.get("ref") ?? "" }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "Une erreur est survenue.");
         return;
       }
-      clearCachedMe();
-      if (add) {
-        window.location.assign("/dashboard");
-      } else {
-        router.push(targetPlan ? "/dashboard/premium" : "/dashboard");
-      }
+      router.push(targetPlan ? "/dashboard/premium" : "/dashboard");
     } catch {
       setError("Connexion impossible. Réessaie.");
     } finally {

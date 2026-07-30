@@ -32,7 +32,7 @@ function isLocked(email: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
-  let body: { email?: string; password?: string; add?: boolean };
+  let body: { email?: string; password?: string };
   try {
     body = await request.json();
   } catch {
@@ -59,6 +59,6 @@ export async function POST(request: NextRequest) {
   }
 
   clearFailures(email);
-  await createSession(user.id, { add: body.add === true });
+  await createSession(user.id);
   return NextResponse.json({ ok: true, username: user.username });
 }

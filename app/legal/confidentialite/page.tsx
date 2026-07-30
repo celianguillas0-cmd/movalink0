@@ -11,7 +11,7 @@ export default function PrivacyPage() {
   return (
     <article>
       <h1>Politique de confidentialité</h1>
-      <p>Dernière mise à jour : 27 juillet 2026</p>
+      <p>Dernière mise à jour : 28 juillet 2026</p>
       <p>
         Cette politique décrit comment {SITE_NAME} ({SITE_URL}) collecte,
         utilise et protège tes données personnelles, conformément au règlement
@@ -119,6 +119,17 @@ export default function PrivacyPage() {
         exercice de droits, etc.) sont conservés pendant une durée de 3 ans à
         des fins de suivi et de preuve.
       </p>
+      <h3>2.8 Réponse au sondage de découverte (facultatif)</h3>
+      <p>
+        Un court sondage facultatif (« Comment as-tu découvert Movalink ? »)
+        peut t'être proposé dans ton tableau de bord. Si tu y réponds, nous
+        conservons le canal choisi (ex. réseau social, ami, recherche) et, le
+        cas échéant, la précision libre que tu saisis, afin d'établir des
+        statistiques agrégées servant à améliorer le Service. Tu peux ignorer ce
+        sondage (« Passer ») ; sa base légale est ton consentement. Ta réponse
+        individuelle est supprimée avec ton compte ; seuls des compteurs
+        agrégés et anonymes sont conservés à des fins statistiques.
+      </p>
 
       <h2>3. Cookies et traceurs</h2>
       <p>
@@ -164,6 +175,10 @@ export default function PrivacyPage() {
             <tr>
               <td className="px-4 py-3">Réponse aux demandes (support, exercice de droits)</td>
               <td className="px-4 py-3">Intérêt légitime + obligations légales (6.1.f et 6.1.c)</td>
+            </tr>
+            <tr>
+              <td className="px-4 py-3">Sondage de découverte (facultatif) et statistiques d'amélioration</td>
+              <td className="px-4 py-3">Consentement (6.1.a)</td>
             </tr>
             <tr>
               <td className="px-4 py-3">Conservation comptable des justificatifs de paiement</td>
@@ -246,6 +261,11 @@ export default function PrivacyPage() {
         <li>
           <strong>Correspondances email (support, droits)</strong> : 3 ans à
           compter du dernier échange.
+        </li>
+        <li>
+          <strong>Réponse au sondage de découverte</strong> : la réponse liée à
+          ton compte est supprimée avec celui-ci ; les compteurs agrégés et
+          anonymes sont conservés sans limite à des fins statistiques.
         </li>
       </ul>
 
