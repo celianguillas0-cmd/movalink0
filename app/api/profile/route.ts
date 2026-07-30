@@ -249,6 +249,7 @@ export async function PUT(request: NextRequest) {
     ciReq === "none" || ciReq === "fade" || ciReq === "zoom" || ciReq === "slide"
       ? ciReq
       : undefined;
+  const tilt3d = fc.tilt3d === true;
   const fullCustomFields = limits.fullCustom
     ? {
         ...(bgType ? { bgType } : {}),
@@ -268,6 +269,7 @@ export async function PUT(request: NextRequest) {
         ...(buttonTextColor ? { buttonTextColor } : {}),
         ...(nameEffect ? { nameEffect } : {}),
         ...(cardIntro ? { cardIntro } : {}),
+        ...(tilt3d ? { tilt3d: true } : {}),
       }
     : {};
 

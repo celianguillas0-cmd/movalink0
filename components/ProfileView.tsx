@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import QRCode from "qrcode";
 import EffectLayer from "./Effects";
+import Tilt3D from "./Tilt3D";
 import { haptics } from "@/lib/haptics";
 import {
   CopyIcon,
@@ -788,6 +789,7 @@ export default function ProfileView({
   const nameFontMeta = FONT_META[nameFont] ?? FONT_META.classic;
   const frame = avatarFrameProps(avatarFrame, accent);
   const btn = linkButtonProps(buttonStyle, accent);
+  const tilt3d = theme.tilt3d === true;
   const cursorCss = cursorValue(cursor, accent);
 
   const cardWidth = theme.cardWidth ?? LAYOUT_DEFAULTS.cardWidth;
@@ -856,6 +858,33 @@ export default function ProfileView({
   const bioColor = theme.bioColor;
   const buttonTextColor = theme.buttonTextColor;
   const nameEffect = theme.nameEffect ?? "none";
+
+  // Rendu d'un bouton de lien, optionnellement inclinable en 3D au survol.
+  const renderLink = (link: Profile["links"][number]) => {
+    const lbtn = link.color ? linkButtonProps(buttonStyle, link.color) : btn;
+    const anchor = (
+      <a
+        key={link.id}
+        href={link.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={lbtn.className}
+        style={{ ...lbtn.style, color: buttonTextColor }}
+        onClick={() => {
+          if (interactive) track(profile.username, "click", link.id);
+        }}
+      >
+        <span className="flex min-w-0 items-center gap-2">
+          {link.icon && (
+            <span className="shrink-0 text-base leading-none">{link.icon}</span>
+          )}
+          <span className="truncate">{link.label}</span>
+        </span>
+        <LinkIcon className="h-4 w-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
+      </a>
+    );
+    return tilt3d ? <Tilt3D key={link.id}>{anchor}</Tilt3D> : anchor;
+  };
 
   // Style du pseudo selon l'effet choisi.
   const nameEffectStyle: React.CSSProperties = {};
@@ -1031,26 +1060,7 @@ export default function ProfileView({
             const groups = profile.linkGroups ?? [];
 
             if (groups.length === 0) {
-              return active.map((link) => {
-                const lbtn = link.color ? linkButtonProps(buttonStyle, link.color) : btn;
-                return (
-                  <a
-                    key={link.id}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={lbtn.className}
-                    style={{ ...lbtn.style, color: buttonTextColor }}
-                    onClick={() => { if (interactive) track(profile.username, "click", link.id); }}
-                  >
-                    <span className="flex min-w-0 items-center gap-2">
-                      {link.icon && <span className="shrink-0 text-base leading-none">{link.icon}</span>}
-                      <span className="truncate">{link.label}</span>
-                    </span>
-                    <LinkIcon className="h-4 w-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
-                  </a>
-                );
-              });
+              return active.map(renderLink);
             }
 
             // Grouped rendering: ungrouped first, then each group
@@ -1058,24 +1068,7 @@ export default function ProfileView({
             const result: React.ReactNode[] = [];
 
             ungrouped.forEach((link) => {
-              const lbtn = link.color ? linkButtonProps(buttonStyle, link.color) : btn;
-              result.push(
-                <a
-                  key={link.id}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={lbtn.className}
-                  style={{ ...lbtn.style, color: buttonTextColor }}
-                  onClick={() => { if (interactive) track(profile.username, "click", link.id); }}
-                >
-                  <span className="flex min-w-0 items-center gap-2">
-                    {link.icon && <span className="shrink-0 text-base leading-none">{link.icon}</span>}
-                    <span className="truncate">{link.label}</span>
-                  </span>
-                  <LinkIcon className="h-4 w-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
-                </a>
-              );
+              result.push(renderLink(link));
             });
 
             groups.forEach((group) => {
@@ -1087,24 +1080,7 @@ export default function ProfileView({
                 </p>
               );
               gLinks.forEach((link) => {
-                const lbtn = link.color ? linkButtonProps(buttonStyle, link.color) : btn;
-                result.push(
-                  <a
-                    key={link.id}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={lbtn.className}
-                    style={{ ...lbtn.style, color: buttonTextColor }}
-                    onClick={() => { if (interactive) track(profile.username, "click", link.id); }}
-                  >
-                    <span className="flex min-w-0 items-center gap-2">
-                      {link.icon && <span className="shrink-0 text-base leading-none">{link.icon}</span>}
-                      <span className="truncate">{link.label}</span>
-                    </span>
-                    <LinkIcon className="h-4 w-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
-                  </a>
-                );
+                result.push(renderLink(link));
               });
             });
 
