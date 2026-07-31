@@ -53,6 +53,8 @@ export default function LedFrame({
         <i />
       </span>
       <span className="led-ring" aria-hidden />
+      {/* Cœur incandescent du tube : visible uniquement en néon flexible. */}
+      <span className="led-core" aria-hidden />
       {children}
     </div>
   );
