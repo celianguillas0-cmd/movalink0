@@ -139,9 +139,15 @@ export default function DashboardHomePage() {
             </p>
           </div>
           <div className="flex shrink-0 gap-2">
+            {/* Action principale : c'est en collant ce lien dans ses bios que
+                l'utilisateur fait vivre sa page — elle mérite le bouton plein. */}
             <button
               type="button"
-              className={smallBtnClass}
+              className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold shadow-sm transition-all duration-150 active:scale-95 ${
+                copied
+                  ? "bg-emerald-500 text-white"
+                  : "bg-zinc-900 text-white hover:shadow-md dark:bg-white dark:text-zinc-900"
+              }`}
               onClick={() => {
                 navigator.clipboard?.writeText(`https://${publicUrl}`).catch(() => {});
                 haptics.success();
@@ -173,10 +179,7 @@ export default function DashboardHomePage() {
             >
               {qrDataUrl ? "Masquer le QR" : "QR code"}
             </button>
-            <Link
-              href="/dashboard/mapage"
-              className="rounded-lg bg-zinc-900 dark:bg-white px-3 py-1.5 text-xs font-semibold text-white dark:text-zinc-900 transition-opacity hover:opacity-90"
-            >
+            <Link href="/dashboard/mapage" className={smallBtnClass}>
               Modifier
             </Link>
           </div>
