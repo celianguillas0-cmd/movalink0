@@ -78,7 +78,7 @@ function installTouchTracking() {
 // fluide et accéléré par le GPU.
 export default function Tilt3D({
   children,
-  max = 50,
+  max = 100,
 }: {
   children: React.ReactNode;
   max?: number;
