@@ -265,7 +265,8 @@ export type LedMode =
   | "chase"
   | "flash"
   | "wave"
-  | "comet";
+  | "comet"
+  | "neon";
 
 export const LED_MODE_LABELS: Record<LedMode, string> = {
   off: "Éteinte",
@@ -276,6 +277,7 @@ export const LED_MODE_LABELS: Record<LedMode, string> = {
   flash: "Clignotant",
   wave: "Vague",
   comet: "Comète",
+  neon: "Néon flexible",
 };
 
 export type CardIntro = "none" | "fade" | "zoom" | "slide";
