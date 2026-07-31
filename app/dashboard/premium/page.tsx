@@ -49,7 +49,7 @@ const PLAN_FEATURES: Record<Exclude<Plan, "free">, string[]> = {
   ],
   elite: [
     "50 liens · 50 jeux",
-    "55 effets animés très travaillés (feux d'artifice, hyperespace, éclairs, papillons, lanternes…)",
+    "56 effets animés très travaillés (feux d'artifice, hyperespace, éclairs, papillons, lanternes…)",
     "Statut Discord en direct sur ta page",
     "Thèmes exclusifs Elite · jusqu'à 5 décorations",
     "Filigrane movalink.vercel.app retiré",
