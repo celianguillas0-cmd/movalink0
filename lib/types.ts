@@ -253,6 +253,7 @@ export interface Theme {
   ledMode?: LedMode; // bande LED illuminée autour des boutons
   ledColor?: string; // couleur de la LED (défaut = couleur d'accent)
   ledSpeed?: number; // durée d'un cycle en dixièmes de seconde (10-80)
+  ledPower?: number; // puissance lumineuse en % (10-100) : débord vers l'intérieur
 }
 
 // Bande LED autour des boutons, façon ruban LED du commerce.

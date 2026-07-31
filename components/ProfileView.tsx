@@ -795,6 +795,7 @@ export default function ProfileView({
   const ledMode: LedMode = theme.ledMode ?? "off";
   const ledColor = theme.ledColor || accent;
   const ledSpeed = theme.ledSpeed ?? 30;
+  const ledPower = theme.ledPower ?? 60;
   const cursorCss = cursorValue(cursor, accent);
 
   const cardWidth = theme.cardWidth ?? LAYOUT_DEFAULTS.cardWidth;
@@ -898,6 +899,7 @@ export default function ProfileView({
           mode={ledMode}
           color={ledColor}
           speed={ledSpeed}
+          power={ledPower}
           buttonStyle={buttonStyle}
         >
           {anchor}

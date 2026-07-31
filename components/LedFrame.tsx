@@ -24,12 +24,14 @@ export default function LedFrame({
   mode,
   color,
   speed,
+  power,
   buttonStyle,
   children,
 }: {
   mode: LedMode;
   color: string;
   speed: number; // durée d'un cycle, en dixièmes de seconde
+  power: number; // puissance lumineuse en % (10-100)
   buttonStyle: ButtonStyleId;
   children: React.ReactNode;
 }) {
@@ -43,6 +45,7 @@ export default function LedFrame({
           "--led-color": color,
           "--led-radius": `${RADIUS[buttonStyle] ?? 12}px`,
           "--led-speed": `${Math.max(1, speed) / 10}s`,
+          "--led-power": `${Math.min(100, Math.max(10, power)) / 100}`,
         } as React.CSSProperties
       }
     >

@@ -2215,6 +2215,24 @@ function MaPageEditor() {
                                   className="w-full"
                                 />
                               </div>
+                              <div className="flex min-w-[190px] flex-1 items-center gap-2">
+                                <label className="shrink-0 text-xs text-gray-500 dark:text-zinc-400">
+                                  Puissance
+                                </label>
+                                <input
+                                  type="range"
+                                  min={10}
+                                  max={100}
+                                  step={5}
+                                  value={profile.theme.ledPower ?? 60}
+                                  onChange={(e) =>
+                                    update({
+                                      theme: { ...profile.theme, ledPower: Number(e.target.value) },
+                                    })
+                                  }
+                                  className="w-full"
+                                />
+                              </div>
                             </div>
                           )}
                         </>
