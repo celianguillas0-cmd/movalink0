@@ -107,6 +107,7 @@ function CanvasEffect({
         topography: 0,
         godRays: 0,
         mist: 0,
+        neonTubes: 0,
       };
       const count = counts[effect] ?? 110;
       particles = makeParticles(count, canvas.width, canvas.height);
@@ -510,6 +511,58 @@ function CanvasEffect({
           ctx.fill();
         }
         ctx.restore();
+      } else if (effect === "neonTubes") {
+        // Tubes néon flexibles : longs rubans de silicone lumineux qui
+        // serpentent lentement. Chacun est peint en trois passes — halo diffus,
+        // gaine colorée, cœur incandescent — et scintille par à-coups comme un
+        // vrai néon.
+        ctx.clearRect(0, 0, w, h);
+        const tubes = 5;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        for (let k = 0; k < tubes; k++) {
+          const hue = (k * 67 + t * 0.15) % 360;
+          const baseY = h * (0.14 + k * 0.18);
+          const amp = 26 + k * 9;
+          const speed = t / (55 + k * 12);
+          // Scintillement : brèves chutes d'intensité, aléatoires mais stables.
+          const flick =
+            0.82 + 0.18 * Math.sin(t / 3 + k * 5) * Math.sin(t / 17 + k);
+          const trace = () => {
+            ctx.beginPath();
+            for (let x = -20; x <= w + 20; x += 10) {
+              const y =
+                baseY +
+                Math.sin(x / 150 + speed + k) * amp +
+                Math.sin(x / 63 - speed * 1.4 + k * 2) * (amp * 0.32);
+              if (x === -20) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+          };
+          ctx.save();
+          // 1) halo diffus autour du tube
+          ctx.globalCompositeOperation = "lighter";
+          ctx.shadowBlur = 26;
+          ctx.shadowColor = `hsl(${hue}, 100%, 60%)`;
+          ctx.strokeStyle = `hsla(${hue}, 100%, 58%, ${0.28 * flick})`;
+          ctx.lineWidth = 13;
+          trace();
+          ctx.stroke();
+          // 2) gaine colorée
+          ctx.shadowBlur = 14;
+          ctx.strokeStyle = `hsla(${hue}, 100%, 62%, ${0.85 * flick})`;
+          ctx.lineWidth = 6;
+          trace();
+          ctx.stroke();
+          // 3) cœur incandescent
+          ctx.shadowBlur = 6;
+          ctx.shadowColor = `hsl(${hue}, 100%, 85%)`;
+          ctx.strokeStyle = `hsla(${hue}, 100%, 92%, ${0.95 * flick})`;
+          ctx.lineWidth = 1.8;
+          trace();
+          ctx.stroke();
+          ctx.restore();
+        }
       } else if (effect === "mist") {
         // Brume : nappes de brouillard douces qui glissent latéralement.
         ctx.clearRect(0, 0, w, h);

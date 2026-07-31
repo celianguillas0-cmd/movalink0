@@ -59,7 +59,8 @@ export type EffectId =
   | "dotGrid"
   | "topography"
   | "godRays"
-  | "mist";
+  | "mist"
+  | "neonTubes";
 
 export type LayoutId = "card" | "clean";
 
@@ -627,6 +628,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
       "topography",
       "godRays",
       "mist",
+      "neonTubes",
     ],
     fonts: ALL_FONTS,
     buttonStyles: [
@@ -818,6 +820,7 @@ export const EFFECT_LABELS: Record<EffectId, string> = {
   topography: "Topographie",
   godRays: "Rayons de lumière",
   mist: "Brume",
+  neonTubes: "Tubes néon",
 };
 
 export const FONT_META: Record<
