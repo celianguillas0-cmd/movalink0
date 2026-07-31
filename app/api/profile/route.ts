@@ -259,6 +259,7 @@ export async function PUT(request: NextRequest) {
       : undefined;
   const ledColor = hex(fc.ledColor);
   const ledSpeed = fcClampInt(fc.ledSpeed, 10, 80);
+  const ledPower = fcClampInt(fc.ledPower, 10, 100);
   const fullCustomFields = limits.fullCustom
     ? {
         ...(bgType ? { bgType } : {}),
@@ -282,6 +283,7 @@ export async function PUT(request: NextRequest) {
         ...(ledMode && ledMode !== "off" ? { ledMode } : {}),
         ...(ledColor ? { ledColor } : {}),
         ...(ledSpeed !== undefined ? { ledSpeed } : {}),
+        ...(ledPower !== undefined ? { ledPower } : {}),
       }
     : {};
 

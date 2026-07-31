@@ -420,11 +420,14 @@ body {
 /* Halo diffus. Le flou est porté par le parent et le masque par l'enfant :
    dans cet ordre, la lumière garde un débord doux vers l'extérieur sans
    éclairer le centre (sinon elle transparaît à travers les boutons en verre). */
+/* --led-power (0.1 à 1) règle la puissance : plus elle monte, plus le halo
+   est opaque, large et diffus — donc plus la lumière déborde vers l'intérieur
+   du bouton. Au minimum, il ne reste qu'un fin liseré. */
 .led-glow {
   position: absolute;
   inset: -7px;
-  filter: blur(10px);
-  opacity: 0.9;
+  filter: blur(calc(4px + var(--led-power, 0.6) * 12px));
+  opacity: calc(0.25 + var(--led-power, 0.6) * 0.75);
   z-index: 0;
   pointer-events: none;
 }
@@ -433,7 +436,7 @@ body {
   inset: 0;
   border-radius: calc(var(--led-radius, 12px) + 7px);
   background: var(--led-bg);
-  padding: 9px;
+  padding: calc(3px + var(--led-power, 0.6) * 11px);
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
