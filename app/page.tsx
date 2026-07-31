@@ -31,7 +31,7 @@ const FEATURES = [
     ),
   },
   {
-    label: "55 effets animés",
+    label: "56 effets animés",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M12 2l2.4 6.2L21 9.3l-5 4.3 1.5 6.9L12 17l-5.5 3.5 1.5-6.9-5-4.3 6.6-1.1z" strokeLinejoin="round" />
@@ -57,7 +57,7 @@ export default function HomePage() {
           </h1>
           <p className="mt-5 max-w-xl text-base text-gray-500 sm:text-lg dark:text-zinc-400">
             La page qui transforme tes visiteurs en communauté : tous tes liens,
-            tes jeux et tes stats — sublimés par 55 effets animés que personne
+            tes jeux et tes stats — sublimés par 56 effets animés que personne
             d&apos;autre n&apos;a. Une seule URL, partout.
           </p>
           <div className="mt-8 w-full max-w-md">

@@ -108,6 +108,7 @@ function CanvasEffect({
         godRays: 0,
         mist: 0,
         neonTubes: 0,
+        angelChain: 0,
       };
       const count = counts[effect] ?? 110;
       particles = makeParticles(count, canvas.width, canvas.height);
@@ -509,6 +510,103 @@ function CanvasEffect({
           ctx.lineTo(ex - dx, ey - dy);
           ctx.closePath();
           ctx.fill();
+        }
+        ctx.restore();
+      } else if (effect === "angelChain") {
+        // Chaîne angélique : un chapelet de maillons d'or en lévitation qui
+        // ondule dans une lueur céleste. Les maillons alternent d'orientation
+        // comme une vraie chaîne, chacun nimbé de son halo, ponctués d'éclats.
+        ctx.clearRect(0, 0, w, h);
+
+        // Lueur divine diffuse derrière la chaîne.
+        const halo = ctx.createRadialGradient(
+          w / 2,
+          h / 2,
+          0,
+          w / 2,
+          h / 2,
+          Math.max(w, h) * 0.55
+        );
+        halo.addColorStop(0, "rgba(255, 226, 150, 0.16)");
+        halo.addColorStop(0.5, "rgba(255, 198, 92, 0.06)");
+        halo.addColorStop(1, "rgba(255, 190, 80, 0)");
+        ctx.fillStyle = halo;
+        ctx.fillRect(0, 0, w, h);
+
+        // Trajectoire de la chaîne : une onde douce qui traverse la page.
+        const pathY = (px: number) =>
+          h * 0.5 +
+          Math.sin(px * Math.PI * 2.1 + t / 80) * h * 0.2 +
+          Math.sin(px * 6.5 - t / 55) * 12;
+
+        const links = 30;
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (let i = 0; i <= links; i++) {
+          const px = i / links;
+          const x = -40 + px * (w + 80);
+          const y = pathY(px);
+          // Tangente locale, pour orienter le maillon le long de la chaîne.
+          const eps = 0.004;
+          const ang = Math.atan2(
+            pathY(px + eps) - pathY(px - eps),
+            (w + 80) * 2 * eps
+          );
+          // Un maillon sur deux est vu de profil : l'alternance fait la chaîne.
+          const edgeOn = i % 2 === 0;
+          const rx = 17;
+          const ry = edgeOn ? 6 : 13;
+          // Respiration lumineuse, décalée le long de la chaîne.
+          const shine = 0.62 + 0.38 * Math.sin(t / 22 - i * 0.55);
+
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(ang);
+
+          // 1) auréole du maillon
+          ctx.shadowBlur = 22;
+          ctx.shadowColor = "rgba(255, 214, 130, 0.95)";
+          ctx.strokeStyle = `rgba(255, 205, 110, ${0.3 * shine})`;
+          ctx.lineWidth = 7;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // 2) or du maillon
+          ctx.shadowBlur = 12;
+          ctx.strokeStyle = `rgba(255, 198, 88, ${0.95 * shine})`;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // 3) reflet blanc sur la partie haute
+          ctx.shadowBlur = 4;
+          ctx.strokeStyle = `rgba(255, 251, 232, ${0.9 * shine})`;
+          ctx.lineWidth = 1.1;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, rx, ry, 0, Math.PI * 1.15, Math.PI * 1.95);
+          ctx.stroke();
+          ctx.restore();
+
+          // Éclat en croix qui parcourt la chaîne, un maillon à la fois.
+          const sparkPhase = (t / 14 - i) % links;
+          if (sparkPhase >= 0 && sparkPhase < 1.6) {
+            const s = (1 - sparkPhase / 1.6) * 16;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.shadowBlur = 16;
+            ctx.shadowColor = "#fff6d0";
+            ctx.strokeStyle = "rgba(255, 252, 235, 0.95)";
+            ctx.lineWidth = 1.4;
+            ctx.beginPath();
+            ctx.moveTo(-s, 0);
+            ctx.lineTo(s, 0);
+            ctx.moveTo(0, -s);
+            ctx.lineTo(0, s);
+            ctx.stroke();
+            ctx.restore();
+          }
         }
         ctx.restore();
       } else if (effect === "neonTubes") {

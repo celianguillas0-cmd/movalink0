@@ -60,7 +60,8 @@ export type EffectId =
   | "topography"
   | "godRays"
   | "mist"
-  | "neonTubes";
+  | "neonTubes"
+  | "angelChain";
 
 export type LayoutId = "card" | "clean";
 
@@ -629,6 +630,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
       "godRays",
       "mist",
       "neonTubes",
+      "angelChain",
     ],
     fonts: ALL_FONTS,
     buttonStyles: [
@@ -821,6 +823,7 @@ export const EFFECT_LABELS: Record<EffectId, string> = {
   godRays: "Rayons de lumière",
   mist: "Brume",
   neonTubes: "Tubes néon",
+  angelChain: "Chaîne angélique",
 };
 
 export const FONT_META: Record<
