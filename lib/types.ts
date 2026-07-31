@@ -823,7 +823,7 @@ export const EFFECT_LABELS: Record<EffectId, string> = {
   godRays: "Rayons de lumière",
   mist: "Brume",
   neonTubes: "Tubes néon",
-  angelChain: "Chaîne angélique",
+  angelChain: "Chaîne",
 };
 
 export const FONT_META: Record<
