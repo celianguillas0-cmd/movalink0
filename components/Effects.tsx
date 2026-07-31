@@ -539,9 +539,15 @@ function CanvasEffect({
           Math.sin(px * Math.PI * 2.1 + t / 80) * h * 0.2 +
           Math.sin(px * 6.5 - t / 55) * 12;
 
-        const links = 30;
-        ctx.save();
-        ctx.globalCompositeOperation = "lighter";
+        // Toute la chaîne est accumulée dans DEUX tracés (maillons + reflets),
+        // peints en quelques passes : une ombre portée par maillon coûterait
+        // une centaine de flous par image et figerait la page.
+        const links = 26;
+        const chain = new Path2D();
+        const gleams = new Path2D();
+        const sparkAt = Math.floor((t / 12) % (links + 1));
+        let sparkX = 0;
+        let sparkY = 0;
         for (let i = 0; i <= links; i++) {
           const px = i / links;
           const x = -40 + px * (w + 80);
@@ -553,61 +559,58 @@ function CanvasEffect({
             (w + 80) * 2 * eps
           );
           // Un maillon sur deux est vu de profil : l'alternance fait la chaîne.
-          const edgeOn = i % 2 === 0;
           const rx = 17;
-          const ry = edgeOn ? 6 : 13;
-          // Respiration lumineuse, décalée le long de la chaîne.
-          const shine = 0.62 + 0.38 * Math.sin(t / 22 - i * 0.55);
-
-          ctx.save();
-          ctx.translate(x, y);
-          ctx.rotate(ang);
-
-          // 1) auréole du maillon
-          ctx.shadowBlur = 22;
-          ctx.shadowColor = "rgba(255, 214, 130, 0.95)";
-          ctx.strokeStyle = `rgba(255, 205, 110, ${0.3 * shine})`;
-          ctx.lineWidth = 7;
-          ctx.beginPath();
-          ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-          ctx.stroke();
-
-          // 2) or du maillon
-          ctx.shadowBlur = 12;
-          ctx.strokeStyle = `rgba(255, 198, 88, ${0.95 * shine})`;
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-          ctx.stroke();
-
-          // 3) reflet blanc sur la partie haute
-          ctx.shadowBlur = 4;
-          ctx.strokeStyle = `rgba(255, 251, 232, ${0.9 * shine})`;
-          ctx.lineWidth = 1.1;
-          ctx.beginPath();
-          ctx.ellipse(0, 0, rx, ry, 0, Math.PI * 1.15, Math.PI * 1.95);
-          ctx.stroke();
-          ctx.restore();
-
-          // Éclat en croix qui parcourt la chaîne, un maillon à la fois.
-          const sparkPhase = (t / 14 - i) % links;
-          if (sparkPhase >= 0 && sparkPhase < 1.6) {
-            const s = (1 - sparkPhase / 1.6) * 16;
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.shadowBlur = 16;
-            ctx.shadowColor = "#fff6d0";
-            ctx.strokeStyle = "rgba(255, 252, 235, 0.95)";
-            ctx.lineWidth = 1.4;
-            ctx.beginPath();
-            ctx.moveTo(-s, 0);
-            ctx.lineTo(s, 0);
-            ctx.moveTo(0, -s);
-            ctx.lineTo(0, s);
-            ctx.stroke();
-            ctx.restore();
+          const ry = i % 2 === 0 ? 6 : 13;
+          const cos = Math.cos(ang);
+          const sin = Math.sin(ang);
+          // moveTo avant chaque ellipse, sinon les maillons seraient reliés.
+          chain.moveTo(x + rx * cos, y + rx * sin);
+          chain.ellipse(x, y, rx, ry, ang, 0, Math.PI * 2);
+          const s0 = Math.PI * 1.15;
+          const s1 = Math.PI * 1.95;
+          gleams.moveTo(
+            x + rx * Math.cos(s0) * cos - ry * Math.sin(s0) * sin,
+            y + rx * Math.cos(s0) * sin + ry * Math.sin(s0) * cos
+          );
+          gleams.ellipse(x, y, rx, ry, ang, s0, s1);
+          if (i === sparkAt) {
+            sparkX = x;
+            sparkY = y;
           }
         }
+
+        const shine = 0.72 + 0.28 * Math.sin(t / 26);
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        // Auréole : larges traits translucides superposés (sans ombre portée).
+        ctx.strokeStyle = `rgba(255, 205, 110, ${0.13 * shine})`;
+        ctx.lineWidth = 11;
+        ctx.stroke(chain);
+        ctx.strokeStyle = `rgba(255, 205, 110, ${0.22 * shine})`;
+        ctx.lineWidth = 6;
+        ctx.stroke(chain);
+        // Or du maillon : l'unique passe qui porte le flou lumineux.
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "rgba(255, 214, 130, 0.9)";
+        ctx.strokeStyle = `rgba(255, 198, 88, ${0.95 * shine})`;
+        ctx.lineWidth = 3;
+        ctx.stroke(chain);
+        ctx.shadowBlur = 0;
+        // Reflet blanc sur la partie haute des maillons.
+        ctx.strokeStyle = `rgba(255, 251, 232, ${0.9 * shine})`;
+        ctx.lineWidth = 1.1;
+        ctx.stroke(gleams);
+
+        // Éclat en croix qui parcourt la chaîne, un maillon à la fois.
+        const sparkSize = 15;
+        ctx.strokeStyle = "rgba(255, 252, 235, 0.95)";
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(sparkX - sparkSize, sparkY);
+        ctx.lineTo(sparkX + sparkSize, sparkY);
+        ctx.moveTo(sparkX, sparkY - sparkSize);
+        ctx.lineTo(sparkX, sparkY + sparkSize);
+        ctx.stroke();
         ctx.restore();
       } else if (effect === "neonTubes") {
         // Tubes néon flexibles : longs rubans de silicone lumineux qui
@@ -626,39 +629,36 @@ function CanvasEffect({
           // Scintillement : brèves chutes d'intensité, aléatoires mais stables.
           const flick =
             0.82 + 0.18 * Math.sin(t / 3 + k * 5) * Math.sin(t / 17 + k);
-          const trace = () => {
-            ctx.beginPath();
-            for (let x = -20; x <= w + 20; x += 10) {
-              const y =
-                baseY +
-                Math.sin(x / 150 + speed + k) * amp +
-                Math.sin(x / 63 - speed * 1.4 + k * 2) * (amp * 0.32);
-              if (x === -20) ctx.moveTo(x, y);
-              else ctx.lineTo(x, y);
-            }
-          };
+          // Le tracé est construit une fois puis peint plusieurs fois : le
+          // halo est obtenu par larges traits translucides superposés, et une
+          // seule passe porte l'ombre portée (un flou par passe et par tube
+          // coûterait bien trop cher).
+          const tube = new Path2D();
+          for (let x = -20; x <= w + 20; x += 10) {
+            const y =
+              baseY +
+              Math.sin(x / 150 + speed + k) * amp +
+              Math.sin(x / 63 - speed * 1.4 + k * 2) * (amp * 0.32);
+            if (x === -20) tube.moveTo(x, y);
+            else tube.lineTo(x, y);
+          }
           ctx.save();
-          // 1) halo diffus autour du tube
           ctx.globalCompositeOperation = "lighter";
-          ctx.shadowBlur = 26;
-          ctx.shadowColor = `hsl(${hue}, 100%, 60%)`;
-          ctx.strokeStyle = `hsla(${hue}, 100%, 58%, ${0.28 * flick})`;
-          ctx.lineWidth = 13;
-          trace();
-          ctx.stroke();
-          // 2) gaine colorée
-          ctx.shadowBlur = 14;
-          ctx.strokeStyle = `hsla(${hue}, 100%, 62%, ${0.85 * flick})`;
+          // 1) halo diffus
+          ctx.strokeStyle = `hsla(${hue}, 100%, 59%, ${0.2 * flick})`;
+          ctx.lineWidth = 14;
+          ctx.stroke(tube);
+          // 2) gaine colorée (seule passe floutée)
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = `hsl(${hue}, 100%, 62%)`;
+          ctx.strokeStyle = `hsla(${hue}, 100%, 62%, ${0.9 * flick})`;
           ctx.lineWidth = 6;
-          trace();
-          ctx.stroke();
+          ctx.stroke(tube);
+          ctx.shadowBlur = 0;
           // 3) cœur incandescent
-          ctx.shadowBlur = 6;
-          ctx.shadowColor = `hsl(${hue}, 100%, 85%)`;
           ctx.strokeStyle = `hsla(${hue}, 100%, 92%, ${0.95 * flick})`;
           ctx.lineWidth = 1.8;
-          trace();
-          ctx.stroke();
+          ctx.stroke(tube);
           ctx.restore();
         }
       } else if (effect === "mist") {
