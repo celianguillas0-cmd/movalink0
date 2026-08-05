@@ -1,3 +1,5 @@
+import { FREE_LAUNCH } from "./config";
+
 export type Plan = "free" | "pro" | "elite";
 
 export type EffectId =
@@ -706,9 +708,17 @@ export const REFERRAL_TIERS: ReferralTier[] = [
   { count: 12, label: "Effet Phénix 🔥", effect: "phenix" },
 ];
 
-// Limites effectives = limites du plan + tous les paliers de parrainage atteints.
+// Plan effectif d'un compte. Pendant le lancement gratuit (FREE_LAUNCH), tout
+// le monde bénéficie du plan Elite quel que soit le plan réellement stocké.
+// Le plan stocké reste inchangé en base : il suffit de couper FREE_LAUNCH pour
+// revenir aux plans payants sans migration de données.
+export function resolvePlan(plan: Plan): Plan {
+  return FREE_LAUNCH ? "elite" : plan;
+}
+
+// Limites effectives = limites du plan (résolu) + paliers de parrainage atteints.
 export function effectiveLimits(plan: Plan, referralCount = 0): PlanLimits {
-  const base = PLAN_LIMITS[plan];
+  const base = PLAN_LIMITS[resolvePlan(plan)];
   if (!referralCount || referralCount < 1) return base;
   const effects = new Set(base.effects);
   const fonts = new Set(base.fonts);

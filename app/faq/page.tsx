@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PublicShell from "@/components/PublicShell";
 import ContactEmail from "@/components/ContactEmail";
+import { FREE_LAUNCH } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -15,7 +16,11 @@ const FAQ = [
   },
   {
     q: "Combien ça coûte pour débloquer plus ?",
-    a: "Deux abonnements, résiliables à tout moment : Pro à 4,90 €/mois (15 liens, full custom, 10 effets, sans badge) et Elite à 9,90 €/mois (50 liens, les 56 effets animés, statut Discord en direct, stats sur 1 an). Tu préfères ne payer qu'une fois ? L'offre à vie à 54,90 € débloque tout l'Elite pour toujours, sans aucun abonnement.",
+    a:
+      (FREE_LAUNCH
+        ? "Rien pour l'instant : c'est le lancement, tout est offert. Chaque compte débloque gratuitement toutes les fonctionnalités Elite, sans carte bancaire. Voici les tarifs qui s'appliqueront plus tard — les comptes créés aujourd'hui en profitent gratuitement. "
+        : "") +
+      "Deux abonnements, résiliables à tout moment : Pro à 4,90 €/mois (15 liens, full custom, 10 effets, sans badge) et Elite à 9,90 €/mois (50 liens, les 56 effets animés, statut Discord en direct, stats sur 1 an). Tu préfères ne payer qu'une fois ? L'offre à vie à 54,90 € débloque tout l'Elite pour toujours, sans aucun abonnement.",
   },
   {
     q: "Je peux annuler mon abonnement ?",

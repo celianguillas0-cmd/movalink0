@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { saveUser } from "@/lib/store";
-import { DISCOUNT_CODES } from "@/lib/config";
+import { DISCOUNT_CODES, FREE_LAUNCH } from "@/lib/config";
 import { Billing, LIFETIME_PRICE, MONTHLY_PRICES } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +10,16 @@ export async function POST(request: NextRequest) {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "Non connecté." }, { status: 401 });
+  }
+
+  // Lancement gratuit : aucune vente. Tout le monde a déjà l'accès Elite via
+  // resolvePlan/effectiveLimits, et on ne touche pas au plan stocké pour
+  // pouvoir revenir proprement aux plans payants en coupant FREE_LAUNCH.
+  if (FREE_LAUNCH) {
+    return NextResponse.json(
+      { error: "Tout est gratuit pendant le lancement — aucun paiement nécessaire." },
+      { status: 400 }
+    );
   }
 
   let body: {

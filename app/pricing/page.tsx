@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PublicShell from "@/components/PublicShell";
 import BuyButton from "@/components/BuyButton";
+import { FREE_LAUNCH } from "@/lib/config";
 import { LIFETIME_PRICE, MONTHLY_PRICES } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -97,9 +98,28 @@ export default function PricingPage() {
             Tarifs
           </h1>
           <p className="text-sm text-gray-400 dark:text-zinc-500 mb-6">
-            Abonnement mensuel résiliable à tout moment, ou {LIFETIME_PRICE.label} à
-            vie pour tout débloquer sans renouvellement.
+            {FREE_LAUNCH
+              ? "C'est le lancement de Movalink : tout est offert. Chaque compte débloque le plan Elite gratuitement, sans carte bancaire."
+              : `Abonnement mensuel résiliable à tout moment, ou ${LIFETIME_PRICE.label} à vie pour tout débloquer sans renouvellement.`}
           </p>
+
+          {FREE_LAUNCH && (
+            <div className="mb-6 flex items-start gap-3 rounded-xl border border-zinc-900 bg-white p-4 dark:border-white dark:bg-zinc-900">
+              <span className="text-2xl leading-none" aria-hidden>
+                🎉
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                  Tout est gratuit pendant le lancement
+                </p>
+                <p className="mt-0.5 text-xs text-gray-500 dark:text-zinc-400">
+                  Profite de <strong>toutes les fonctionnalités Elite</strong> dès
+                  maintenant. Les tarifs ci-dessous s&apos;appliqueront plus tard —
+                  les comptes créés aujourd&apos;hui en profitent gratuitement.
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-3">
             {PLANS.map((plan) => (
@@ -139,7 +159,14 @@ export default function PricingPage() {
                   ))}
                 </ul>
                 <div className="mt-5">
-                  {plan.id === "free" ? (
+                  {FREE_LAUNCH ? (
+                    <Link
+                      href="/signup"
+                      className={plan.popular ? solidBtn : outlineBtn}
+                    >
+                      {plan.id === "free" ? "Commencer" : "Débloquer gratuitement"}
+                    </Link>
+                  ) : plan.id === "free" ? (
                     <Link href="/signup" className={outlineBtn}>
                       Commencer
                     </Link>
@@ -158,30 +185,39 @@ export default function PricingPage() {
             ))}
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-gray-400 dark:text-zinc-500">
-            <span className="flex items-center gap-1.5">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <rect x="3" y="11" width="18" height="11" rx="2" />
-                <path d="M7 11V7a5 5 0 0110 0v4" />
-              </svg>
-              Paiement sécurisé Stripe
-            </span>
-            <span aria-hidden>·</span>
-            <span>Résiliable à tout moment · option à vie {LIFETIME_PRICE.label}</span>
-            <span aria-hidden>·</span>
-            <span>14 jours satisfait ou remboursé</span>
-          </div>
-          <p className="mt-3 text-center text-xs text-gray-400 dark:text-zinc-500">
-            Droit de rétractation (art. L221-18 du Code de la consommation), sauf renonciation
-            expresse pour accès immédiat. Détails dans nos{" "}
-            <Link
-              href="/legal/cgu"
-              className="text-gray-600 hover:underline dark:text-zinc-300"
-            >
-              CGU / CGV
-            </Link>
-            .
-          </p>
+          {FREE_LAUNCH ? (
+            <p className="mt-6 text-center text-xs text-gray-400 dark:text-zinc-500">
+              Aucun paiement pendant le lancement. Crée ta page et débloque tout
+              gratuitement.
+            </p>
+          ) : (
+            <>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-gray-400 dark:text-zinc-500">
+                <span className="flex items-center gap-1.5">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" />
+                    <path d="M7 11V7a5 5 0 0110 0v4" />
+                  </svg>
+                  Paiement sécurisé Stripe
+                </span>
+                <span aria-hidden>·</span>
+                <span>Résiliable à tout moment · option à vie {LIFETIME_PRICE.label}</span>
+                <span aria-hidden>·</span>
+                <span>14 jours satisfait ou remboursé</span>
+              </div>
+              <p className="mt-3 text-center text-xs text-gray-400 dark:text-zinc-500">
+                Droit de rétractation (art. L221-18 du Code de la consommation), sauf renonciation
+                expresse pour accès immédiat. Détails dans nos{" "}
+                <Link
+                  href="/legal/cgu"
+                  className="text-gray-600 hover:underline dark:text-zinc-300"
+                >
+                  CGU / CGV
+                </Link>
+                .
+              </p>
+            </>
+          )}
         </div>
       </main>
     </PublicShell>

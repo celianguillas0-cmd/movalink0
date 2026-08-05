@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { getProfile, getStats } from "@/lib/store";
-import { effectiveLimits, toPublicUser } from "@/lib/types";
+import { effectiveLimits, resolvePlan, toPublicUser } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +17,9 @@ export async function GET() {
   const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase() ?? "";
   const isAdmin = user.email === adminEmail || user.isAdmin === true;
   return NextResponse.json({
-    user: { ...toPublicUser(user), isAdmin },
+    // Pendant le lancement gratuit, le dashboard reflète le plan effectif (Elite)
+    // pour débloquer l'UI (thèmes, options) sans afficher de CTA d'upgrade.
+    user: { ...toPublicUser(user), plan: resolvePlan(user.plan), isAdmin },
     profile,
     stats,
     limits: effectiveLimits(user.plan, user.referralCount ?? 0),

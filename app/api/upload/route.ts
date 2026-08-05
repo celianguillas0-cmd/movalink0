@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { getCurrentUser } from "@/lib/auth";
-import { PLAN_LIMITS } from "@/lib/types";
+import { effectiveLimits } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const limits = PLAN_LIMITS[user.plan];
+  const limits = effectiveLimits(user.plan, user.referralCount ?? 0);
   if (!limits.music) {
     return NextResponse.json(
       { error: "La musique de fond nécessite un plan Pro ou Elite." },

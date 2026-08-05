@@ -3,6 +3,14 @@ export const SITE_URL = "https://movalink.vercel.app";
 export const CONTACT_EMAIL = "movalink.help@gmail.com";
 export const SITE_TAGLINE = "Tout ton univers gaming. Un seul lien.";
 
+// ─── Lancement en douceur ────────────────────────────────────────────────────
+// Tant que Stripe n'est pas configuré, tout le site est offert au niveau Elite :
+// chaque compte débloque toutes les fonctionnalités et le badge Movalink est
+// retiré, sans paiement. Les offres payantes sont masquées.
+// Repasser à `false` (et redéployer) une fois la facturation Stripe en place
+// pour réactiver les plans Gratuit / Pro / Elite.
+export const FREE_LAUNCH = true;
+
 // Codes cadeaux : débloquent un plan sans paiement. Comparés en majuscules.
 // Usage unique par compte (sauf après réinitialisation).
 export const PROMO_CODES: Record<string, "pro" | "elite"> = {

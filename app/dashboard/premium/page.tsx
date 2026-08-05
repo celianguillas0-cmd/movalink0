@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import BuyButton from "@/components/BuyButton";
 import RedeemCode from "@/components/RedeemCode";
 import { fetchMe, getCachedMe } from "@/lib/me-client";
+import { FREE_LAUNCH } from "@/lib/config";
 import {
   cardClass,
   pageSubtitleClass,
@@ -112,26 +113,56 @@ export default function PremiumPage() {
         >
           <h1 className={pageTitleClass}>Premium</h1>
           <p className={pageSubtitleClass}>
-            Abonne-toi au mois, ou débloque tout à vie en un seul paiement.
+            {FREE_LAUNCH
+              ? "C'est le lancement : tout est offert. Profites-en."
+              : "Abonne-toi au mois, ou débloque tout à vie en un seul paiement."}
           </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {[
-              "Sans engagement",
-              "Résiliable en 1 clic",
-              "14 jours satisfait ou remboursé",
-              "Paiement sécurisé Stripe",
-            ].map((t) => (
-              <span
-                key={t}
-                className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-medium text-gray-600 dark:bg-zinc-800 dark:text-zinc-300"
-              >
-                <span className="text-emerald-500">✓</span> {t}
-              </span>
-            ))}
-          </div>
+          {!FREE_LAUNCH && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {[
+                "Sans engagement",
+                "Résiliable en 1 clic",
+                "14 jours satisfait ou remboursé",
+                "Paiement sécurisé Stripe",
+              ].map((t) => (
+                <span
+                  key={t}
+                  className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-medium text-gray-600 dark:bg-zinc-800 dark:text-zinc-300"
+                >
+                  <span className="text-emerald-500">✓</span> {t}
+                </span>
+              ))}
+            </div>
+          )}
         </motion.div>
 
-        {plan !== "free" && (
+        {FREE_LAUNCH && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.03 }}
+            className={`${cardClass} mb-4 border-zinc-900 dark:border-white`}
+          >
+            <div className="flex items-start gap-3">
+              <span className="text-2xl leading-none" aria-hidden>
+                🎉
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                  Tout Movalink est offert pendant le lancement
+                </p>
+                <p className="mt-1 text-xs text-gray-500 dark:text-zinc-400">
+                  Ton compte a accès à <strong>toutes les fonctionnalités
+                  Elite</strong> — les 56 effets animés, la personnalisation
+                  complète, le statut Discord en direct, les stats sur 1 an et le
+                  badge Movalink retiré. Aucun paiement requis. Amuse-toi bien. 💜
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {!FREE_LAUNCH && plan !== "free" && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -179,16 +210,18 @@ export default function PremiumPage() {
           </motion.div>
         )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.03 }}
-          className={`${cardClass} mb-4`}
-        >
-          <RedeemCode />
-        </motion.div>
+        {!FREE_LAUNCH && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.03 }}
+            className={`${cardClass} mb-4`}
+          >
+            <RedeemCode />
+          </motion.div>
+        )}
 
-        {!user?.lifetime && (
+        {!FREE_LAUNCH && !user?.lifetime && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -216,7 +249,7 @@ export default function PremiumPage() {
           </motion.div>
         )}
 
-        {!user?.lifetime && (
+        {!FREE_LAUNCH && !user?.lifetime && (
           <>
             <label className="mb-4 flex cursor-pointer items-start gap-2.5 rounded-xl border border-gray-100 bg-white p-3.5 text-xs leading-relaxed text-gray-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
               <input
@@ -362,12 +395,14 @@ export default function PremiumPage() {
           </>
         )}
 
-        <p className="mt-6 text-center text-xs text-gray-400 dark:text-zinc-500">
-          Paiement sécurisé par Stripe. Abonnement résiliable à tout moment.
-          Droit de rétractation de 14 jours (art. L221-18 du Code de la
-          consommation), sauf renonciation expresse pour accès immédiat. Détails
-          dans les CGU/CGV.
-        </p>
+        {!FREE_LAUNCH && (
+          <p className="mt-6 text-center text-xs text-gray-400 dark:text-zinc-500">
+            Paiement sécurisé par Stripe. Abonnement résiliable à tout moment.
+            Droit de rétractation de 14 jours (art. L221-18 du Code de la
+            consommation), sauf renonciation expresse pour accès immédiat.
+            Détails dans les CGU/CGV.
+          </p>
+        )}
       </div>
     </div>
   );
