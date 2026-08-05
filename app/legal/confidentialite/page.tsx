@@ -147,7 +147,7 @@ export default function PrivacyPage() {
       </p>
 
       <h2>4. Finalités et bases légales des traitements</h2>
-      <div className="border border-gray-200 dark:border-zinc-700 rounded-xl overflow-hidden text-sm mb-3">
+      <div className="border border-gray-200 dark:border-zinc-700 rounded-xl overflow-x-auto text-sm mb-3">
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-zinc-800">
             <tr>
@@ -194,7 +194,7 @@ export default function PrivacyPage() {
         techniques suivants, avec lesquels des accords de traitement des données
         (DPA) conformes au RGPD sont en vigueur :
       </p>
-      <div className="border border-gray-200 dark:border-zinc-700 rounded-xl overflow-hidden text-sm mb-3">
+      <div className="border border-gray-200 dark:border-zinc-700 rounded-xl overflow-x-auto text-sm mb-3">
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-zinc-800">
             <tr>

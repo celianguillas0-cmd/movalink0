@@ -57,9 +57,11 @@ function SignupForm() {
           Ton pseudo (URL publique) <span className="text-red-400">*</span>
         </label>
         <div className="flex items-center rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3.5 py-2.5 transition-all focus-within:ring-2 focus-within:ring-zinc-900 dark:focus-within:ring-white focus-within:border-transparent">
-          <span className="text-sm text-gray-400 dark:text-zinc-500">
+          <span className="shrink-0 text-sm text-gray-400 dark:text-zinc-500">
             movalink.vercel.app/
           </span>
+          {/* min-w-0 : sans ça, la largeur minimale intrinsèque du champ
+              s'ajoute à celle du préfixe et fait déborder le cadre. */}
           <input
             id="username"
             required
@@ -69,7 +71,7 @@ function SignupForm() {
             }
             maxLength={20}
             placeholder="tonpseudo"
-            className="w-full bg-transparent text-sm font-medium text-gray-900 dark:text-white outline-none placeholder:text-gray-300 dark:placeholder:text-zinc-600"
+            className="min-w-0 flex-1 bg-transparent text-sm font-medium text-gray-900 dark:text-white outline-none placeholder:text-gray-300 dark:placeholder:text-zinc-600"
           />
         </div>
       </div>

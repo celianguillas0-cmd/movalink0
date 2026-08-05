@@ -78,7 +78,7 @@ export default function CguPage() {
         présentes Conditions. En cas de divergence entre le tableau ci-dessous
         et la page Tarifs, cette dernière prévaut.
       </p>
-      <div className="border border-gray-200 dark:border-zinc-700 rounded-xl overflow-hidden text-sm mb-3">
+      <div className="border border-gray-200 dark:border-zinc-700 rounded-xl overflow-x-auto text-sm mb-3">
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-zinc-800">
             <tr>

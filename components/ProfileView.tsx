@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import QRCode from "qrcode";
 import EffectLayer from "./Effects";
 import CursorTrail from "./CursorTrail";
 import Tilt3D from "./Tilt3D";
@@ -621,10 +620,21 @@ function ShareButton({ username }: { username: string }) {
     copy();
   };
 
+  // La librairie QR (~50 ko) n'est téléchargée qu'au premier clic : inutile de
+  // la faire porter à tous les visiteurs de la page publique, qui pour la
+  // plupart n'ouvriront jamais le QR code.
   const toggleQr = () => {
     if (qrUrl) { setQrUrl(""); return; }
-    QRCode.toDataURL(url, { width: 320, margin: 2, color: { dark: "#09090b", light: "#ffffff" } })
-      .then(setQrUrl).catch(() => {});
+    import("qrcode")
+      .then((m) =>
+        m.default.toDataURL(url, {
+          width: 320,
+          margin: 2,
+          color: { dark: "#09090b", light: "#ffffff" },
+        })
+      )
+      .then(setQrUrl)
+      .catch(() => {});
   };
 
   return (

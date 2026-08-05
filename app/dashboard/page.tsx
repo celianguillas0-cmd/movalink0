@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import QRCode from "qrcode";
 import {
   cardClass,
   pageSubtitleClass,
@@ -138,7 +137,10 @@ export default function DashboardHomePage() {
               Ton lien public — colle-le dans toutes tes bios.
             </p>
           </div>
-          <div className="flex shrink-0 gap-2">
+          {/* flex-wrap : à 320 px les quatre boutons ne tiennent pas sur une
+              ligne. shrink-0 ne vaut qu'à partir de sm, où la carte passe en
+              ligne et le groupe ne doit plus être comprimé. */}
+          <div className="flex flex-wrap gap-2 sm:shrink-0">
             {/* Action principale : c'est en collant ce lien dans ses bios que
                 l'utilisateur fait vivre sa page — elle mérite le bouton plein. */}
             <button
@@ -168,11 +170,15 @@ export default function DashboardHomePage() {
                   setQrDataUrl("");
                   return;
                 }
-                QRCode.toDataURL(`https://${publicUrl}`, {
-                  width: 480,
-                  margin: 2,
-                  color: { dark: "#09090b", light: "#ffffff" },
-                })
+                // Librairie chargée au clic seulement (voir ProfileView).
+                import("qrcode")
+                  .then((m) =>
+                    m.default.toDataURL(`https://${publicUrl}`, {
+                      width: 480,
+                      margin: 2,
+                      color: { dark: "#09090b", light: "#ffffff" },
+                    })
+                  )
                   .then(setQrDataUrl)
                   .catch(() => {});
               }}

@@ -304,10 +304,10 @@ function GroupsSection({ profile, onSave }: { profile: Profile; onSave: (p: Part
       <div className="flex gap-2">
         <input type="text" value={newLabel} onChange={(e) => setNewLabel(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addGroup()}
           placeholder="Nom du groupe (ex: Socials, Gaming…)"
-          className="flex-1 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
+          className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
           maxLength={40} />
         <button type="button" onClick={addGroup} disabled={saving || !newLabel.trim()}
-          className="rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40 dark:bg-white dark:text-zinc-900">
+          className="shrink-0 rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40 dark:bg-white dark:text-zinc-900">
           Ajouter
         </button>
       </div>
@@ -1927,12 +1927,14 @@ function MaPageEditor() {
                             })}
                           </div>
                         </div>
+                        {/* min-w-0 : les champs horaires ont une largeur mini
+                            incompressible qui débordait la carte à 320 px. */}
                         <div className="flex gap-3">
-                          <div className="flex-1">
+                          <div className="min-w-0 flex-1">
                             <label className={labelClass}>Heure de début</label>
                             <input type="time" value={profile.streamSchedule?.timeStart ?? ""} onChange={(e) => update({ streamSchedule: { ...(profile.streamSchedule ?? { days: [] }), timeStart: e.target.value } })} className={inputClass} />
                           </div>
-                          <div className="flex-1">
+                          <div className="min-w-0 flex-1">
                             <label className={labelClass}>Heure de fin (opt.)</label>
                             <input type="time" value={profile.streamSchedule?.timeEnd ?? ""} onChange={(e) => update({ streamSchedule: { ...(profile.streamSchedule ?? { days: [], timeStart: "" }), timeEnd: e.target.value } })} className={inputClass} />
                           </div>
