@@ -109,7 +109,7 @@ export type AvatarFrameId =
   | "gradientRing"
   | "pulse";
 
-export type CursorId = "default" | "crosshair" | "neon";
+export type CursorId = "default" | "crosshair" | "neon" | "smoke";
 
 export interface User {
   id: string;
@@ -226,6 +226,7 @@ export interface Theme {
   buttonStyle?: ButtonStyleId;
   avatarFrame?: AvatarFrameId;
   cursor?: CursorId;
+  cursorColor?: string; // couleur de la traînée de fumée (défaut = accent)
   // Mise en page libre de la carte (optionnels : défauts = apparence historique).
   cardWidth?: number; // largeur max de la carte en px (300-560)
   cardAlign?: "top" | "center" | "bottom"; // position verticale
@@ -661,7 +662,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
       "gradientRing",
       "pulse",
     ],
-    cursors: ["default", "crosshair", "neon"],
+    cursors: ["default", "crosshair", "neon", "smoke"],
     statsDays: 365,
     branding: false,
     watermark: false,
@@ -967,6 +968,7 @@ export const CURSOR_LABELS: Record<CursorId, string> = {
   default: "Défaut",
   crosshair: "Viseur",
   neon: "Point néon",
+  smoke: "Traînée de fumée",
 };
 
 export const THEME_DEFAULTS = {

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import QRCode from "qrcode";
 import EffectLayer from "./Effects";
+import CursorTrail from "./CursorTrail";
 import Tilt3D from "./Tilt3D";
 import LedFrame from "./LedFrame";
 import { haptics } from "@/lib/haptics";
@@ -1257,6 +1258,7 @@ export default function ProfileView({
         accent={accent}
         emojiChar={theme.effectEmoji || "🔥"}
       />
+      {cursor === "smoke" && <CursorTrail color={theme.cursorColor || accent} />}
       {theme.layout === "card" ? (
         <div
           className="relative z-10 w-full px-4 py-8"

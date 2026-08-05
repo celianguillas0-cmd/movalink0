@@ -187,6 +187,17 @@ export async function PUT(request: NextRequest) {
     ? requestedCursor
     : THEME_DEFAULTS.cursor;
 
+  // Couleur de la traînée de fumée : suit le droit au curseur lui-même.
+  // Vide = on retombe sur la couleur d'accent au rendu.
+  const rawCursorColor = clampText(
+    body.theme?.cursorColor ?? current.theme.cursorColor,
+    7
+  );
+  const cursorColor =
+    cursor === "smoke" && /^#[0-9a-fA-F]{6}$/.test(rawCursorColor)
+      ? rawCursorColor
+      : "";
+
   // Mise en page libre : réglée seulement si le plan l'autorise, sinon défauts.
   const clampInt = (v: unknown, min: number, max: number, fallback: number) => {
     const n = typeof v === "number" ? v : Number(v);
@@ -468,6 +479,7 @@ export async function PUT(request: NextRequest) {
       buttonStyle,
       avatarFrame,
       cursor,
+      ...(cursorColor ? { cursorColor } : {}),
       cardWidth,
       cardAlign,
       cardRadius,

@@ -2195,6 +2195,39 @@ function MaPageEditor() {
                       onLockedPreview={setUpsell}
                     />
 
+                    {(preview.cursor ?? profile.theme.cursor) === "smoke" && (
+                      <div className="-mt-2 flex flex-wrap items-center gap-3 rounded-lg border border-gray-100 p-3 dark:border-zinc-800">
+                        <div className="flex items-center gap-2">
+                          <label className="text-xs text-gray-500 dark:text-zinc-400">
+                            Couleur de la fumée
+                          </label>
+                          <input
+                            type="color"
+                            value={profile.theme.cursorColor ?? profile.theme.accent}
+                            onChange={(e) =>
+                              update({ theme: { ...profile.theme, cursorColor: e.target.value } })
+                            }
+                            className="h-8 w-8 cursor-pointer rounded-full border border-gray-200 bg-transparent dark:border-zinc-700"
+                          />
+                        </div>
+                        {profile.theme.cursorColor && (
+                          <button
+                            type="button"
+                            className={smallBtnClass}
+                            onClick={() =>
+                              update({ theme: { ...profile.theme, cursorColor: "" } })
+                            }
+                          >
+                            Utiliser la couleur d&apos;accent
+                          </button>
+                        )}
+                        <p className="w-full text-xs text-gray-400 dark:text-zinc-500">
+                          La fumée suit le curseur sur ta page. Bouge la souris dans
+                          l&apos;aperçu pour la voir.
+                        </p>
+                      </div>
+                    )}
+
                     <div className="flex items-center justify-between gap-4 rounded-lg border border-gray-100 p-3 dark:border-zinc-800">
                       <div>
                         <p className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
