@@ -210,16 +210,16 @@ export default function PremiumPage() {
           </motion.div>
         )}
 
-        {!FREE_LAUNCH && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.03 }}
-            className={`${cardClass} mb-4`}
-          >
-            <RedeemCode />
-          </motion.div>
-        )}
+        {/* Reste visible pendant le lancement : c'est là que se saisissent les
+            codes fondateur, qui rendent l'accès Elite définitif. */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.03 }}
+          className={`${cardClass} mb-4`}
+        >
+          <RedeemCode />
+        </motion.div>
 
         {!FREE_LAUNCH && !user?.lifetime && (
           <motion.div

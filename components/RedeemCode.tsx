@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FREE_LAUNCH } from "@/lib/config";
 
 export default function RedeemCode() {
   const [code, setCode] = useState("");
@@ -27,7 +28,9 @@ export default function RedeemCode() {
       setSuccess(
         data.reset
           ? "Compte réinitialisé au plan Gratuit. Rechargement..."
-          : `Code validé : ton compte passe au plan ${data.plan === "elite" ? "Elite" : "Pro"} ! Rechargement...`
+          : data.founder
+            ? "Bienvenue parmi les fondateurs 🎉 Ton accès Elite est à vie — tu le gardes même après la fin du lancement gratuit. Rechargement..."
+            : `Code validé : ton compte passe au plan ${data.plan === "elite" ? "Elite" : "Pro"} ! Rechargement...`
       );
       setCode("");
       // Rechargement complet : met à jour le plan partout (sidebar, limites).
@@ -42,8 +45,14 @@ export default function RedeemCode() {
   return (
     <form onSubmit={submit} className="flex flex-col gap-2">
       <p className="text-sm font-semibold text-gray-900 dark:text-white">
-        Tu as un code cadeau ?
+        {FREE_LAUNCH ? "Tu as un code fondateur ?" : "Tu as un code cadeau ?"}
       </p>
+      {FREE_LAUNCH && (
+        <p className="-mt-1 text-xs text-gray-500 dark:text-zinc-400">
+          Il rend ton accès Elite <strong>définitif</strong> : tu le gardes même
+          quand les plans payants seront activés.
+        </p>
+      )}
       <div className="flex gap-2">
         <input
           value={code}

@@ -472,3 +472,19 @@ export async function decrementUserStats(plan: Plan): Promise<void> {
   s[plan] = Math.max(0, s[plan] - 1);
   await kv.set(USER_STATS_KEY, s);
 }
+
+// ─── Compteur de fondateurs ───────────────────────────────────────────────────
+// Nombre d'accès « fondateur » déjà accordés, pour plafonner l'offre de
+// lancement. Un simple entier partagé : aucune infrastructure supplémentaire.
+
+const FOUNDER_COUNT_KEY = "founders:count";
+
+export async function getFounderCount(): Promise<number> {
+  return (await kv.get<number>(FOUNDER_COUNT_KEY)) ?? 0;
+}
+
+export async function incrementFounderCount(): Promise<number> {
+  const next = (await getFounderCount()) + 1;
+  await kv.set(FOUNDER_COUNT_KEY, next);
+  return next;
+}

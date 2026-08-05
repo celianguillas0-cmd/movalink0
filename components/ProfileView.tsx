@@ -2,10 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import EffectLayer from "./Effects";
-import CursorTrail from "./CursorTrail";
+import dynamic from "next/dynamic";
 import Tilt3D from "./Tilt3D";
 import LedFrame from "./LedFrame";
+
+// Chargés à la demande : ces deux modules ne servent qu'aux profils qui les
+// activent. Les embarquer d'office faisait payer ~60 ko de téléchargement à
+// tous les visiteurs, y compris ceux d'une page sans effet ni curseur animé.
+const EffectLayer = dynamic(() => import("./Effects"), { ssr: false });
+const CursorTrail = dynamic(() => import("./CursorTrail"), { ssr: false });
 import { haptics } from "@/lib/haptics";
 import {
   CopyIcon,
@@ -1263,11 +1268,13 @@ export default function ProfileView({
       {decorations.map((d, i) => (
         <DecorationLayer key={i} decoration={d} fontFamily={fontMeta.family} />
       ))}
-      <EffectLayer
-        effect={theme.effect}
-        accent={accent}
-        emojiChar={theme.effectEmoji || "🔥"}
-      />
+      {theme.effect !== "none" && (
+        <EffectLayer
+          effect={theme.effect}
+          accent={accent}
+          emojiChar={theme.effectEmoji || "🔥"}
+        />
+      )}
       {cursor === "smoke" && <CursorTrail color={theme.cursorColor || accent} />}
       {theme.layout === "card" ? (
         <div

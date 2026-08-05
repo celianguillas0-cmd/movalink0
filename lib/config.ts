@@ -22,6 +22,19 @@ export const PROMO_CODES: Record<string, "pro" | "elite"> = {
 // des codes utilisés, permettant de re-saisir les autres codes. Réutilisable.
 export const RESET_CODE = "AQUOXRESET";
 
+// ─── Codes fondateur ─────────────────────────────────────────────────────────
+// À distribuer à la communauté de l'avant-première. Contrairement aux codes
+// promo ci-dessus, ils accordent l'Elite **à vie** : l'accès est conservé
+// quand FREE_LAUNCH repasse à false et que les plans payants s'activent.
+//
+// Le nombre total d'attributions est plafonné par FOUNDER_LIMIT (compteur
+// global côté serveur), pour que l'offre reste tenable même si un code fuite.
+// Pour clore l'opération : vider ce tableau et redéployer.
+export const FOUNDER_CODES: string[] = ["FONDATEUR"];
+
+// Nombre maximal d'accès fondateur accordés, tous codes confondus.
+export const FOUNDER_LIMIT = 100;
+
 // Codes de réduction appliqués au paiement Stripe : pourcentage de remise sur
 // le prix. Comparés en majuscules. La remise est calculée côté serveur dans
 // /api/checkout — jamais depuis le navigateur — donc infalsifiable.
