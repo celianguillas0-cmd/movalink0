@@ -1697,6 +1697,97 @@ function MaPageEditor() {
                       )}
                     </div>
 
+                    {/* Badge « en direct » manuel (toutes plateformes : TikTok, Kick…) */}
+                    <div className={cardClass}>
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">Badge « en direct »</p>
+                        {!limits.liveEmbed && (
+                          <Link href="/dashboard/premium" className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">Pro</Link>
+                        )}
+                      </div>
+                      <p className="mb-3 text-xs text-gray-500 dark:text-zinc-400">
+                        Affiche un badge rouge clignotant sur ta page quand tu es en live.
+                        Fonctionne avec n&apos;importe quelle plateforme : TikTok, Kick, Twitch, YouTube…
+                      </p>
+                      {limits.liveEmbed ? (
+                        <div className="flex flex-col gap-3">
+                          <div className="flex items-center justify-between gap-4">
+                            <div>
+                              <p className="text-sm font-medium text-gray-900 dark:text-white">Je suis en direct</p>
+                              <p className="text-xs text-gray-500 dark:text-zinc-400">
+                                À activer quand ton live commence, à couper quand il finit.
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                update({
+                                  liveStatus: {
+                                    url: profile.liveStatus?.url ?? "",
+                                    label: profile.liveStatus?.label ?? "",
+                                    active: !profile.liveStatus?.active,
+                                  },
+                                })
+                              }
+                              disabled={!profile.liveStatus?.url}
+                              title={!profile.liveStatus?.url ? "Renseigne d'abord le lien de ton live" : undefined}
+                              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-40 ${profile.liveStatus?.active ? "bg-red-600" : "bg-gray-200 dark:bg-zinc-700"}`}
+                              role="switch"
+                              aria-checked={!!profile.liveStatus?.active}
+                            >
+                              <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${profile.liveStatus?.active ? "translate-x-5" : "translate-x-0"}`} />
+                            </button>
+                          </div>
+                          <div>
+                            <label className={labelClass}>Lien de ton live</label>
+                            <div className="flex gap-2">
+                              <input
+                                value={profile.liveStatus?.url ?? ""}
+                                maxLength={300}
+                                placeholder="https://tiktok.com/@monpseudo/live"
+                                onChange={(e) =>
+                                  update({
+                                    liveStatus: {
+                                      active: profile.liveStatus?.active ?? false,
+                                      label: profile.liveStatus?.label ?? "",
+                                      url: e.target.value,
+                                    },
+                                  })
+                                }
+                                className={inputClass}
+                              />
+                              {profile.liveStatus?.url && (
+                                <button type="button" className={`${smallBtnClass} shrink-0`} onClick={() => update({ liveStatus: null })}>✕</button>
+                              )}
+                            </div>
+                          </div>
+                          <div>
+                            <label className={labelClass}>Texte du badge (optionnel)</label>
+                            <input
+                              value={profile.liveStatus?.label ?? ""}
+                              maxLength={40}
+                              placeholder="En direct"
+                              onChange={(e) =>
+                                update({
+                                  liveStatus: {
+                                    active: profile.liveStatus?.active ?? false,
+                                    url: profile.liveStatus?.url ?? "",
+                                    label: e.target.value,
+                                  },
+                                })
+                              }
+                              className={inputClass}
+                            />
+                            <p className="mt-1 text-xs text-gray-400 dark:text-zinc-500">
+                              ex : « En live sur TikTok », « Je stream ! ». Par défaut : « En direct ».
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-400 dark:text-zinc-500">Disponible avec un plan Pro ou Elite.</p>
+                      )}
+                    </div>
+
                     {/* Twitch embed */}
                     <div className={cardClass}>
                       <div className="flex items-center justify-between gap-2 mb-3">

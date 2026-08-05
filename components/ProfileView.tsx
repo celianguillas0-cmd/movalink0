@@ -1043,6 +1043,20 @@ export default function ProfileView({
       >
         @{profile.username}
       </p>
+      {profile.liveStatus?.active && profile.liveStatus.url && (
+        <a
+          href={profile.liveStatus.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-flex items-center gap-2 rounded-full bg-red-600 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-white shadow-[0_0_22px_rgba(220,38,38,0.6)] transition-transform hover:scale-105"
+        >
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
+          </span>
+          {profile.liveStatus.label || "En direct"}
+        </a>
+      )}
       {theme.discordId && <DiscordPresence discordId={theme.discordId} />}
       {profile.bio && (
         <p

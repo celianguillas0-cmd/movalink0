@@ -405,6 +405,10 @@ export interface Profile {
   twitchChannel?: string;
   youtubeChannel?: string;
   steamId?: string;
+  // Badge « en direct » manuel : le créateur l'active d'un clic quand il lance
+  // son live (TikTok, Kick, n'importe quelle plateforme). Aucune API tierce,
+  // aucun scraping — juste un lien posé par l'utilisateur.
+  liveStatus?: { active: boolean; url: string; label?: string } | null;
   supportButton?: { label: string; url: string } | null;
   streamSchedule?: { days: number[]; timeStart: string; timeEnd?: string } | null;
   clips?: { url: string; title?: string }[];

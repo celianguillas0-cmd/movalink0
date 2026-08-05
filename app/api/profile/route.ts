@@ -388,6 +388,20 @@ export async function PUT(request: NextRequest) {
   const youtubeChannel = limits.liveEmbed ? clampText(body.youtubeChannel, 120) : "";
   const steamId = limits.steamStatus && /^\d{17}$/.test(body.steamId ?? "") ? body.steamId! : "";
 
+  // Badge « en direct » manuel (même palier que les autres widgets live).
+  // On conserve l'URL même si le badge est désactivé, pour ne pas la reperdre
+  // à chaque fois que le créateur coupe son live.
+  const liveStatus = (() => {
+    if (!limits.liveEmbed) return null;
+    const src = "liveStatus" in body ? body.liveStatus : current.liveStatus;
+    if (!src) return null;
+    const url = sanitizeUrl(clampText(src.url, 300)) ?? "";
+    const label = clampText(src.label, 40);
+    const active = src.active === true && !!url;
+    if (!url && !label) return null;
+    return { active, url, ...(label ? { label } : {}) };
+  })();
+
   const supportButton = (() => {
     if (!limits.supportButton || !body.supportButton) return null;
     const label = clampText(body.supportButton.label, 60) || "Me soutenir";
@@ -472,6 +486,7 @@ export async function PUT(request: NextRequest) {
     ...(twitchChannel ? { twitchChannel } : {}),
     ...(youtubeChannel ? { youtubeChannel } : {}),
     ...(steamId ? { steamId } : {}),
+    ...(liveStatus ? { liveStatus } : {}),
     ...(supportButton ? { supportButton } : {}),
     ...(streamSchedule ? { streamSchedule } : {}),
     ...(clips?.length ? { clips } : {}),
