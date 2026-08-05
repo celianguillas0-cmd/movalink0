@@ -92,6 +92,13 @@ export default function CursorTrail({ color }: { color: string }) {
     const sprite = buildSprite(normalizeHex(color));
     const puffs: Puff[] = [];
 
+    // Sur mobile (pointeur grossier), on allège : moins de bouffées et une
+    // résolution plafonnée, car le remplissage de gros sprites translucides
+    // est ce qui coûte le plus cher sur GPU de téléphone.
+    const coarse = window.matchMedia?.("(pointer: coarse)").matches ?? false;
+    const maxPuffs = coarse ? 130 : MAX_PUFFS;
+    const maxDpr = coarse ? 1.5 : 2;
+
     let raf = 0;
     let dpr = 1;
     let w = 0;
@@ -104,7 +111,7 @@ export default function CursorTrail({ color }: { color: string }) {
     let last = performance.now();
 
     const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
       const rect = parent.getBoundingClientRect();
       w = rect.width;
       h = rect.height;
@@ -119,7 +126,7 @@ export default function CursorTrail({ color }: { color: string }) {
     ro.observe(parent);
 
     const spawn = (x: number, y: number, vx: number, vy: number) => {
-      if (puffs.length >= MAX_PUFFS) return;
+      if (puffs.length >= maxPuffs) return;
       const speed = Math.hypot(vx, vy);
       puffs.push({
         x: x + (Math.random() - 0.5) * 4,
@@ -181,16 +188,47 @@ export default function CursorTrail({ color }: { color: string }) {
       py = y;
     };
 
-    const onMove = (e: PointerEvent) => {
+    const emitAt = (clientX: number, clientY: number) => {
       const rect = parent.getBoundingClientRect();
-      emitAlong(e.clientX - rect.left, e.clientY - rect.top);
+      emitAlong(clientX - rect.left, clientY - rect.top);
     };
-    const onLeave = () => {
+
+    // Souris / stylet. Le tactile est traité à part : pendant un défilement le
+    // navigateur annule les événements « pointer » alors que les « touch »
+    // continuent — sans ça la traînée se couperait dès que la page défile.
+    const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType === "touch") return;
+      emitAt(e.clientX, e.clientY);
+    };
+    const onPointerLeave = () => {
       hasPointer = false;
     };
 
-    parent.addEventListener("pointermove", onMove, { passive: true });
-    parent.addEventListener("pointerleave", onLeave, { passive: true });
+    // Doigt : la traînée suit le glissement, y compris pendant le défilement.
+    // Écouteurs passifs et aucun preventDefault — le scroll reste intact.
+    const onTouchStart = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (!t) return;
+      // On repart de la position du doigt sans tracer : pas de trait entre
+      // l'ancien point et l'endroit où l'écran est touché.
+      hasPointer = false;
+      carry = 0;
+      emitAt(t.clientX, t.clientY);
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (t) emitAt(t.clientX, t.clientY);
+    };
+    const onTouchEnd = () => {
+      hasPointer = false;
+    };
+
+    parent.addEventListener("pointermove", onPointerMove, { passive: true });
+    parent.addEventListener("pointerleave", onPointerLeave, { passive: true });
+    parent.addEventListener("touchstart", onTouchStart, { passive: true });
+    parent.addEventListener("touchmove", onTouchMove, { passive: true });
+    parent.addEventListener("touchend", onTouchEnd, { passive: true });
+    parent.addEventListener("touchcancel", onTouchEnd, { passive: true });
 
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
@@ -258,8 +296,12 @@ export default function CursorTrail({ color }: { color: string }) {
       cancelAnimationFrame(raf);
       ro.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
-      parent.removeEventListener("pointermove", onMove);
-      parent.removeEventListener("pointerleave", onLeave);
+      parent.removeEventListener("pointermove", onPointerMove);
+      parent.removeEventListener("pointerleave", onPointerLeave);
+      parent.removeEventListener("touchstart", onTouchStart);
+      parent.removeEventListener("touchmove", onTouchMove);
+      parent.removeEventListener("touchend", onTouchEnd);
+      parent.removeEventListener("touchcancel", onTouchEnd);
     };
   }, [color]);
 
