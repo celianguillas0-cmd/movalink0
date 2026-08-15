@@ -37,7 +37,7 @@ export default function ProfilePreview() {
             AQ
           </div>
           <p className="mt-3 text-lg font-bold text-white">Aquox</p>
-          <p className="text-xs text-white/40">@aquox</p>
+          <p className="text-xs text-white/60">@aquox</p>
 
           <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
             <span className="h-1.5 w-1.5 rounded-full bg-white" />
@@ -78,7 +78,7 @@ export default function ProfilePreview() {
           </div>
 
           <div className="mt-4 flex w-full items-center justify-between rounded-xl bg-white/5 px-3 py-2">
-            <span className="text-[10px] text-white/40">Vues cette semaine</span>
+            <span className="text-[10px] text-white/60">Vues cette semaine</span>
             <span className="text-xs font-bold text-white">12 480</span>
           </div>
         </div>

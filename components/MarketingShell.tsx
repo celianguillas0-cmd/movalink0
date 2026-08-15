@@ -74,7 +74,7 @@ export default function MarketingShell({
                 <LogoMark className="h-6 w-6" />
                 <span className="text-sm font-semibold">{SITE_NAME}</span>
               </div>
-              <p className="mt-2 max-w-xs text-sm text-gray-400 dark:text-zinc-500">
+              <p className="mt-2 max-w-xs text-sm text-gray-500 dark:text-zinc-400">
                 Tout ton univers gaming, réuni derrière un seul lien.
               </p>
             </div>
@@ -106,7 +106,7 @@ export default function MarketingShell({
               />
             </div>
           </div>
-          <p className="mt-10 text-xs text-gray-400 dark:text-zinc-600">
+          <p className="mt-10 text-xs text-gray-500 dark:text-zinc-400">
             © {new Date().getFullYear()} {SITE_NAME}
           </p>
         </div>
@@ -124,7 +124,7 @@ function FooterCol({
 }) {
   return (
     <div>
-      <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
+      <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-zinc-400">
         {title}
       </p>
       <ul className="flex flex-col gap-2">

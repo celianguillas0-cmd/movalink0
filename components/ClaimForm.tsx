@@ -19,7 +19,7 @@ export default function ClaimForm() {
       }}
     >
       <div className="flex min-w-0 flex-1 items-center rounded-xl border border-gray-200 bg-white px-3.5 py-3 shadow-sm focus-within:border-gray-400 dark:border-zinc-700 dark:bg-zinc-900 dark:focus-within:border-zinc-500">
-        <span className="shrink-0 text-sm text-gray-400 dark:text-zinc-500">
+        <span className="shrink-0 text-sm text-gray-500 dark:text-zinc-400">
           movalink.vercel.app/
         </span>
         {/* min-w-0 : sans ça, la largeur mini du champ s'ajoute à celle du

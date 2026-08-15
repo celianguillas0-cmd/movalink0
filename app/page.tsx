@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import MarketingShell from "@/components/MarketingShell";
 import ClaimForm from "@/components/ClaimForm";
 import ProfilePreview from "@/components/ProfilePreview";
+import { FREE_LAUNCH, SITE_NAME, SITE_URL } from "@/lib/config";
+
+export const metadata: Metadata = {
+  title: `${SITE_NAME} — Ta page gaming, un seul lien`,
+  description:
+    "Réunis tes liens, tes réseaux, tes jeux et tes stats sur une page à ton image, avec 56 effets animés. Gratuit, prêt en deux minutes, sans carte bancaire.",
+  alternates: { canonical: "/" },
+};
 
 const STEPS = [
   {
@@ -83,15 +92,102 @@ const PILLARS = [
   },
 ];
 
+// Les objections qui reviennent avant l'inscription. Réponses alignées sur la
+// page FAQ complète, à laquelle la section renvoie.
+const FAQ = [
+  {
+    q: "C'est vraiment gratuit ?",
+    a: "Oui. Pendant le lancement, chaque compte débloque toutes les fonctionnalités sans payer et sans carte bancaire. Ensuite, le plan Gratuit restera complet et sans limite de durée.",
+  },
+  {
+    q: "Je peux changer de pseudo plus tard ?",
+    a: "Oui, depuis ton compte. Ton profil, tes statistiques et ton classement suivent automatiquement, et ta nouvelle adresse est active aussitôt.",
+  },
+  {
+    q: "Quels réseaux sont reconnus ?",
+    a: "Une vingtaine : TikTok, Twitch, YouTube, Discord, Instagram, X, Snapchat, Telegram, Reddit, WhatsApp, Threads, Facebook, Pinterest, LinkedIn, Spotify, SoundCloud, Patreon, GitHub, Steam, Kick et Skool. Tu entres ton pseudo, le lien se construit tout seul.",
+  },
+  {
+    q: "Mes statistiques sont-elles privées ?",
+    a: "Oui. Toi seul vois les statistiques de ta page, et nous ne comptons que des totaux anonymes — aucune donnée personnelle sur tes visiteurs, aucun traceur publicitaire.",
+  },
+  {
+    q: "Je peux l'installer comme une application ?",
+    a: "Oui. Sur Chrome (ordinateur ou Android), un bouton « Installer l'application » apparaît. Sur iPhone : Partager, puis « Sur l'écran d'accueil ».",
+  },
+];
+
+// Huit aperçus animés, recréés en CSS (classes .lp-fx-* dans globals.css).
+const EFFECT_TILES = [
+  { label: "Aurore", fx: "lp-fx-aurora" },
+  { label: "Matrix", fx: "lp-fx-matrix" },
+  { label: "Neige", fx: "lp-fx-snow" },
+  { label: "Feux d'artifice", fx: "lp-fx-fireworks" },
+  { label: "Synthwave", fx: "lp-fx-synthwave" },
+  { label: "Tubes néon", fx: "lp-fx-neon" },
+  { label: "Étoiles", fx: "lp-fx-stars" },
+  { label: "Pluie", fx: "lp-fx-rain" },
+];
+
 const EFFECTS = [
   "Neige", "Matrix", "Feux d'artifice", "Hyperespace", "Aurore", "Papillons",
   "Éclairs", "Synthwave", "Lanternes", "Poussière d'or", "Méduses", "Vortex",
   "Nébuleuse", "Braises", "Tubes néon", "Sakura",
 ];
 
+// Données structurées. La FAQ balisée est générée depuis le tableau affiché
+// juste au-dessus : Google exige que le balisage corresponde au contenu
+// visible, et deux listes séparées finiraient par diverger.
+// Aucune note ni avis n'est déclaré : il n'y en a pas, et en inventer serait
+// à la fois une faute de référencement et une pratique commerciale trompeuse.
+function structuredData() {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: SITE_NAME,
+        inLanguage: "fr-FR",
+      },
+      {
+        "@type": "SoftwareApplication",
+        name: SITE_NAME,
+        applicationCategory: "WebApplication",
+        operatingSystem: "Web",
+        url: SITE_URL,
+        description:
+          "Page de profil pour créateurs gaming : liens, réseaux, jeux, statistiques et effets animés, réunis derrière une seule adresse.",
+        ...(FREE_LAUNCH
+          ? {
+              offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "EUR",
+              },
+            }
+          : {}),
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: FAQ.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
+    ],
+  };
+}
+
 export default function HomePage() {
   return (
     <MarketingShell>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData()) }}
+      />
       {/* ─── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
         {/* Fond : une seule lueur diffuse. Remplace le motif hexagonal, qui
@@ -117,7 +213,7 @@ export default function HomePage() {
             <h1 className="mt-5 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
               Tout ton univers gaming.
               <br />
-              <span className="text-gray-400 dark:text-zinc-500">
+              <span className="text-gray-500 dark:text-zinc-400">
                 Un seul lien.
               </span>
             </h1>
@@ -132,7 +228,7 @@ export default function HomePage() {
               <ClaimForm />
             </div>
 
-            <p className="mt-3 text-xs text-gray-400 dark:text-zinc-500">
+            <p className="mt-3 text-xs text-gray-500 dark:text-zinc-400">
               Prêt en deux minutes · Sans carte bancaire
             </p>
           </div>
@@ -153,10 +249,9 @@ export default function HomePage() {
           <div className="mt-12 grid gap-10 sm:grid-cols-3 sm:gap-8">
             {STEPS.map((s) => (
               <div key={s.n}>
-                <div
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold text-white"
-                  style={{ background: "var(--accent)" }}
-                >
+                {/* indigo-600 fixe : var(--accent) vaut indigo-400 en thème
+                    sombre, où le texte blanc tombait à 2,98 de contraste. */}
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">
                   {s.n}
                 </div>
                 <h3 className="mt-4 text-base font-semibold">{s.title}</h3>
@@ -216,7 +311,7 @@ export default function HomePage() {
           <div className="mt-12 overflow-hidden rounded-2xl border border-gray-200 dark:border-zinc-800">
             <div className="grid grid-cols-1 sm:grid-cols-2">
               <div className="border-b border-gray-200 px-6 py-4 sm:border-b-0 sm:border-r dark:border-zinc-800">
-                <p className="text-sm font-semibold text-gray-400 dark:text-zinc-500">
+                <p className="text-sm font-semibold text-gray-500 dark:text-zinc-400">
                   Une page de liens classique
                 </p>
               </div>
@@ -224,10 +319,7 @@ export default function HomePage() {
                 className="px-6 py-4"
                 style={{ background: "var(--accent-muted)" }}
               >
-                <p
-                  className="text-sm font-semibold"
-                  style={{ color: "var(--accent)" }}
-                >
+                <p className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
                   Avec Movalink
                 </p>
               </div>
@@ -241,11 +333,11 @@ export default function HomePage() {
                 <div className="flex items-start gap-3 px-6 py-4 sm:border-r dark:border-zinc-800">
                   <span
                     aria-hidden
-                    className="mt-0.5 shrink-0 text-gray-300 dark:text-zinc-600"
+                    className="mt-0.5 shrink-0 text-gray-300 dark:text-zinc-400"
                   >
                     ✕
                   </span>
-                  <span className="text-sm text-gray-400 dark:text-zinc-500">
+                  <span className="text-sm text-gray-500 dark:text-zinc-400">
                     {row.generic}
                   </span>
                 </div>
@@ -275,22 +367,71 @@ export default function HomePage() {
             title="56 effets animés"
             text="Des vraies animations en arrière-plan de ta page, pas un filtre posé sur une image. C'est ce qui fait qu'on se souvient de ton profil."
           />
-          <div className="mt-10 flex flex-wrap gap-2">
+          {/* Aperçus animés plutôt qu'une liste de noms : l'argument est
+              visuel, autant le montrer. Recréés en CSS — la page d'accueil
+              n'embarque pas le moteur d'effets. */}
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {EFFECT_TILES.map((t) => (
+              <div
+                key={t.label}
+                className="relative aspect-[4/3] overflow-hidden rounded-xl bg-zinc-950 ring-1 ring-black/5 dark:ring-white/10"
+              >
+                <div className={`lp-fx ${t.fx}`} aria-hidden />
+                <span className="absolute bottom-2 left-2.5 text-xs font-medium text-white/90 drop-shadow">
+                  {t.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center gap-2">
             {EFFECTS.map((e) => (
               <span
                 key={e}
-                className="rounded-full border border-gray-200 px-3.5 py-1.5 text-sm text-gray-600 dark:border-zinc-800 dark:text-zinc-300"
+                className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-600 dark:border-zinc-800 dark:text-zinc-300"
               >
                 {e}
               </span>
             ))}
-            <span
-              className="rounded-full px-3.5 py-1.5 text-sm font-medium text-white"
-              style={{ background: "var(--accent)" }}
-            >
+            <span className="rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white">
               +40 autres
             </span>
           </div>
+        </div>
+      </section>
+
+      {/* ─── Questions fréquentes ─────────────────────────────────────────── */}
+      <section className="border-t border-gray-100 dark:border-zinc-900">
+        <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:py-24">
+          <SectionTitle kicker="Avant de te lancer" title="Les questions qu'on nous pose" />
+          {/* <details> natif : accessible au clavier et sans JavaScript. */}
+          <div className="mt-10 divide-y divide-gray-100 border-y border-gray-100 dark:divide-zinc-900 dark:border-zinc-900">
+            {FAQ.map((f) => (
+              <details key={f.q} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-medium marker:content-['']">
+                  {f.q}
+                  <span
+                    aria-hidden
+                    className="shrink-0 text-xl leading-none text-gray-300 transition-transform group-open:rotate-45 dark:text-zinc-400"
+                  >
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 pr-8 text-sm leading-relaxed text-gray-500 dark:text-zinc-400">
+                  {f.a}
+                </p>
+              </details>
+            ))}
+          </div>
+          <p className="mt-6 text-sm text-gray-500 dark:text-zinc-400">
+            D&apos;autres questions ?{" "}
+            <Link
+              href="/faq"
+              className="font-medium text-gray-900 underline-offset-4 hover:underline dark:text-white"
+            >
+              Voir la FAQ complète
+            </Link>
+          </p>
         </div>
       </section>
 
@@ -307,7 +448,7 @@ export default function HomePage() {
           <div className="mx-auto mt-8 max-w-md">
             <ClaimForm />
           </div>
-          <p className="mt-6 text-sm text-gray-400 dark:text-zinc-500">
+          <p className="mt-6 text-sm text-gray-500 dark:text-zinc-400">
             Déjà un compte ?{" "}
             <Link
               href="/login"
@@ -333,10 +474,9 @@ function SectionTitle({
 }) {
   return (
     <div className="max-w-2xl">
-      <p
-        className="text-xs font-semibold uppercase tracking-wider"
-        style={{ color: "var(--accent)" }}
-      >
+      {/* indigo-600/400 plutôt que var(--accent) : l'indigo-500 tombait à
+          4,47 sur blanc, juste sous le seuil AA de 4,5. */}
+      <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
         {kicker}
       </p>
       <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
