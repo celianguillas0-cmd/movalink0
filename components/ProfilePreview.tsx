@@ -1,26 +1,31 @@
+import { LogoMark } from "./Icons";
+
 // Aperçu d'une page Movalink, affiché dans le hero de l'accueil.
 //
+// Le profil de démonstration est Movalink lui-même : aucun pseudo, aucune
+// donnée personnelle réelle n'a à figurer sur la page d'accueil publique.
+//
 // Il montre volontairement une page *poussée à fond* — effet de fond animé,
-// anneau d'avatar tournant, pseudo en dégradé mouvant, bande LED autour des
-// boutons, jeux et statut Discord. Un aperçu sobre ressemblerait à n'importe
-// quelle page de liens et ne dirait rien de ce que le produit sait faire :
-// c'est cette image qui doit donner envie de créer sa page.
+// anneau d'avatar tournant, pseudo en dégradé mouvant, bande LED et relief 3D
+// sur les boutons, statut en direct et liste de jeux. Un aperçu sobre
+// ressemblerait à n'importe quelle page de liens et ne dirait rien de ce que le
+// produit sait faire : c'est cette image qui doit donner envie de créer sa page.
 //
 // Autonome plutôt que branché sur ProfileView : la page d'accueil reste rendue
 // côté serveur et n'embarque ni le moteur d'effets, ni LedFrame, ni le suivi de
 // curseur. On reproduit l'apparence, pas la mécanique.
 
 const LINKS = [
-  { label: "Ma chaîne Twitch", icon: "🎬" },
-  { label: "Discord de la commu", icon: "💬" },
-  { label: "Mes setups & config", icon: "🖥️" },
+  { label: "Voir les 56 effets", icon: "✨" },
+  { label: "Rejoindre le Discord", icon: "💬" },
+  { label: "Créer ma page", icon: "🚀" },
 ];
 
 const SOCIALS = ["TikTok", "Twitch", "YouTube", "Discord"];
 
 const GAMES = [
-  { game: "Valorant", pseudo: "Aquox#EUW" },
-  { game: "Rocket League", pseudo: "aquox_rl" },
+  { game: "Valorant", pseudo: "Movalink#EUW" },
+  { game: "Rocket League", pseudo: "movalink_rl" },
 ];
 
 export default function ProfilePreview() {
@@ -42,21 +47,21 @@ export default function ProfilePreview() {
         <div className="lp-dust" aria-hidden />
 
         <div className="relative flex flex-col items-center px-5 py-6">
-          {/* Avatar : anneau dégradé en rotation. */}
+          {/* Avatar : la marque, cerclée d'un anneau dégradé en rotation. */}
           <div className="lp-ring relative h-[76px] w-[76px] rounded-full">
             <div
-              className="absolute inset-0 grid place-items-center rounded-full text-xl font-bold text-white"
+              className="absolute inset-0 grid place-items-center rounded-full"
               style={{
                 background: "linear-gradient(140deg, var(--accent), #0ea5e9)",
                 margin: 3,
               }}
             >
-              AQ
+              <LogoMark className="h-8 w-8 text-white" />
             </div>
           </div>
 
-          <p className="lp-name mt-3 text-xl font-bold">Aquox</p>
-          <p className="text-xs text-white/60">@aquox</p>
+          <p className="lp-name mt-3 text-xl font-bold">Movalink</p>
+          <p className="text-xs text-white/60">@movalink</p>
 
           <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
@@ -71,9 +76,9 @@ export default function ProfilePreview() {
           </div>
 
           <p className="mt-3 text-center text-xs leading-relaxed text-white/70">
-            Créateur gaming · FPS &amp; chill
+            Tout ton univers gaming
             <br />
-            Stream tous les soirs à 21 h
+            réuni derrière un seul lien
           </p>
 
           <div className="mt-3.5 flex flex-wrap justify-center gap-1.5">
