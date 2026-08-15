@@ -87,8 +87,8 @@ export default function ProfilePreview() {
             ))}
           </div>
 
-          {/* Boutons cerclés d'une bande LED qui tourne. */}
-          <div className="mt-4 flex w-full flex-col gap-2">
+          {/* Boutons : bande LED qui tourne + relief 3D, inclinés au survol. */}
+          <div className="lp-tilt mt-4 flex w-full flex-col gap-2.5">
             {LINKS.map((l) => (
               <div key={l.label} className="lp-led">
                 <div className="flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-white">
@@ -126,7 +126,7 @@ export default function ProfilePreview() {
 
       {/* Légende : sans elle, le lecteur peut croire à une décoration. */}
       <p className="mt-4 text-center text-xs text-gray-500 dark:text-zinc-400">
-        Une vraie page Movalink — effet animé, bande LED, statut en direct.
+        Une vraie page Movalink — effet animé, bande LED, boutons 3D (survole-les).
       </p>
     </div>
   );
