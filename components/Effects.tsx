@@ -1,7 +1,32 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { EffectId } from "@/lib/types";
+
+// « Animations réduites » du système. Les effets sont l'argument principal du
+// produit, mais ils restent des animations plein écran en boucle : un visiteur
+// qui a demandé à son système de les limiter — pour des migraines, un trouble
+// vestibulaire ou une sensibilité aux clignotements — doit être écouté, sinon
+// la page devient inutilisable pour lui.
+//
+// useSyncExternalStore plutôt que useState + useEffect : la valeur est lue au
+// premier rendu client, donc l'effet n'apparaît pas une fraction de seconde
+// avant d'être retiré, et un changement de réglage est pris en compte à chaud.
+const REDUCED_QUERY = "(prefers-reduced-motion: reduce)";
+
+function subscribeReducedMotion(onChange: () => void) {
+  const mq = window.matchMedia?.(REDUCED_QUERY);
+  mq?.addEventListener("change", onChange);
+  return () => mq?.removeEventListener("change", onChange);
+}
+
+export function usePrefersReducedMotion(): boolean {
+  return useSyncExternalStore(
+    subscribeReducedMotion,
+    () => window.matchMedia?.(REDUCED_QUERY).matches === true,
+    () => false // rendu serveur : on ne connaît pas le réglage du visiteur
+  );
+}
 
 interface Particle {
   x: number;
@@ -1272,7 +1297,13 @@ export default function EffectLayer({
   accent: string;
   emojiChar?: string;
 }) {
+  // Appelé avant tout retour anticipé : l'ordre des hooks doit rester constant.
+  const reducedMotion = usePrefersReducedMotion();
+
   if (effect === "none") return null;
+  // Le fond de la page, ses couleurs et sa mise en page restent identiques :
+  // seule l'animation superposée disparaît.
+  if (reducedMotion) return null;
 
   if (effect === "plasma") {
     return (
