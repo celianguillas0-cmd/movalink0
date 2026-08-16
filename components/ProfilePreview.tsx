@@ -39,28 +39,29 @@ const DEMO: Profile = {
     { id: "g1", game: "Valorant", pseudo: "Movalink#EUW" },
     { id: "g2", game: "Rocket League", pseudo: "movalink_rl" },
   ],
-  // Réglages choisis après comparaison de quatre configurations rendues côte
-  // à côte : l'effet Aurore et le fond noir uni ne se voyaient pas à cette
-  // taille. Le violet/rose tranche aussi avec l'indigo de la page, donc la
-  // carte se détache au lieu de s'y fondre.
+  // Réglages choisis après deux tours de comparaison rendus côte à côte.
+  // Noir et blanc électrique : accent blanc pur, effet Éclairs, boutons néon.
+  // Deux enseignements de ces essais :
+  //   — le style « Relief 3D » remplit le bouton avec la couleur d'accent :
+  //     avec un accent blanc, le libellé devient blanc sur blanc, illisible ;
+  //   — la LED « Clignotant » éteint les boutons une image sur deux, ce qui
+  //     rend la carte terne la moitié du temps. D'où une LED continue.
   theme: {
-    accent: "#f472b6",
-    effect: "synthwave",
+    accent: "#ffffff",
+    effect: "lightning",
     layout: "card",
     font: "classic",
     buttonStyle: "neon",
-    avatarFrame: "gradientRing",
+    avatarFrame: "double",
     cursor: "default",
     nameEffect: "glow",
     tilt3d: true,
     ledMode: "comet",
-    ledColor: "#f472b6",
-    ledSpeed: 25,
-    ledPower: 75,
-    bgType: "gradient",
-    bgColor: "#2e1065",
-    bgColor2: "#0f172a",
-    bgAngle: 160,
+    ledColor: "#ffffff",
+    ledSpeed: 22,
+    ledPower: 85,
+    bgType: "solid",
+    bgColor: "#000000",
     cardIntro: "none",
   },
   decorations: [],
@@ -77,7 +78,7 @@ export default function ProfilePreview() {
         className="absolute -inset-10 -z-10 rounded-full opacity-45 blur-3xl"
         style={{
           background:
-            "radial-gradient(circle at 50% 35%, #a855f7, transparent 68%)",
+            "radial-gradient(circle at 50% 35%, #94a3b8, transparent 68%)",
         }}
       />
 
@@ -95,7 +96,7 @@ export default function ProfilePreview() {
       </div>
 
       <p className="mt-4 text-center text-xs text-gray-500 dark:text-zinc-400">
-        Page de démonstration, rendue par Movalink — effet Synthwave, boutons
+        Page de démonstration, rendue par Movalink — effet Éclairs, boutons
         néon, bande LED.
       </p>
     </div>
