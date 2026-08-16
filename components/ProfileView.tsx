@@ -269,6 +269,33 @@ function track(username: string, type: "view" | "click", linkId?: string) {
 }
 
 // Style des boutons de liens selon le choix du profil.
+// Couleur de texte lisible sur un fond donné.
+//
+// Les styles « Relief 3D » et « Dégradé » peignent le bouton avec la couleur
+// d'accent. Sans ce calcul, un accent clair — blanc, jaune, pastel — donnait un
+// libellé blanc sur fond blanc : le bouton devenait illisible, seuls les emoji
+// restaient visibles. On choisit donc l'encre en fonction de la luminance du
+// fond, formule WCAG.
+function readableInkOn(background: string): string {
+  const hex = background.replace("#", "");
+  const full =
+    hex.length === 3
+      ? hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
+      : hex.slice(0, 6);
+  if (!/^[0-9a-fA-F]{6}$/.test(full)) return "#ffffff";
+  const channel = (v: number) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  };
+  const r = channel(parseInt(full.slice(0, 2), 16));
+  const g = channel(parseInt(full.slice(2, 4), 16));
+  const b = channel(parseInt(full.slice(4, 6), 16));
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  // 0,179 est le point où le contraste avec du blanc et avec du noir
+  // s'équivaut : au-dessus le noir passe mieux, en dessous le blanc.
+  return luminance > 0.179 ? "#0a0a0a" : "#ffffff";
+}
+
 function linkButtonProps(
   style: ButtonStyleId,
   accent: string
@@ -309,6 +336,7 @@ function linkButtonProps(
         className: `${base} rounded-xl border-0 hover:brightness-110`,
         style: {
           background: `linear-gradient(135deg, ${accent}, ${accent}55)`,
+          color: readableInkOn(accent),
         },
       };
     case "shadow":
@@ -326,6 +354,7 @@ function linkButtonProps(
         className: `${base} rounded-xl border-0 active:translate-y-[2px]`,
         style: {
           background: accent,
+          color: readableInkOn(accent),
           boxShadow: "inset 0 -4px 0 rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.25)",
         },
       };
@@ -891,7 +920,13 @@ export default function ProfileView({
         target="_blank"
         rel="noopener noreferrer"
         className={lbtn.className}
-        style={{ ...lbtn.style, color: buttonTextColor }}
+        // Le choix explicite de l'utilisateur prime, mais seulement s'il en a
+        // fait un : écrit tel quel, `color: undefined` effacerait l'encre
+        // calculée pour les styles qui peignent le bouton en couleur d'accent.
+        style={{
+          ...lbtn.style,
+          ...(buttonTextColor ? { color: buttonTextColor } : {}),
+        }}
         onClick={() => {
           if (interactive) track(profile.username, "click", link.id);
         }}
@@ -902,7 +937,9 @@ export default function ProfileView({
           )}
           <span className="truncate">{link.label}</span>
         </span>
-        <LinkIcon className="h-4 w-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
+        {/* L'icône suit l'encre du bouton : figée en blanc, elle disparaissait
+            sur un bouton clair. */}
+        <LinkIcon className="h-4 w-4 shrink-0 text-current opacity-40 transition-opacity group-hover:opacity-100" />
       </a>
     );
     // La LED est à l'intérieur du cadre 3D : ruban et bouton s'inclinent ensemble.
