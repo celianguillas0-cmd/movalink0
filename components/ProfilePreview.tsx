@@ -39,20 +39,28 @@ const DEMO: Profile = {
     { id: "g1", game: "Valorant", pseudo: "Movalink#EUW" },
     { id: "g2", game: "Rocket League", pseudo: "movalink_rl" },
   ],
+  // Réglages choisis après comparaison de quatre configurations rendues côte
+  // à côte : l'effet Aurore et le fond noir uni ne se voyaient pas à cette
+  // taille. Le violet/rose tranche aussi avec l'indigo de la page, donc la
+  // carte se détache au lieu de s'y fondre.
   theme: {
-    accent: "#6366f1",
-    effect: "aurora",
+    accent: "#f472b6",
+    effect: "synthwave",
     layout: "card",
     font: "classic",
-    buttonStyle: "glass",
-    avatarFrame: "animated",
+    buttonStyle: "neon",
+    avatarFrame: "gradientRing",
     cursor: "default",
-    nameEffect: "gradient",
+    nameEffect: "glow",
     tilt3d: true,
-    ledMode: "chase",
-    ledColor: "#22d3ee",
-    ledSpeed: 30,
-    ledPower: 60,
+    ledMode: "comet",
+    ledColor: "#f472b6",
+    ledSpeed: 25,
+    ledPower: 75,
+    bgType: "gradient",
+    bgColor: "#2e1065",
+    bgColor2: "#0f172a",
+    bgAngle: 160,
     cardIntro: "none",
   },
   decorations: [],
@@ -69,7 +77,7 @@ export default function ProfilePreview() {
         className="absolute -inset-10 -z-10 rounded-full opacity-45 blur-3xl"
         style={{
           background:
-            "radial-gradient(circle at 50% 35%, var(--accent), transparent 68%)",
+            "radial-gradient(circle at 50% 35%, #a855f7, transparent 68%)",
         }}
       />
 
@@ -87,8 +95,8 @@ export default function ProfilePreview() {
       </div>
 
       <p className="mt-4 text-center text-xs text-gray-500 dark:text-zinc-400">
-        Page de démonstration, rendue par Movalink — effet Aurore, bande LED,
-        boutons 3D.
+        Page de démonstration, rendue par Movalink — effet Synthwave, boutons
+        néon, bande LED.
       </p>
     </div>
   );
