@@ -13,6 +13,7 @@ import {
   CursorId,
   Decoration,
   EffectId,
+  FaqEntry,
   FontId,
   GameEntry,
   LAYOUT_DEFAULTS,
@@ -440,6 +441,17 @@ export async function PUT(request: NextRequest) {
       })
     : [];
 
+  // Questions fréquentes. On conserve les lignes en cours de saisie (question
+  // encore vide) pour que l'autosave n'efface pas celle qu'on vient d'ajouter ;
+  // elles sont ignorées au rendu de la page publique.
+  const faq: FaqEntry[] = limits.faqItems > 0 && Array.isArray(body.faq)
+    ? body.faq.slice(0, limits.faqItems).map((f) => ({
+        id: typeof f?.id === "string" && f.id ? f.id.slice(0, 32) : newId(),
+        question: clampText(f?.question, 120),
+        answer: clampText(f?.answer, 600),
+      }))
+    : [];
+
   // ─── Advanced settings (all plans) ──────────────────────────────────────
   // pagePassword: use body value if the key is present (empty string = clear),
   // otherwise fall back to current stored value so autosaves don't wipe it.
@@ -502,6 +514,7 @@ export async function PUT(request: NextRequest) {
     ...(supportButton ? { supportButton } : {}),
     ...(streamSchedule ? { streamSchedule } : {}),
     ...(clips?.length ? { clips } : {}),
+    ...(faq.length ? { faq } : {}),
     ...(pagePassword ? { pagePassword } : {}),
     ...(linkGroups.length ? { linkGroups } : {}),
     ...(!scheduledPagesEnabled ? { scheduledPagesEnabled: false } : {}),

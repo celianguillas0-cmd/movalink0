@@ -52,6 +52,10 @@ const BLOCKS = [
     text: "La liste de tes jeux avec ton pseudo sur chacun, pour que ta commu te retrouve en jeu en un coup d'œil.",
   },
   {
+    title: "Tes questions fréquentes",
+    text: "Ta config, tes réglages, tes partenariats : réponds une bonne fois sur ta page, au lieu de retaper la même chose en message privé.",
+  },
+  {
     title: "Une page qui te ressemble",
     text: "Couleurs, dégradés, polices, cadre d'avatar, boutons 3D, bande LED, musique de fond, filigrane à ton logo.",
   },

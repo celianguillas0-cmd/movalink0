@@ -1966,6 +1966,81 @@ function MaPageEditor() {
                         <p className="text-sm text-gray-400 dark:text-zinc-500">Disponible avec un plan Pro ou Elite.</p>
                       )}
                     </div>
+                    {/* Questions fréquentes */}
+                    <div className={cardClass}>
+                      <div className="mb-1 flex items-center justify-between gap-2">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">❓ Questions fréquentes</p>
+                        {!limits.faqItems && <Link href="/dashboard/premium" className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">Pro</Link>}
+                      </div>
+                      <p className="mb-3 text-xs text-gray-500 dark:text-zinc-400">
+                        Réponds une bonne fois aux questions qu&apos;on te pose sans arrêt —
+                        ta config, tes réglages, tes partenariats. Elles s&apos;affichent
+                        dépliables sur ta page.
+                      </p>
+                      {limits.faqItems > 0 ? (
+                        <div className="flex flex-col gap-3">
+                          {(profile.faq ?? []).map((item, i) => (
+                            <div key={item.id} className="rounded-xl border border-gray-100 p-3 dark:border-zinc-800">
+                              <div className="flex gap-2">
+                                <input
+                                  value={item.question}
+                                  maxLength={120}
+                                  placeholder="Quelle est ta config ?"
+                                  onChange={(e) => {
+                                    const faq = [...(profile.faq ?? [])];
+                                    faq[i] = { ...item, question: e.target.value };
+                                    update({ faq });
+                                  }}
+                                  className={inputClass}
+                                />
+                                <button
+                                  type="button"
+                                  className={`${smallBtnClass} shrink-0`}
+                                  onClick={() => update({ faq: (profile.faq ?? []).filter((_, j) => j !== i) })}
+                                  aria-label="Supprimer cette question"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                              <textarea
+                                value={item.answer}
+                                maxLength={600}
+                                rows={3}
+                                placeholder="Ta réponse…"
+                                onChange={(e) => {
+                                  const faq = [...(profile.faq ?? [])];
+                                  faq[i] = { ...item, answer: e.target.value };
+                                  update({ faq });
+                                }}
+                                className={`${inputClass} mt-2 resize-y`}
+                              />
+                            </div>
+                          ))}
+                          {(profile.faq?.length ?? 0) < limits.faqItems ? (
+                            <button
+                              type="button"
+                              className={smallBtnClass}
+                              onClick={() =>
+                                update({
+                                  faq: [
+                                    ...(profile.faq ?? []),
+                                    { id: `faq${Date.now().toString(36)}`, question: "", answer: "" },
+                                  ],
+                                })
+                              }
+                            >
+                              + Ajouter une question
+                            </button>
+                          ) : (
+                            <p className="text-xs text-gray-400 dark:text-zinc-500">
+                              Limite atteinte ({limits.faqItems} questions).
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-400 dark:text-zinc-500">Disponible avec un plan Pro ou Elite.</p>
+                      )}
+                    </div>
                     </div>{/* end widgets sub-section */}
 
                   </div>

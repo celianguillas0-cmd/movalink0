@@ -206,6 +206,15 @@ export interface GameEntry {
   pseudo: string;
 }
 
+// Question fréquente affichée sur la page publique : le créateur répond une
+// fois aux questions qu'on lui pose sans arrêt (config, sponsor, commandes…)
+// au lieu de les retaper en message privé.
+export interface FaqEntry {
+  id: string;
+  question: string;
+  answer: string;
+}
+
 // Code promo / partenariat de marque (ex : Gymshark) — pour les créateurs
 // qui ont des partenariats d'affiliation. Le code est copiable en un clic.
 export interface PromoCode {
@@ -413,6 +422,7 @@ export interface Profile {
   supportButton?: { label: string; url: string } | null;
   streamSchedule?: { days: number[]; timeStart: string; timeEnd?: string } | null;
   clips?: { url: string; title?: string }[];
+  faq?: FaqEntry[];              // questions fréquentes du créateur
   pagePassword?: string;
   linkGroups?: LinkGroup[];
   scheduledPagesEnabled?: boolean;
@@ -475,6 +485,7 @@ export interface PlanLimits {
   steamStatus: boolean;    // statut Steam (jeu en cours)
   supportButton: boolean;  // bouton "me soutenir" (Ko-fi / PayPal)
   clips: number;           // galerie de clips (0 = désactivé)
+  faqItems: number;        // questions fréquentes (0 = désactivé)
   savedProfiles: number;   // emplacements de pages sauvegardées (0 = désactivé)
 }
 
@@ -526,6 +537,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     steamStatus: false,
     supportButton: false,
     clips: 0,
+    faqItems: 3,
     savedProfiles: 1,
   },
   pro: {
@@ -574,6 +586,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     steamStatus: false,
     supportButton: true,
     clips: 4,
+    faqItems: 10,
     savedProfiles: 3,
   },
   elite: {
@@ -679,6 +692,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     steamStatus: true,
     supportButton: true,
     clips: 8,
+    faqItems: 25,
     savedProfiles: 10,
   },
 };

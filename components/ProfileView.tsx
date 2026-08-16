@@ -17,6 +17,7 @@ import {
   GamepadIcon,
   LinkIcon,
   LogoMark,
+  QuestionIcon,
   SOCIAL_ICONS,
   SOCIAL_LABELS,
   TagIcon,
@@ -1238,6 +1239,39 @@ export default function ProfileView({
       ) : null}
 
       {/* Clips */}
+      {(profile.faq ?? []).filter((f) => f.question && f.answer).length > 0 && (
+        <div className="mt-8 w-full">
+          <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-white/50">
+            <QuestionIcon className="h-4 w-4" />
+            Questions fréquentes
+          </div>
+          {/* <details> natif : dépliable au clavier et sans JavaScript. */}
+          <div className="flex flex-col gap-2">
+            {(profile.faq ?? [])
+              .filter((f) => f.question && f.answer)
+              .map((f) => (
+                <details
+                  key={f.id}
+                  className="group rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5"
+                >
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium marker:content-['']">
+                    <span className="min-w-0">{f.question}</span>
+                    <span
+                      aria-hidden
+                      className="shrink-0 text-lg leading-none text-white/40 transition-transform group-open:rotate-45"
+                    >
+                      +
+                    </span>
+                  </summary>
+                  <p className="mt-2 whitespace-pre-line text-xs leading-relaxed text-white/70">
+                    {f.answer}
+                  </p>
+                </details>
+              ))}
+          </div>
+        </div>
+      )}
+
       {profile.clips?.length ? <ClipsGrid clips={profile.clips} /> : null}
 
       {/* Countdown widget */}
