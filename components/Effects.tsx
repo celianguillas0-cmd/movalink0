@@ -249,11 +249,23 @@ function CanvasEffect({
             }
             bolt.push(seg);
           }
-          boltLife = 7;
-          boltCooldown = 45 + Math.floor(Math.random() * 140);
+          // L'éclair reste 14 images (~0,23 s) et l'attente descend à 26-70
+          // images (~0,4 à 1,2 s) : la foudre frappe assez souvent pour qu'on
+          // la voie sur un simple coup d'œil. Auparavant, 7 images suivies de
+          // 45 à 185 d'attente ne la rendaient visible que 6 % du temps.
+          //
+          // Le plancher de 26 images est délibéré : avec les 14 images de
+          // l'éclair, il borne la cadence à 1,5 flash par seconde, sous le
+          // seuil de trois flashs par seconde au-delà duquel un clignotement
+          // lumineux devient un risque pour les personnes photosensibles.
+          boltLife = 14;
+          boltCooldown = 26 + Math.floor(Math.random() * 44);
         }
         if (boltLife > 0) {
-          const intensity = boltLife / 7;
+          // Décroissance quadratique : la lueur s'éteint en fondu au lieu de
+          // se couper net, ce qui prolonge la présence à l'écran sans ajouter
+          // un seul flash.
+          const intensity = (boltLife / 14) ** 2;
           ctx.fillStyle = `rgba(200, 220, 255, ${0.12 * intensity})`;
           ctx.fillRect(0, 0, w, h);
           ctx.save();

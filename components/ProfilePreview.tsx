@@ -41,11 +41,9 @@ const DEMO: Profile = {
   ],
   // Noir et blanc électrique : accent blanc pur, boutons néon sur fond noir.
   //
-  // Hyperespace plutôt qu'Éclairs : mesuré sur la page, l'éclair n'est à
-  // l'écran que 5,8 % du temps — il dure 7 images puis se tait 45 à 185
-  // images. Superbe sur une page qu'on habite, invisible sur une vignette
-  // qu'on regarde trois secondes. Hyperespace trace des traînées blanches en
-  // continu, donc la carte est électrique en permanence.
+  // Effet Éclairs, dont la cadence a été revue dans Effects.tsx : la foudre
+  // n'était visible que 5,8 % du temps, invisible sur une vignette qu'on
+  // regarde trois secondes.
   //
   // Deux pièges écartés en cours de route :
   //   — le style « Relief 3D » remplit le bouton avec la couleur d'accent :
@@ -53,7 +51,7 @@ const DEMO: Profile = {
   //   — la LED « Clignotant » éteint les boutons une image sur deux.
   theme: {
     accent: "#ffffff",
-    effect: "hyperspace",
+    effect: "lightning",
     layout: "card",
     font: "classic",
     buttonStyle: "neon",
@@ -101,8 +99,8 @@ export default function ProfilePreview() {
       </div>
 
       <p className="mt-4 text-center text-xs text-gray-500 dark:text-zinc-400">
-        Page de démonstration, rendue par Movalink — effet Hyperespace,
-        boutons néon, bande LED.
+        Page de démonstration, rendue par Movalink — effet Éclairs, boutons
+        néon, bande LED.
       </p>
     </div>
   );
