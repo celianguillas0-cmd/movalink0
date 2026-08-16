@@ -3,6 +3,7 @@ import Link from "next/link";
 import MarketingShell from "@/components/MarketingShell";
 import ClaimForm from "@/components/ClaimForm";
 import ProfilePreview from "@/components/ProfilePreview";
+import StyleGallery from "@/components/StyleGallery";
 import { FREE_LAUNCH, SITE_NAME, SITE_URL } from "@/lib/config";
 
 export const metadata: Metadata = {
@@ -388,7 +389,23 @@ export default function HomePage() {
             ))}
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center gap-2">
+          {/* Trois pages entières, pour montrer que l'effet n'est qu'un
+              réglage parmi d'autres — et que deux pages peuvent n'avoir
+              visuellement rien en commun. */}
+          <div className="mt-14">
+            <h3 className="text-lg font-semibold">
+              Le même produit, trois pages différentes
+            </h3>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-500 dark:text-zinc-400">
+              Effet, couleurs, style de boutons, cadre d&apos;avatar, bande LED :
+              chaque réglage se change en un clic, et l&apos;aperçu suit en direct.
+            </p>
+            <div className="mt-6">
+              <StyleGallery />
+            </div>
+          </div>
+
+          <div className="mt-14 flex flex-wrap items-center gap-2">
             {EFFECTS.map((e) => (
               <span
                 key={e}
