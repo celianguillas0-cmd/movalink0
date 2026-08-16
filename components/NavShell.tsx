@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { LogoMark } from "./Icons";
 import { MoonIcon, SunIcon, useTheme } from "./ThemeToggle";
 import { SITE_NAME } from "@/lib/config";
-import { fetchMe, getCachedMe, MeData } from "@/lib/me-client";
 import { Plan } from "@/lib/types";
 
 export interface NavItem {
@@ -88,54 +87,12 @@ export const navIcons = {
   ),
 };
 
-export interface MovalinkMe {
-  loggedIn: boolean | null;
-  name: string | null;
-  username: string | null;
-  avatarUrl: string | null;
-  plan: Plan;
-  isAdmin?: boolean;
-}
-
-function toMovalinkMe(d: MeData): MovalinkMe {
-  return {
-    loggedIn: true,
-    name: d.profile?.displayName ?? d.user.username,
-    username: d.user.username,
-    avatarUrl: d.profile?.avatarUrl || null,
-    plan: d.user.plan ?? "free",
-    isAdmin: d.user.isAdmin ?? false,
-  };
-}
-
-export function useMe(): MovalinkMe {
-  const cached = getCachedMe();
-  const [me, setMe] = useState<MovalinkMe>(
-    cached
-      ? toMovalinkMe(cached)
-      : {
-          loggedIn: null,
-          name: null,
-          username: null,
-          avatarUrl: null,
-          plan: "free",
-        }
-  );
-
-  useEffect(() => {
-    let alive = true;
-    fetchMe().then(({ me: d }) => {
-      if (!alive) return;
-      if (d) setMe(toMovalinkMe(d));
-      else setMe((m) => ({ ...m, loggedIn: false }));
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  return me;
-}
+// `useMe` vit désormais dans son propre module, pour que les pages vitrine
+// puissent l'utiliser sans embarquer toute cette navigation. Ré-exporté ici :
+// le reste de l'application l'importe depuis NavShell.
+import type { MovalinkMe } from "./useMe";
+export { useMe } from "./useMe";
+export type { MovalinkMe };
 
 const btnSquare: React.CSSProperties = {
   width: 32,

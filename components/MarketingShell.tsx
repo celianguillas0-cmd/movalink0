@@ -1,15 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LogoMark } from "./Icons";
 import ThemeToggle from "./ThemeToggle";
+import { useMe } from "./useMe";
 import { SITE_NAME } from "@/lib/config";
 
-// Coquille de la page d'accueil : en-tête et pied de page classiques d'un site
-// vitrine. Volontairement distincte de PublicShell, qui affiche la navigation
-// de l'application (Ma page, Compte…) : un visiteur qui découvre Movalink n'a
-// pas encore de compte, lui montrer une interface d'appli le désoriente et
-// mange l'espace utile à la présentation du produit.
+// Coquille des pages vitrine : en-tête et pied de page classiques d'un site de
+// présentation. Volontairement distincte de PublicShell, qui affiche la
+// navigation de l'application (Ma page, Compte…) : un visiteur qui découvre
+// Movalink n'a pas encore de compte, lui montrer une interface d'appli le
+// désoriente et mange l'espace utile à la présentation du produit.
+//
+// Elle habille tout le parcours de découverte — accueil, fonctionnalités,
+// tarifs, FAQ — et pas seulement l'accueil : un visiteur qui cliquait sur
+// « Tarifs » depuis l'accueil atterrissait dans le menu latéral de l'appli,
+// avec une bannière d'installation, et avait l'impression de changer de site.
 
 const NAV = [
   { href: "/fonctionnalites", label: "Fonctionnalités" },
@@ -23,6 +30,13 @@ export default function MarketingShell({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  // `loggedIn` vaut null tant que la session n'est pas connue. On affiche alors
+  // l'état déconnecté, de loin le plus fréquent sur ces pages : un visiteur
+  // connecté voit brièvement « Créer ma page » avant « Mon tableau de bord »,
+  // sans décalage de mise en page.
+  const loggedIn = useMe().loggedIn === true;
+
   return (
     <div className="min-h-screen bg-white text-gray-900 dark:bg-zinc-950 dark:text-white">
       <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur-md dark:border-zinc-900 dark:bg-zinc-950/80">
@@ -39,7 +53,12 @@ export default function MarketingShell({
               <Link
                 key={n.href}
                 href={n.href}
-                className="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white"
+                aria-current={pathname === n.href ? "page" : undefined}
+                className={
+                  pathname === n.href
+                    ? "text-sm font-medium text-gray-900 dark:text-white"
+                    : "text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white"
+                }
               >
                 {n.label}
               </Link>
@@ -48,20 +67,51 @@ export default function MarketingShell({
 
           <div className="flex shrink-0 items-center gap-2">
             <ThemeToggle />
-            <Link
-              href="/login"
-              className="hidden rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 sm:block dark:text-zinc-300 dark:hover:text-white"
-            >
-              Connexion
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 dark:bg-white dark:text-zinc-900"
-            >
-              Créer ma page
-            </Link>
+            {loggedIn ? (
+              <Link
+                href="/dashboard/mapage"
+                className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 dark:bg-white dark:text-zinc-900"
+              >
+                Ma page
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="hidden rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 sm:block dark:text-zinc-300 dark:hover:text-white"
+                >
+                  Connexion
+                </Link>
+                <Link
+                  href="/signup"
+                  className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 dark:bg-white dark:text-zinc-900"
+                >
+                  Créer ma page
+                </Link>
+              </>
+            )}
           </div>
         </div>
+
+        {/* Sous md, la navigation ne tient pas à côté du logo et du bouton.
+            Une rangée défilante la garde accessible sans menu dépliant, donc
+            sans état ni JavaScript supplémentaire. */}
+        <nav className="flex gap-5 overflow-x-auto border-t border-gray-100 px-4 py-2.5 md:hidden dark:border-zinc-900">
+          {NAV.map((n) => (
+            <Link
+              key={n.href}
+              href={n.href}
+              aria-current={pathname === n.href ? "page" : undefined}
+              className={
+                pathname === n.href
+                  ? "shrink-0 text-sm font-medium text-gray-900 dark:text-white"
+                  : "shrink-0 text-sm text-gray-500 dark:text-zinc-400"
+              }
+            >
+              {n.label}
+            </Link>
+          ))}
+        </nav>
       </header>
 
       <main>{children}</main>
